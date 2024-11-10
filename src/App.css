@@ -1,0 +1,237 @@
+body,
+html,
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+}
+
+.editor {
+  width: 100%;
+}
+
+/* Side by Side Previewer */
+.textarea-parallel {
+  width: 48%;
+  padding: 10px;
+  margin: 0 5px 0 10px; /* Adjust margins to be consistent */
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: black;
+  color: white;
+  resize: none; /* Prevent resizing */
+  flex-grow: 1; 
+  min-height: 650px; /* Set minimum height */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+/* Side by Side Previewer */
+.preview-parallel {
+  width: 48%;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 0 10px 0 5px; /* Adjust margins to be consistent */
+  text-align: left;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
+  flex-grow: 1;
+  min-height: 650px; /* Set minimum height to match textarea */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.editor-preview-container-parallel {
+  display: flex;
+  flex-grow: 1;
+  width: 100%;
+}
+
+
+/* Horizontal Previewer */
+.textarea-horizontal {
+  width: 98%;
+  padding: 10px;
+  margin: 1px 0; 
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: black;
+  color: white;
+  resize: block; 
+  flex-grow: 1; 
+  min-height: 350px; 
+  box-sizing: border-box;
+}
+
+/* Horizontal Previewer */
+.preview-horizontal {
+  width: 98%;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 1px 0; /* Adjust margins to be consistent */
+  text-align: left;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
+  flex-grow: 1;
+  min-height: 350px;
+  box-sizing: border-box;
+}
+
+/* Container for horizontal layout */
+.editor-preview-container-horizontal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.preview-horizontal table,
+.preview-parallel table {
+  width: 95%;
+  margin: 10px 0; /* Align table to the left */
+  border-collapse: collapse;
+}
+
+.preview-horizontal th,
+.preview-horizontal td,
+.preview-parallel th,
+.preview-parallel td {
+  border: 1px solid #000; /* Add borders to table cells */
+  padding: 8px;
+  text-align: left;
+}
+
+.preview-horizontal th,
+.preview-parallel th {
+  background-color: #f2f2f2;
+}
+
+.toolbar {
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px auto;
+}
+
+.toolbar button {
+  margin-right: 5px;
+}
+
+.markdown-mark {
+  margin-right: 5px;
+  margin-Bottom: -14px;
+  width: 55px;
+  height: 40px;
+  line-height: 30px;
+  background-color: purple;
+  color: white;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
+}
+
+.button {
+  margin-top: 2px;
+  height: 40px;
+  line-height: 20px;
+  background-color: purple;
+  color: white;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
+}
+
+.button-mermaid { 
+  margin-top: 2px;
+  height: 40px;
+  line-height: 20px;
+  background-color: rgb(19, 0, 128);
+  color: white;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
+}
+
+.button-html { 
+  margin-top: 2px;
+  height: 40px;
+  line-height: 20px;
+  background-color: rgb(136, 116, 248);
+  color: white;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
+}
+
+.button-format { 
+  margin-top: 2px;
+  height: 40px;
+  line-height: 20px;
+  background-color: rgb(30, 68, 38);
+  color: white;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
+}
+
+.button:hover {
+  background-color: #575757;
+}
+
+
+.label {
+  margin-top: 12px;
+  font-size: 17px;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
+}
+
+.menubar {
+  width: 90%;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+}
+
+.menu-item {
+  color: white;
+  text-align: center;
+  padding: 14px 20px;
+  text-decoration: none;
+  font-size: 17px;
+  background-color: rgb(59, 59, 61);
+  border: none;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  background-color: #575757;
+}
