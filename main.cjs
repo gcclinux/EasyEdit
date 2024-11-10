@@ -20,24 +20,14 @@ function createWindow() {
   mainWindow.loadURL('http://localhost:3000');
 }
 
+const { dialog } = require('electron');
+
 // Define the menu template
 const menuTemplate = [
   {
     label: 'File',
     submenu: [
-      {
-        label: 'Open',
-        click: () => {
-          console.log('Open clicked');
-        },
-      },
-      {
-        label: 'Save',
-        click: () => {
-          console.log('Save clicked');
-        },
-      },
-      { type: 'separator' },
+      { role: 'reload' },
       {
         label: 'Exit',
         click: () => {
@@ -46,21 +36,9 @@ const menuTemplate = [
       },
     ],
   },
-  {
-    label: 'Edit',
-    submenu: [
-      { role: 'undo' },
-      { role: 'redo' },
-      { type: 'separator' },
-      { role: 'cut' },
-      { role: 'copy' },
-      { role: 'paste' },
-    ],
-  },
-  {
+   {
     label: 'View',
     submenu: [
-      { role: 'reload' },
       { role: 'toggledevtools' },
       { type: 'separator' },
       { role: 'resetzoom' },
@@ -74,10 +52,14 @@ const menuTemplate = [
     label: 'Help',
     submenu: [
       {
-        label: 'Learn More',
-        click: async () => {
-          const { shell } = require('electron');
-          await shell.openExternal('https://electronjs.org');
+        label: 'About',
+        click: () => {
+          dialog.showMessageBox({
+            type: 'info',
+            title: 'EasyEdit',
+            message: 'EasyEdit v0.2 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to PDF. \n',
+            buttons: ['OK']
+          });
         },
       },
     ],

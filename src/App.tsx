@@ -729,9 +729,6 @@ erDiagram
           <button className="menu-item" onClick={saveAsPDF}>
         Save as PDF
       </button>
-        <button className="menu-item" onClick={handleAboutClick}>
-          About
-        </button>
       </div>
       <div className="editor">
         <div className="toolbar">
