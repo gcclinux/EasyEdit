@@ -653,7 +653,7 @@ erDiagram
     const blob = new Blob([editorContent], {
       type: "text/markdown;charset=utf-8",
     });
-    saveAs(blob, "smalltextmd.md");
+    saveAs(blob, "easyedit.md");
   };
 
   const saveAsPDF = () => {
@@ -679,7 +679,7 @@ erDiagram
           heightLeft -= pageHeight;
         }
 
-        pdf.save("smalltextmd.pdf");
+        pdf.save("easyedit.pdf");
       }).catch((error) => {
         console.error("Error generating PDF:", error); // Debugging statement
       });
@@ -706,12 +706,6 @@ erDiagram
       }
     };
     input.click();
-  };
-
-  const handleAboutClick = () => {
-    alert(
-      `SmallTextMD v0.2 \n\n Designed in Vite & React, SmallTextMD is a simple markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can also save your markdown text as a .md file.`
-    );
   };
 
   return (
