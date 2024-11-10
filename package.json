@@ -1,7 +1,7 @@
 {
-  "name": "my-react-codemirror-app",
+  "name": "EasyEdit",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "start": "concurrently \"vite\" \"wait-on http://localhost:3000 && electron .\"",
@@ -10,7 +10,7 @@
   },
   "main": "main.cjs",
   "build": {
-    "appId": "com.example.yourapp",
+    "appId": "easyedit.wagemaker.uk",
     "files": [
       "dist/**/*",
       "main.js",
@@ -20,6 +20,8 @@
       "buildResources": "assets"
     }
   },
+  "author": "Ricardo Wagemaker <wagemra@gmail.com>",
+  "license": "MIT",
   "dependencies": {
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
