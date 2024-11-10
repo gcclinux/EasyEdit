@@ -1,78 +1,62 @@
-## To install react+vite
-
+## Run the project
 ```
-npm create vite@latest smalltextmd
-```
-
-√ Project name: ... smalltextmd
-√ Select a framework: » React
-√ Select a variant: » TypeScript + SWC
-
-## To install the project
-
-```
-cd smalltextmd
-npm install
-npm install react-markdown remark-gfm file-saver
-npm install --save-dev @types/file-saver
+$ npm start
 ```
 
-## To run the project
-
-$ npm run dev
-$ npm run prd
-
-Another way is using npm run dev, you can modify the script in your package.json file to include the --port option. Here's how you can do it:
-
-## Example (added line "test": "vite --port 3024",):
-
+## Important package.json
 ```
-
+{
+  "name": "my-react-codemirror-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "test": "vite --port 3024",
-    "dev": "export USE_HTTPS=false && vite --port 3024",
-    "prd": "export USE_HTTPS=true && vite --port 3024 --host",
+    "start": "concurrently \"vite\" \"wait-on http://localhost:3000 && electron .\"",
     "build": "vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "electron:build": "electron-builder"
   },
-
-```
-
-Also update the vite.config.ts file to include the option to run in SSL or HTTP
-
-```
-// Determine if HTTPS should be used based on an environment variable
-const useHttps = process.env.USE_HTTPS === 'true';
-
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    port: 3024,
-    host: true,
-    ...(useHttps ? {
-      https: {
-        key: fs.readFileSync(path.resolve(__dirname, '/server/certbot/shared/domain/privkey.pem')),
-        cert: fs.readFileSync(path.resolve(__dirname, '/server/certbot/shared/domain/cert.pem')),
-        ca: fs.readFileSync(path.resolve(__dirname, '/server/certbot/shared/domain/chain.pem')),
-      }
-    } : {})
+  "main": "main.cjs",
+  "build": {
+    "appId": "com.example.yourapp",
+    "files": [
+      "dist/**/*",
+      "main.js",
+      "preload.js"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
+  },
+  "dependencies": {
+    "file-saver": "^2.0.5",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.2",
+    "mermaid": "^11.4.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-markdown": "^9.0.1",
+    "remark-gfm": "^4.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@types/file-saver": "^2.0.7",
+    "@types/node": "^22.8.1",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "concurrently": "^9.1.0",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "eslint": "^9.13.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.13",
+    "globals": "^15.11.0",
+    "vite": "^5.4.9",
+    "wait-on": "^8.0.1"
   }
-});
+}
 ```
 
-```
-
-export USE_HTTPS=false; npm run dev
-export USE_HTTPS=true; npm run prd
-
-```
-
-## Running in screen Example:
-
-```
-$ cd /server/code/smalltextmd && screen -L -Logfile /server/code/tools/logs/SMALLTEXTMD.log -dmS SMALLTEXTMD npm run prd
-```
 
 ## Mermeid example
 
