@@ -26,9 +26,9 @@ $ npm start
 
 ```
 {
-  "name": "my-react-codemirror-app",
+  "name": "easyedit",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "start": "concurrently \"vite\" \"wait-on http://localhost:3000 && electron .\"",
@@ -37,7 +37,7 @@ $ npm start
   },
   "main": "main.cjs",
   "build": {
-    "appId": "com.example.yourapp",
+    "appId": "easyedit.wagemaker.uk",
     "files": [
       "dist/**/*",
       "main.js",
@@ -47,19 +47,24 @@ $ npm start
       "buildResources": "assets"
     }
   },
+  "author": "Ricardo Wagemaker <wagemra@gmail.com>",
+  "license": "MIT",
   "dependencies": {
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.2",
+    "lodash.debounce": "^4.0.8",
     "mermaid": "^11.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-markdown": "^9.0.1",
+    "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
     "@types/file-saver": "^2.0.7",
+    "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^22.8.1",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
