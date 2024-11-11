@@ -7,6 +7,7 @@ import "./App.css";
 import markdownMarkWhite from "./assets/markdown-mark-white.svg";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import rehypeRaw from "rehype-raw";
 
 const App = () => {
   const [editorContent, setEditorContent] = React.useState("");
@@ -74,7 +75,7 @@ const App = () => {
         editorContent.substring(end);
       setEditorContent(newText);
       setTimeout(() => {
-        const newCursorPosition = start + listText.length -2;
+        const newCursorPosition = start + listText.length - 2;
         textarea.setSelectionRange(newCursorPosition, newCursorPosition);
         textarea.focus();
       }, 0);
@@ -94,7 +95,7 @@ const App = () => {
         editorContent.substring(end);
       setEditorContent(newText);
       setTimeout(() => {
-        const newCursorPosition = start + listText.length -1;
+        const newCursorPosition = start + listText.length - 1;
         textarea.setSelectionRange(newCursorPosition, newCursorPosition);
         textarea.focus();
       }, 0);
@@ -114,7 +115,7 @@ const App = () => {
         editorContent.substring(end);
       setEditorContent(newText);
       setTimeout(() => {
-        const newCursorPosition = start + listText.length -2;
+        const newCursorPosition = start + listText.length - 2;
         textarea.setSelectionRange(newCursorPosition, newCursorPosition);
         textarea.focus();
       }, 0);
@@ -305,7 +306,7 @@ const App = () => {
       const textarea = textareaRef.current;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
-      const imageText = `\n![alt text](image url)\n`;
+      const imageText = `Default MarkDown Example\n![alt text](image url)\n\nExtended HTML Example\n<img src="image url" alt="alt text" width="300" height="200">\n\n`;
       const newText =
         editorContent.substring(0, start) +
         imageText +
@@ -385,7 +386,6 @@ const App = () => {
     }
   };
 
-
   const insertClassSyntax = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
@@ -456,8 +456,6 @@ gantt
     }
   };
 
-
-  
   const insertmindmapSyntax = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
@@ -658,31 +656,35 @@ erDiagram
 
   const saveAsPDF = () => {
     console.log("saveAsPDF called"); // Debugging statement
-    const previewElement = document.querySelector(".preview-horizontal, .preview-parallel") as HTMLElement;
+    const previewElement = document.querySelector(
+      ".preview-horizontal, .preview-parallel"
+    ) as HTMLElement;
     if (previewElement) {
-      html2canvas(previewElement).then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF();
-        const imgWidth = 190; // Width of the image in the PDF
-        const pageHeight = pdf.internal.pageSize.height;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        let heightLeft = imgHeight;
-        let position = 10;
+      html2canvas(previewElement)
+        .then((canvas) => {
+          const imgData = canvas.toDataURL("image/png");
+          const pdf = new jsPDF();
+          const imgWidth = 190; // Width of the image in the PDF
+          const pageHeight = pdf.internal.pageSize.height;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          let heightLeft = imgHeight;
+          let position = 10;
 
-        pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight;
-          pdf.addPage();
           pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
           heightLeft -= pageHeight;
-        }
 
-        pdf.save("easyedit.pdf");
-      }).catch((error) => {
-        console.error("Error generating PDF:", error); // Debugging statement
-      });
+          while (heightLeft >= 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+          }
+
+          pdf.save("easyedit.pdf");
+        })
+        .catch((error) => {
+          console.error("Error generating PDF:", error); // Debugging statement
+        });
     } else {
       console.error("Preview element not found"); // Debugging statement
     }
@@ -711,22 +713,23 @@ erDiagram
   return (
     <div className="container">
       <div className="menubar">
-      <button className="menu-item" onClick={toggleLayout}>
+        <button className="menu-item" onClick={toggleLayout}>
           Toggle Layout
         </button>
         <button className="menu-item" onClick={handleOpenClick}>
           Load Document
         </button>
         <button className="menu-item" onClick={saveToFile}>
-            Save as MD
-          </button>
-          <button className="menu-item" onClick={saveAsPDF}>
-        Save as PDF
-      </button>
+          Save as MD
+        </button>
+        <button className="menu-item" onClick={saveAsPDF}>
+          Save as PDF
+        </button>
       </div>
       <div className="editor">
         <div className="toolbar">
-          <img className="markdown-mark"
+          <img
+            className="markdown-mark"
             src={markdownMarkWhite}
             alt="MD"
             onClick={() => window.location.reload()}
@@ -777,21 +780,37 @@ erDiagram
           <button className="button" onClick={insertFootSyntax}>
             FootNote
           </button>
-          <button className="button-mermaid" onClick={insertMermaidSyntax} title="Insert Mermaid flowchart">
-          flowchart
+          <button
+            className="button-mermaid"
+            onClick={insertMermaidSyntax}
+            title="Insert Mermaid flowchart"
+          >
+            flowchart
           </button>
-          <button className="button-mermaid" onClick={insertGanttSyntax} title="Insert Mermaid Gantt chart">
-          Gantt
+          <button
+            className="button-mermaid"
+            onClick={insertGanttSyntax}
+            title="Insert Mermaid Gantt chart"
+          >
+            Gantt
           </button>
-          <button className="button-mermaid" onClick={insertmindmapSyntax} title="Insert Mermaid MindMap">
-          MindMap
+          <button
+            className="button-mermaid"
+            onClick={insertmindmapSyntax}
+            title="Insert Mermaid MindMap"
+          >
+            MindMap
           </button>
-          <button className="button-mermaid" onClick={inserterDiagramSyntax} title="Insert Mermaid erDiagram">
-          erDiag
+          <button
+            className="button-mermaid"
+            onClick={inserterDiagramSyntax}
+            title="Insert Mermaid erDiagram"
+          >
+            erDiag
           </button>
         </div>
         <div className="toolbar">
-        <button className="button" onClick={insertCheckSyntax}>
+          <button className="button" onClick={insertCheckSyntax}>
             &#9745;
           </button>
           <button className="button-html" onClick={insertSymbol1}>
@@ -857,32 +876,60 @@ erDiagram
           <button className="button-html" onClick={insertSymbol25}>
             &#8868;
           </button>
-         <button className="button-html" onClick={insertSymbol26}>
+          <button className="button-html" onClick={insertSymbol26}>
             &#8869;
           </button>
-         <button className="button-mermaid" onClick={insertClassSyntax} title="Insert Mermaid classDiag">
-          ClassDiag
+          <button
+            className="button-mermaid"
+            onClick={insertClassSyntax}
+            title="Insert Mermaid classDiag"
+          >
+            ClassDiag
           </button>
-         <button className="button-mermaid" onClick={inserterGitSyntax} title="Insert Mermaid gitGraph">
-          gitGraph
+          <button
+            className="button-mermaid"
+            onClick={inserterGitSyntax}
+            title="Insert Mermaid gitGraph"
+          >
+            gitGraph
           </button>
-        <button className="button-mermaid" onClick={inserterBlockSyntax} title="Insert Mermaid Block">
-          Block
+          <button
+            className="button-mermaid"
+            onClick={inserterBlockSyntax}
+            title="Insert Mermaid Block"
+          >
+            Block
           </button>
-        <button className="button-mermaid" onClick={insertjourneySyntax} title="Insert Mermaid Journey">
-          Journey
+          <button
+            className="button-mermaid"
+            onClick={insertjourneySyntax}
+            title="Insert Mermaid Journey"
+          >
+            Journey
           </button>
         </div>
-        <div className={isHorizontal ? "editor-preview-container-horizontal" : "editor-preview-container-parallel"}>
-        <textarea
-          ref={textareaRef}
-          value={editorContent}
-          onChange={(e) => setEditorContent(e.target.value)}
-          className={isHorizontal ? "textarea-horizontal" : "textarea-parallel"}
-        />
-          <div className={isHorizontal ? "preview-horizontal" : "preview-parallel"} ref={previewRef}>
+        <div
+          className={
+            isHorizontal
+              ? "editor-preview-container-horizontal"
+              : "editor-preview-container-parallel"
+          }
+        >
+          <textarea
+            ref={textareaRef}
+            value={editorContent}
+            onChange={(e) => setEditorContent(e.target.value)}
+            className={
+              isHorizontal ? "textarea-horizontal" : "textarea-parallel"
+            }
+          />
+          <div
+            className={isHorizontal ? "preview-horizontal" : "preview-parallel"}
+            ref={previewRef}
+          >
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
               components={{
                 code({ className, children, ...props }) {
                   const match = /language-mermaid/.test(className || "");

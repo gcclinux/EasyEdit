@@ -1,9 +1,29 @@
+## EasyEdit
+
+Required build dependacies
+
+- - npm
+- - vite
+- - file-saver
+- - html2canvas
+- - jspdf
+- - mermaid
+- - react
+- - react-dom
+- - react-markdown
+- - remark-gfm
+- - electron
+
+<img src="./screenshots/sample001.png" alt="Example" width="500" height="300">
+
 ## Run the project
+
 ```
 $ npm start
 ```
 
 ## Important package.json
+
 ```
 {
   "name": "my-react-codemirror-app",
@@ -57,15 +77,13 @@ $ npm start
 }
 ```
 
-
 ## Mermeid example
 
 ```mermaid
-graph TD;
-A[Hard] -->|Text| B(Round)
-B --> C{Decision}
-C -->|One| D[Result 1]
-C -->|Two| E[Result 2]
+flowchart TD
+    A[Christmas] -->|Get money| B(Go shopping)
+    B --> C{Let me think}
+    C -->|One| D[Laptop]
+    C -->|Two| E[iPhone]
+    C -->|Three| F[fa:fa-car Car]
 ```
-
-- - -

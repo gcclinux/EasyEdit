@@ -1,5 +1,5 @@
-const { app, BrowserWindow, screen, Menu } = require('electron');
-const path = require('path');
+const { app, BrowserWindow, screen, Menu } = require("electron");
+const path = require("path");
 
 // Disable hardware acceleration
 app.disableHardwareAcceleration();
@@ -11,54 +11,69 @@ function createWindow() {
     width: width,
     height: height,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true,
       contextIsolation: false,
     },
   });
 
-  mainWindow.loadURL('http://localhost:3000');
+  mainWindow.loadURL("http://localhost:3000");
 }
 
-const { dialog } = require('electron');
+const { dialog } = require("electron");
 
 // Define the menu template
 const menuTemplate = [
   {
-    label: 'File',
+    label: "File",
     submenu: [
-      { role: 'reload' },
+      { role: "reload" },
       {
-        label: 'Exit',
+        label: "Exit",
         click: () => {
           app.quit();
         },
       },
     ],
   },
-   {
-    label: 'View',
+  {
+    label: "Edit",
     submenu: [
-      { role: 'toggledevtools' },
-      { type: 'separator' },
-      { role: 'resetzoom' },
-      { role: 'zoomin' },
-      { role: 'zoomout' },
-      { type: 'separator' },
-      { role: 'togglefullscreen' },
+      { role: "undo" },
+      { role: "redo" },
+      { type: "separator" },
+      { role: "cut" },
+      { role: "copy" },
+      { role: "paste" },
+      { role: "pasteandmatchstyle" },
+      { role: "delete" },
+      { role: "selectall" },
     ],
   },
   {
-    label: 'Help',
+    label: "View",
+    submenu: [
+      { role: "toggledevtools" },
+      { type: "separator" },
+      { role: "resetzoom" },
+      { role: "zoomin" },
+      { role: "zoomout" },
+      { type: "separator" },
+      { role: "togglefullscreen" },
+    ],
+  },
+  {
+    label: "Help",
     submenu: [
       {
-        label: 'About',
+        label: "About",
         click: () => {
           dialog.showMessageBox({
-            type: 'info',
-            title: 'EasyEdit',
-            message: 'EasyEdit v0.2 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to PDF. \n',
-            buttons: ['OK']
+            type: "info",
+            title: "EasyEdit",
+            message:
+              "EasyEdit v0.2 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to PDF. \n",
+            buttons: ["OK"],
           });
         },
       },
@@ -66,7 +81,7 @@ const menuTemplate = [
   },
 ];
 
-app.on('ready', () => {
+app.on("ready", () => {
   // Create the custom menu
   const menu = Menu.buildFromTemplate(menuTemplate);
   Menu.setApplicationMenu(menu);
@@ -74,13 +89,13 @@ app.on('ready', () => {
   createWindow();
 });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
     app.quit();
   }
 });
 
-app.on('activate', () => {
+app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
