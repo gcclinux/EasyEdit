@@ -30,18 +30,6 @@ function createWindow() {
   });
 
   mainWindow.loadURL("http://localhost:3000");
-
-  // Handle file open
-  ipcMain.handle('dialog:openFile', async () => {
-    const result = await dialog.showOpenDialog(mainWindow, {
-      properties: ['openFile'],
-      filters: [{ name: 'Markdown Files', extensions: ['md'] }]
-    });
-    if (result.canceled) return;
-    const filePath = result.filePaths[0];
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
-    return fileContent;
-  });
 }
 
 // Define the menu template
@@ -49,13 +37,6 @@ const menuTemplate = [
   {
     label: "File",
     submenu: [
-      {
-        label: "Load Document",
-        click: async () => {
-          const content = await mainWindow.webContents.send('open-file');
-          mainWindow.webContents.send('file-opened', content);
-        },
-      },
       { role: "reload" },
       {
         label: "Exit",
@@ -95,14 +76,18 @@ const menuTemplate = [
     label: "Help",
     submenu: [
       {
-        label: "Learn More",
-        click: async () => {
-          const { shell } = require('electron');
-          await shell.openExternal('https://electronjs.org');
+        label: 'About',
+        click: () => {
+          dialog.showMessageBox({
+            type: 'info',
+            title: 'EasyEdit',
+            message: 'EasyEdit v1.0 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to PDF. \n',
+            buttons: ['OK']
+          });
         },
       },
     ],
-  },
+  }
 ];
 
 // Set the application menu

@@ -14,5 +14,5 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
   openFile: () => ipcRenderer.invoke('dialog:openFile'),
-  onFileOpened: (callback) => ipcRenderer.on('file-opened', (event, content) => callback(content)),
+  onFileOpened: (callback) => ipcRenderer.on('file-opened', (_event, content) => callback(content)),
 });
