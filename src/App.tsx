@@ -1,25 +1,26 @@
-import React, { useRef, useEffect, useCallback } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import mermaid from "mermaid";
-import { saveAs } from "file-saver";
-import "./App.css";
-import markdownMarkWhite from "./assets/markdown-mark-white.svg";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
-import rehypeRaw from "rehype-raw";
-import debounce from "lodash.debounce";
+import React, { useRef, useState, useEffect, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import mermaid from 'mermaid';
+import { saveAs } from 'file-saver';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import rehypeRaw from 'rehype-raw';
+import debounce from 'lodash.debounce';
+import './App.css';
+import markdownMarkWhite from './assets/md.svg';
 
 const App = () => {
-  const [editorContent, setEditorContent] = React.useState("");
-  const [isHorizontal, setIsHorizontal] = React.useState(false);
+  const [editorContent, setEditorContent] = useState('');
+  const [isHorizontal, setIsHorizontal] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const cursorPositionRef = useRef<number>(0);
 
   const initializeMermaid = useCallback(
     debounce(() => {
       if (previewRef.current) {
-        const mermaidElements = previewRef.current.querySelectorAll(".mermaid");
+        const mermaidElements = previewRef.current.querySelectorAll('.mermaid');
         mermaidElements.forEach((element) => {
           mermaid.init(undefined, element as HTMLElement);
         });
@@ -31,6 +32,18 @@ const App = () => {
   useEffect(() => {
     initializeMermaid();
   }, [editorContent, initializeMermaid]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    cursorPositionRef.current = e.target.selectionStart;
+    setEditorContent(e.target.value);
+  };
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
+      textareaRef.current.focus();
+    }
+  }, [editorContent]);
 
   const toggleLayout = () => {
     setIsHorizontal(!isHorizontal);
@@ -47,6 +60,73 @@ const App = () => {
     }
   };
 
+  const TextareaComponent = React.memo(() => {
+    useEffect(() => {
+      if (textareaRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = textareaRef.current;
+        const isAtBottom = scrollHeight - scrollTop === clientHeight;
+        if (isAtBottom) {
+          textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
+        }
+      }
+    }, [editorContent]);
+
+    return (
+      <textarea
+        ref={textareaRef}
+        value={editorContent}
+        onChange={handleChange}
+        className={isHorizontal ? 'textarea-horizontal' : 'textarea-parallel'}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const target = e.target as HTMLTextAreaElement;
+            const { selectionStart, selectionEnd } = target;
+            const newValue =
+              editorContent.substring(0, selectionStart) +
+              '\n' +
+              editorContent.substring(selectionEnd);
+            cursorPositionRef.current = selectionStart + 1;
+            setEditorContent(newValue);
+          }
+        }}
+      />
+    );
+  });
+
+  const PreviewComponent = React.memo(() => {
+    useEffect(() => {
+      initializeMermaid();
+    }, [editorContent, initializeMermaid]);
+
+    return (
+      <div
+        className={isHorizontal ? 'preview-horizontal' : 'preview-parallel'}
+        ref={previewRef}
+      >
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw]}
+          components={{
+            code({ className, children, ...props }) {
+              const match = /language-mermaid/.test(className || "");
+              return match ? (
+                <div className="mermaid">
+                  {String(children).replace(/\n$/, "")}
+                </div>
+              ) : (
+                <code className={className} {...props}>
+                  {children}
+                </code>
+              );
+            },
+          }}
+        >
+          {editorContent}
+        </ReactMarkdown>
+      </div>
+    );
+  });
 
   const insertSymbol1 = () => insertSymbol("&#8894;");
   const insertSymbol2 = () => insertSymbol("&#8704;");
@@ -924,39 +1004,8 @@ erDiagram
               : "editor-preview-container-parallel"
           }
         >
-          <textarea
-            ref={textareaRef}
-            value={editorContent}
-            onChange={(e) => setEditorContent(e.target.value)}
-            className={
-              isHorizontal ? "textarea-horizontal" : "textarea-parallel"
-            }
-          />
-          <div
-            className={isHorizontal ? "preview-horizontal" : "preview-parallel"}
-            ref={previewRef}
-          >
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeRaw]}
-              components={{
-                code({ className, children, ...props }) {
-                  const match = /language-mermaid/.test(className || "");
-                  return match ? (
-                    <div className="mermaid">
-                      {String(children).replace(/\n$/, "")}
-                    </div>
-                  ) : (
-                    <code className={className} {...props}>
-                      {children}
-                    </code>
-                  );
-                },
-              }}
-            >
-              {editorContent}
-            </ReactMarkdown>
-          </div>
+          <TextareaComponent />
+          <PreviewComponent />
         </div>
       </div>
     </div>

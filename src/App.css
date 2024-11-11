@@ -19,43 +19,45 @@ html,
   width: 100%;
 }
 
-/* Side by Side Previewer */
+/* Textarea Parallel */
 .textarea-parallel {
-  width: 48%;
-  padding: 10px;
-  margin: 0 5px 0 10px; /* Adjust margins to be consistent */
-  font-size: 16px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 10px;
+  text-align: left;
+  font-family: monospace;
+  font-size: 16px;
   background-color: black;
   color: white;
-  resize: none; /* Prevent resizing */
-  flex-grow: 1; 
-  min-height: 650px; /* Set minimum height */
-  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  resize: none;
+  overflow: auto; /* Enable scrolling */
+  box-sizing: border-box;
 }
 
-/* Side by Side Previewer */
+/* Preview Parallel */
 .preview-parallel {
-  width: 48%;
   border: 1px solid #ccc;
   padding: 10px;
-  margin: 0 10px 0 5px; /* Adjust margins to be consistent */
   text-align: left;
   font-family: Arial, sans-serif;
   font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  text-decoration: none;
-  flex-grow: 1;
-  min-height: 650px; /* Set minimum height to match textarea */
-  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  overflow: auto; /* Enable scrolling */
+  box-sizing: border-box;
 }
 
+.textarea-parallel,
+.preview-parallel {
+  overflow: auto;
+  width: 50%;
+  margin: 0;
+  box-sizing: border-box;
+  height: 80vh; /* Reduce initial height */
+}
+
+/* Container for parallel layout */
 .editor-preview-container-parallel {
   display: flex;
-  flex-grow: 1;
-  width: 100%;
+  flex-direction: row;
+  height: calc(100vh - 60px); /* Adjust according to any headers or footers */
 }
 
 
