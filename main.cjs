@@ -1,15 +1,25 @@
 const { app, BrowserWindow, screen, Menu } = require("electron");
 const path = require("path");
+const fs = require("fs");
 
 // Disable hardware acceleration
 app.disableHardwareAcceleration();
 
 function createWindow() {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  const iconPath = path.join(__dirname, "public", process.platform === 'win32' ? 'icon.ico' : 'icon.png');
+  const preloadPath = path.join(__dirname, "preload.js");
+
+  // Check if preload.js exists
+  if (!fs.existsSync(preloadPath)) {
+    console.error(`Preload script not found: ${preloadPath}`);
+    return;
+  }
 
   const mainWindow = new BrowserWindow({
     width: width,
     height: height,
+    icon: iconPath,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true,
@@ -80,6 +90,10 @@ const menuTemplate = [
     ],
   },
 ];
+
+// Set the application menu
+const menu = Menu.buildFromTemplate(menuTemplate);
+Menu.setApplicationMenu(menu);
 
 app.on("ready", () => {
   // Create the custom menu

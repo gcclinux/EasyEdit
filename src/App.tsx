@@ -11,8 +11,8 @@ import './App.css';
 import markdownMarkWhite from './assets/md.svg';
 
 const App = () => {
-  const [editorContent, setEditorContent] = useState('');
-  const [isHorizontal, setIsHorizontal] = useState(false);
+  const [editorContent, setEditorContent] = useState<string>('');
+  const [isHorizontal, setIsHorizontal] = useState<boolean>(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const cursorPositionRef = useRef<number>(0);
