@@ -1,9 +1,11 @@
-const { app, BrowserWindow, screen, Menu } = require("electron");
+const { app, BrowserWindow, screen, Menu, dialog, ipcMain } = require("electron");
 const path = require("path");
 const fs = require("fs");
 
 // Disable hardware acceleration
 app.disableHardwareAcceleration();
+
+let mainWindow;
 
 function createWindow() {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
@@ -16,27 +18,44 @@ function createWindow() {
     return;
   }
 
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: width,
     height: height,
     icon: iconPath,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload: preloadPath,
       nodeIntegration: true,
       contextIsolation: false,
     },
   });
 
   mainWindow.loadURL("http://localhost:3000");
-}
 
-const { dialog } = require("electron");
+  // Handle file open
+  ipcMain.handle('dialog:openFile', async () => {
+    const result = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openFile'],
+      filters: [{ name: 'Markdown Files', extensions: ['md'] }]
+    });
+    if (result.canceled) return;
+    const filePath = result.filePaths[0];
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    return fileContent;
+  });
+}
 
 // Define the menu template
 const menuTemplate = [
   {
     label: "File",
     submenu: [
+      {
+        label: "Load Document",
+        click: async () => {
+          const content = await mainWindow.webContents.send('open-file');
+          mainWindow.webContents.send('file-opened', content);
+        },
+      },
       { role: "reload" },
       {
         label: "Exit",
@@ -76,15 +95,10 @@ const menuTemplate = [
     label: "Help",
     submenu: [
       {
-        label: "About",
-        click: () => {
-          dialog.showMessageBox({
-            type: "info",
-            title: "EasyEdit",
-            message:
-              "EasyEdit v1.0 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to PDF. \n",
-            buttons: ["OK"],
-          });
+        label: "Learn More",
+        click: async () => {
+          const { shell } = require('electron');
+          await shell.openExternal('https://electronjs.org');
         },
       },
     ],
@@ -96,10 +110,6 @@ const menu = Menu.buildFromTemplate(menuTemplate);
 Menu.setApplicationMenu(menu);
 
 app.on("ready", () => {
-  // Create the custom menu
-  const menu = Menu.buildFromTemplate(menuTemplate);
-  Menu.setApplicationMenu(menu);
-
   createWindow();
 });
 
