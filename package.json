@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "concurrently \"vite\" \"wait-on http://localhost:3000 && electron .\"",
+    "start": "concurrently \"vite --host\" \"wait-on http://localhost:3000 && electron .\"",
     "build": "vite build",
     "electron:build": "electron-builder"
   },
