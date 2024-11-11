@@ -26,6 +26,7 @@
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.2",
+    "lodash.debounce": "^4.0.8",
     "mermaid": "^11.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -36,6 +37,7 @@
   "devDependencies": {
     "@eslint/js": "^9.13.0",
     "@types/file-saver": "^2.0.7",
+    "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^22.8.1",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import mermaid from "mermaid";
@@ -8,6 +8,7 @@ import markdownMarkWhite from "./assets/markdown-mark-white.svg";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import rehypeRaw from "rehype-raw";
+import debounce from "lodash.debounce";
 
 const App = () => {
   const [editorContent, setEditorContent] = React.useState("");
@@ -15,14 +16,21 @@ const App = () => {
   const previewRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const initializeMermaid = useCallback(
+    debounce(() => {
+      if (previewRef.current) {
+        const mermaidElements = previewRef.current.querySelectorAll(".mermaid");
+        mermaidElements.forEach((element) => {
+          mermaid.init(undefined, element as HTMLElement);
+        });
+      }
+    }, 300),
+    [editorContent]
+  );
+
   useEffect(() => {
-    if (previewRef.current) {
-      const mermaidElements = previewRef.current.querySelectorAll(".mermaid");
-      mermaidElements.forEach((element) => {
-        mermaid.init(undefined, element as HTMLElement);
-      });
-    }
-  }, [editorContent]);
+    initializeMermaid();
+  }, [editorContent, initializeMermaid]);
 
   const toggleLayout = () => {
     setIsHorizontal(!isHorizontal);
@@ -38,6 +46,7 @@ const App = () => {
       textareaRef.current.focus();
     }
   };
+
 
   const insertSymbol1 = () => insertSymbol("&#8894;");
   const insertSymbol2 = () => insertSymbol("&#8704;");
