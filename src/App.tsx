@@ -99,6 +99,38 @@ const App = () => {
       initializeMermaid();
     }, [editorContent, initializeMermaid]);
 
+    // Add new useEffect for auto-scrolling
+    useEffect(() => {
+      if (!previewRef.current) return;
+    
+      // Create observer to watch for Mermaid diagram changes
+      const observer = new MutationObserver(() => {
+        if (previewRef.current) {
+          // Add small delay to ensure diagrams are fully rendered
+          setTimeout(() => {
+            previewRef.current!.scrollTop = previewRef.current!.scrollHeight;
+          }, 100);
+        }
+      });
+    
+      // Observe changes in the preview div
+      observer.observe(previewRef.current, {
+        childList: true,
+        subtree: true,
+        attributes: true
+      });
+    
+      // Initial scroll
+      setTimeout(() => {
+        if (previewRef.current) {
+          previewRef.current.scrollTop = previewRef.current.scrollHeight;
+        }
+      }, 100);
+    
+      // Cleanup
+      return () => observer.disconnect();
+    }, [editorContent]);
+
     return (
       <div
         className={isHorizontal ? 'preview-horizontal' : 'preview-parallel'}
