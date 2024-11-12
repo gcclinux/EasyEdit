@@ -1,6 +1,7 @@
+const fs = require('fs');
+const fsPromises = fs.promises;
 const { app, BrowserWindow, screen, Menu, dialog, ipcMain } = require("electron");
 const path = require("path");
-const fs = require("fs");
 
 // Disable hardware acceleration
 app.disableHardwareAcceleration();
@@ -37,6 +38,24 @@ const menuTemplate = [
   {
     label: "File",
     submenu: [
+      {
+        label: "Open File",
+        accelerator: "CmdOrCtrl+O",
+        click: async () => {
+          const result = await dialog.showOpenDialog({
+            properties: ['openFile']
+          });
+          if (!result.canceled) {
+            try {
+              const filePath = result.filePaths[0];
+              const content = await fsPromises.readFile(filePath, 'utf-8');
+              mainWindow.webContents.send('file-opened', content);
+            } catch (err) {
+              console.error('Error reading file:', err);
+            }
+          }
+        }
+      },
       { role: "reload" },
       {
         label: "Exit",

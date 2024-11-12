@@ -9,6 +9,8 @@ import rehypeRaw from 'rehype-raw';
 import debounce from 'lodash.debounce';
 import './App.css';
 import markdownMarkWhite from './assets/md.svg';
+import { IpcRendererEvent } from 'electron';
+const { ipcRenderer } = window.require('electron');
 
 const App = () => {
   const [editorContent, setEditorContent] = useState<string>('');
@@ -37,6 +39,17 @@ const App = () => {
     cursorPositionRef.current = e.target.selectionStart;
     setEditorContent(e.target.value);
   };
+
+  useEffect(() => {
+    ipcRenderer.on('file-opened', (_event: IpcRendererEvent, content: string) => {
+      setEditorContent(content);
+    });
+
+    // Cleanup listener
+    return () => {
+      ipcRenderer.removeAllListeners('file-opened');
+    };
+  }, []);
 
   useEffect(() => {
     if (textareaRef.current) {
