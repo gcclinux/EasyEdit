@@ -79,7 +79,7 @@ const menuTemplate = [
         label: 'About',
         click: () => {
           dialog.showMessageBox({
-            type: 'info',
+            type: 'error',
             title: 'EasyEdit',
             message: 'EasyEdit v1.0 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to PDF. \n',
             buttons: ['OK']

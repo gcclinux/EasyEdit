@@ -4,7 +4,6 @@ html,
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
 }
 
 .container {
@@ -47,16 +46,17 @@ html,
 .textarea-parallel,
 .preview-parallel {
   overflow: auto;
-  width: 50%;
+  width: 49%;
   margin: 0;
   box-sizing: border-box;
-  height: 70vh; /* Reduce initial height */
+  height: 70vh;
 }
 
 /* Container for parallel layout */
 .editor-preview-container-parallel {
   display: flex;
   flex-direction: row;
+  justify-content: center;
   height: calc(100vh - 60px); /* Adjust according to any headers or footers */
 }
 
