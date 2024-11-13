@@ -92,3 +92,20 @@ flowchart TD
     C -->|Two| E[iPhone]
     C -->|Three| F[fa:fa-car Car]
 ```
+
+## Tables as code
+```
+
+| header1 | header2 | header3 |
+| :--- | :--- | :--- |
+| row1 | col2 | col3 |
+| row2 | col2 | col3 |
+
+```
+
+## Table displayed
+
+| header1 | header2 | header3 |
+| :--- | :--- | :--- |
+| row1 | col2 | col3 |
+| row2 | col2 | col3 |

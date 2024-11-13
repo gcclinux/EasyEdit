@@ -11,20 +11,13 @@ let mainWindow;
 function createWindow() {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   const iconPath = path.join(__dirname, "public", process.platform === 'win32' ? 'icon.ico' : 'icon.png');
-  const preloadPath = path.join(__dirname, "preload.js");
-
-  // Check if preload.js exists
-  if (!fs.existsSync(preloadPath)) {
-    console.error(`Preload script not found: ${preloadPath}`);
-    return;
-  }
 
   mainWindow = new BrowserWindow({
     width: width,
     height: height,
     icon: iconPath,
     webPreferences: {
-      preload: preloadPath,
+      // preload: preloadPath,
       nodeIntegration: true,
       contextIsolation: false,
     },
@@ -74,7 +67,6 @@ const menuTemplate = [
       { role: "cut" },
       { role: "copy" },
       { role: "paste" },
-      { role: "pasteandmatchstyle" },
       { role: "delete" },
       { role: "selectall" },
     ],
@@ -82,7 +74,7 @@ const menuTemplate = [
   {
     label: "View",
     submenu: [
-      { role: "toggledevtools" },
+      // { role: "toggledevtools" },
       { type: "separator" },
       { role: "resetzoom" },
       { role: "zoomin" },
