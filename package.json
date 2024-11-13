@@ -14,7 +14,8 @@
     "productName": "EasyEdit",
     "files": [
       "dist/**/*",
-      "src/**/*",
+      "src/*",
+      "src/assets/*",
       "public/*",
       "screenshots/*",
       "index.html",
@@ -23,7 +24,7 @@
       "tsconfig.app.json",
       "tsconfig.json",
       "tsconfig.node.json",
-      "vite.config.ts" ,
+      "vite.config.ts",
       "main.cjs"
     ],
     "directories": {
@@ -33,11 +34,17 @@
     "win": {
       "target": "nsis",
       "icon": "public/icon.ico"
+    },
+    "linux": {
+      "target": ["AppImage", "deb", "rpm"],
+      "icon": "public/icon.png"
     }
   },
   "author": "Ricardo Wagemaker <wagemra@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "electron-is-dev": "^3.0.1",
+    "express": "^4.21.1",
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.2",

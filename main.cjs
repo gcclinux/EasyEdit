@@ -2,13 +2,15 @@ const fs = require('fs');
 const fsPromises = fs.promises;
 const { app, BrowserWindow, screen, Menu, dialog, ipcMain } = require("electron");
 const path = require("path");
+const express = require('express');
 
 // Disable hardware acceleration
 app.disableHardwareAcceleration();
 
 let mainWindow;
 
-function createWindow() {
+async function createWindow() {
+  const isDev = (await import('electron-is-dev')).default;
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   const iconPath = path.join(__dirname, "public", process.platform === 'win32' ? 'icon.ico' : 'icon.png');
 
@@ -23,8 +25,25 @@ function createWindow() {
     },
   });
 
-  mainWindow.loadURL("http://localhost:3000");
+  if (isDev) {
+    mainWindow.loadURL("http://localhost:3000");
+  } else {
+    const app = express();
+    const port = 3000;
+
+    app.use(express.static(path.join(__dirname, 'dist')));
+
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+    });
+
+    server = app.listen(port, () => {
+      console.log(`Server running at http://localhost:${port}`);
+      mainWindow.loadURL(`http://localhost:${port}`);
+    });
+  }
 }
+
 
 // Define the menu template
 const menuTemplate = [
