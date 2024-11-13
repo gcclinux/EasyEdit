@@ -6,18 +6,33 @@
   "scripts": {
     "start": "concurrently \"vite --host\" \"wait-on http://localhost:3000 && electron .\"",
     "build": "vite build",
-    "electron:build": "electron-builder"
+    "electron:build": "npm run build && electron-builder"
   },
   "main": "main.cjs",
   "build": {
     "appId": "easyedit.wagemaker.uk",
+    "productName": "EasyEdit",
     "files": [
       "dist/**/*",
-      "main.js",
-      "preload.js"
+      "src/**/*",
+      "public/*",
+      "screenshots/*",
+      "index.html",
+      "LICENSE",
+      "package.json",
+      "tsconfig.app.json",
+      "tsconfig.json",
+      "tsconfig.node.json",
+      "vite.config.ts" ,
+      "main.cjs"
     ],
     "directories": {
-      "buildResources": "assets"
+      "buildResources": "public",
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.ico"
     }
   },
   "author": "Ricardo Wagemaker <wagemra@gmail.com>",
