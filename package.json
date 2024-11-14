@@ -36,7 +36,7 @@
       "icon": "public/icon.ico"
     },
     "linux": {
-      "target": ["AppImage", "deb", "rpm"],
+      "target": ["AppImage"],
       "icon": "public/icon.png"
     }
   },
