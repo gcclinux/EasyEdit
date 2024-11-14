@@ -1,7 +1,7 @@
 {
   "name": "easyedit",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "start": "concurrently \"vite --host\" \"wait-on http://localhost:3000 && electron .\"",
@@ -36,13 +36,16 @@
       "icon": "public/icon.ico"
     },
     "linux": {
-      "target": ["AppImage"],
+      "target": [
+        "AppImage"
+      ],
       "icon": "public/icon.png"
     }
   },
   "author": "Ricardo Wagemaker <wagemra@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "detect-port": "^1.6.1",
     "electron-is-dev": "^3.0.1",
     "express": "^4.21.1",
     "file-saver": "^2.0.5",

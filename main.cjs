@@ -3,6 +3,7 @@ const fsPromises = fs.promises;
 const { app, BrowserWindow, screen, Menu, dialog, ipcMain } = require("electron");
 const path = require("path");
 const express = require('express');
+const detect = require('detect-port');
 
 // Disable hardware acceleration
 app.disableHardwareAcceleration();
@@ -29,17 +30,25 @@ async function createWindow() {
     mainWindow.loadURL("http://localhost:3000");
   } else {
     const app = express();
-    const port = 3000;
-
+    const defaultPort = 3000;
+    
     app.use(express.static(path.join(__dirname, 'dist')));
-
+    
     app.get('*', (req, res) => {
       res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     });
-
-    server = app.listen(port, () => {
-      console.log(`Server running at http://localhost:${port}`);
-      mainWindow.loadURL(`http://localhost:${port}`);
+    
+    detect(defaultPort, (err, availablePort) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+    
+      const port = availablePort === defaultPort ? defaultPort : availablePort;
+      const server = app.listen(port, () => {
+        console.log(`Server running at http://localhost:${port}`);
+        mainWindow.loadURL(`http://localhost:${port}`);
+      });
     });
   }
 }
@@ -111,7 +120,7 @@ const menuTemplate = [
           dialog.showMessageBox({
             type: 'info',
             title: 'EasyEdit',
-            message: 'EasyEdit v1.0 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to PDF. \n\nDeveloped by: Ricardo Wagemaker <wagemra@gmail.com> \nGitHub: https://github.com/gcclinux/EasyEdit \nLicense: MIT\n',
+            message: 'EasyEdit v1.01 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to PDF. \n\nDeveloped by: Ricardo Wagemaker <wagemra@gmail.com> \nGitHub: https://github.com/gcclinux/EasyEdit \nLicense: MIT\n',
             buttons: ['OK']
           });
         },
