@@ -14,15 +14,26 @@ Required build dependacies
 - - remark-gfm
 - - electron
 
-<img src="./screenshots/sample001.png" alt="Example" width="500" height="300">
+<img src="screenshots/sample001.png" alt="Example" width="500" height="300">
+
+## Install the project
+```
+$ node --version
+$ npm --version
+$ git --version
+
+$ git clone https://github.com/gcclinux/EasyEdit.git
+$ cd EasyEdit
+$ npm install
+```
+
 
 ## Run the project
-
 ```
 $ npm start
 ```
 
-## Build an standalone App
+## Build as an standalone App (Windows & Linux)
 ```
 $ npm run electron:build
 ```
