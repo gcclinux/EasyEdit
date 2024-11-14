@@ -4,6 +4,7 @@ const { app, BrowserWindow, screen, Menu, dialog, ipcMain } = require("electron"
 const path = require("path");
 const express = require('express');
 const detect = require('detect-port');
+const defaultPort = 3000;
 
 // Disable hardware acceleration
 app.disableHardwareAcceleration();
@@ -27,10 +28,9 @@ async function createWindow() {
   });
 
   if (isDev) {
-    mainWindow.loadURL("http://localhost:3000");
+    mainWindow.loadURL(`http://localhost:${defaultPort}`);
   } else {
     const app = express();
-    const defaultPort = 3000;
     
     app.use(express.static(path.join(__dirname, 'dist')));
     
@@ -46,8 +46,31 @@ async function createWindow() {
     
       const port = availablePort === defaultPort ? defaultPort : availablePort;
       const server = app.listen(port, () => {
-        console.log(`Server running at http://localhost:${port}`);
-        mainWindow.loadURL(`http://localhost:${port}`);
+        //console.log(`Server running at http://localhost:${port}`);
+        
+        // Parse command line arguments
+        const args = process.argv.slice(2);
+        if (args.length > 0) {
+          const filePath = args[0];
+          try {
+            fsPromises.readFile(filePath, 'utf-8')
+              .then(content => {
+                mainWindow.webContents.once('did-finish-load', () => {
+                  mainWindow.webContents.send('file-opened', content);
+                });
+                mainWindow.loadURL(`http://localhost:${port}`);
+              })
+              .catch(err => {
+                console.error('Error reading file:', err);
+                mainWindow.loadURL(`http://localhost:${port}`);
+              });
+          } catch (err) {
+            console.error('Error reading file:', err);
+            mainWindow.loadURL(`http://localhost:${port}`);
+          }
+        } else {
+          mainWindow.loadURL(`http://localhost:${port}`);
+        }
       });
     });
   }
@@ -120,7 +143,7 @@ const menuTemplate = [
           dialog.showMessageBox({
             type: 'info',
             title: 'EasyEdit',
-            message: 'EasyEdit v1.01 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to PDF. \n\nDeveloped by: Ricardo Wagemaker <wagemra@gmail.com> \nGitHub: https://github.com/gcclinux/EasyEdit \nLicense: MIT\n',
+            message: 'EasyEdit v1.0.2 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to PDF. \n\nDeveloped by: Ricardo Wagemaker <wagemra@gmail.com> \nGitHub: https://github.com/gcclinux/EasyEdit \nLicense: MIT\n',
             buttons: ['OK']
           });
         },
@@ -133,9 +156,61 @@ const menuTemplate = [
 const menu = Menu.buildFromTemplate(menuTemplate);
 Menu.setApplicationMenu(menu);
 
-app.on("ready", () => {
-  createWindow();
+// Modify app.whenReady()
+app.whenReady().then(async () => {
+  //console.log('App is ready');
+  const isDev = (await import('electron-is-dev')).default;
+  
+  await createWindow();
+
+  let filePath;
+  if (process.argv.length > 1) {
+    filePath = process.argv[process.argv.length - 1];
+    
+    if (!path.isAbsolute(filePath)) {
+      filePath = path.resolve(process.cwd(), filePath);
+    }
+    
+    //console.log('Attempting to open:', filePath);
+
+    try {
+      const content = await fsPromises.readFile(filePath, 'utf-8');
+      //console.log('File content loaded successfully');
+
+      // Setup window loading completion handler first
+      mainWindow.webContents.once('did-finish-load', () => {
+        //console.log('Window loaded, sending file content');
+        mainWindow.webContents.send('file-opened', content);
+      });
+
+      // Then load the appropriate URL
+      if (isDev) {
+        mainWindow.loadURL(`http://localhost:${defaultPort}`);
+      } else {
+        const app = express();
+        app.use(express.static(path.join(__dirname, 'dist')));
+        app.get('*', (req, res) => {
+          res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+        });
+
+        detect(defaultPort, (err, availablePort) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          const port = availablePort === defaultPort ? defaultPort : availablePort;
+          const server = app.listen(port, () => {
+            //console.log(`Server running at http://localhost:${port}`);
+            mainWindow.loadURL(`http://localhost:${port}`);
+          });
+        });
+      }
+    } catch (err) {
+      console.error('Error reading file:', err);
+    }
+  }
 });
+
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {

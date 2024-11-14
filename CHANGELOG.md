@@ -7,6 +7,7 @@ EasyEdit All notable changes to this project will be documented in this file.
 
 ## New Features
 - 1.0.0 - Initial version distributed
+- 1.0.2 - Added capability to parse a file directly to executable
 
 ## Current built version
 - 1.0.0 - Has Windows (exe), Linux (AppImage)
