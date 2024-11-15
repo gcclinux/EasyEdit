@@ -9,7 +9,17 @@ mkdir -p "${FULL_PATH}"
 
 # Download AppImage
 echo "Downloading EasyEdit..."
-wget -P "${FULL_PATH}" https://github.com/gcclinux/EasyEdit/releases/download/latest/EasyEdit-x86_64.AppImage
+if ! wget -P "${FULL_PATH}" https://github.com/gcclinux/EasyEdit/releases/download/latest/EasyEdit-x86_64.AppImage; then
+    echo "Error: Failed to download EasyEdit AppImage"
+    exit 1
+fi
+
+# Verify downloaded file
+if [ ! -s "${FULL_PATH}/EasyEdit-x86_64.AppImage" ]; then
+    echo "Error: Downloaded AppImage is empty or missing"
+    rm -f "${FULL_PATH}/EasyEdit-x86_64.AppImage"
+    exit 1
+fi
 chmod +x "${FULL_PATH}/EasyEdit-x86_64.AppImage"
 
 # Download icon
