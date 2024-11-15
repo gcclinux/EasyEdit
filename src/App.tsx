@@ -789,12 +789,29 @@ erDiagram
   };
 
   const saveAsPDF = () => {
-    console.log("saveAsPDF called"); // Debugging statement
+    console.log("saveAsPDF called");
     const previewElement = document.querySelector(
       ".preview-horizontal, .preview-parallel"
     ) as HTMLElement;
+  
     if (previewElement) {
-      html2canvas(previewElement)
+      // Save original scroll position and dimensions
+      const originalScrollPos = previewElement.scrollTop;
+      const originalHeight = previewElement.style.height;
+      const originalOverflow = previewElement.style.overflow;
+  
+      // Temporarily modify the element to show full content
+      previewElement.style.height = 'auto';
+      previewElement.style.overflow = 'visible';
+      const scrollHeight = previewElement.scrollHeight;
+  
+      html2canvas(previewElement, {
+        height: scrollHeight,
+        windowHeight: scrollHeight,
+        scrollY: -window.scrollY,
+        useCORS: true,
+        allowTaint: true
+      })
         .then((canvas) => {
           const imgData = canvas.toDataURL("image/png");
           const pdf = new jsPDF();
@@ -803,26 +820,36 @@ erDiagram
           const imgHeight = (canvas.height * imgWidth) / canvas.width;
           let heightLeft = imgHeight;
           let position = 10;
-
+  
           pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
           heightLeft -= pageHeight;
-
+  
           while (heightLeft >= 0) {
             position = heightLeft - imgHeight;
             pdf.addPage();
             pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
             heightLeft -= pageHeight;
           }
-
+  
           pdf.save("easyedit.pdf");
+  
+          // Restore original element properties
+          previewElement.style.height = originalHeight;
+          previewElement.style.overflow = originalOverflow;
+          previewElement.scrollTop = originalScrollPos;
         })
         .catch((error) => {
-          console.error("Error generating PDF:", error); // Debugging statement
+          console.error("Error generating PDF:", error);
+          // Restore original element properties even if there's an error
+          previewElement.style.height = originalHeight;
+          previewElement.style.overflow = originalOverflow;
+          previewElement.scrollTop = originalScrollPos;
         });
     } else {
-      console.error("Preview element not found"); // Debugging statement
+      console.error("Preview element not found");
     }
   };
+  
 
   const handleOpenClick = () => {
     const input = document.createElement("input");
