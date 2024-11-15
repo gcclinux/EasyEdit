@@ -1,7 +1,7 @@
 {
   "name": "easyedit",
   "private": true,
-  "version": "1.0.4",
+  "version": "1.0.5",
   "type": "module",
   "scripts": {
     "start": "concurrently \"vite --host\" \"wait-on http://localhost:3000 && electron .\"",
@@ -33,13 +33,24 @@
     },
     "win": {
       "target": "nsis",
-      "icon": "public/icon.ico"
+      "icon": "public/icon.ico",
+      "fileAssociations": [
+        {
+          "ext": ["txt", "md", "html", "css"],
+          "description": "Text Files",
+          "icon": "public/icon.ico"
+        }
+      ],
+      "publisherName": "Ricardo Wagemaker",
+      "legalTrademarks": "EasyEdit"
     },
     "linux": {
       "target": [
         "AppImage"
       ],
-      "icon": "public/icon.png"
+      "icon": "public/icon.png",
+      "category": "Development;TextEditor;Utility",
+      "maintainer": "Ricardo Wagemaker"
     }
   },
   "author": "Ricardo Wagemaker <wagemra@gmail.com>",
