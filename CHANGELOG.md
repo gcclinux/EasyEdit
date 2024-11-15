@@ -11,8 +11,11 @@ EasyEdit All notable changes to this project will be documented in this file.
 ## New Features
 - 1.0.0 - Initial version distributed
 - 1.0.2 - Added capability to parse a file directly to executable
+- 1.0.6 - Focused on a Linux installation script
 
 ## Current built version
+- 1.0.6 - Has Linux (AppImage)
+- - EasyEdit-x86_64.AppImage
 - 1.0.0 - Has Windows (exe), Linux (AppImage)
 - - EasyEdit-1.0.0-arm64.AppImage
 - - EasyEdit-1.0.0-x86_64.AppImage
