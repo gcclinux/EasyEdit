@@ -4,6 +4,7 @@ EasyEdit All notable changes to this project will be documented in this file.
 
 ## Bug Fix
 - 1.0.1 - Added detect-port in case App starts and default port is already in use by another App
+- 1.0.3 - Re-wrote and optimised the main.cjs so windows also have the abillity of right click on MD and open with EasyEdit
 
 ## New Features
 - 1.0.0 - Initial version distributed
