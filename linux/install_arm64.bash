@@ -9,9 +9,10 @@ mkdir -p "${FULL_PATH}"
 
 # Download AppImage
 echo "Downloading EasyEdit..."
-wget -P "${FULL_PATH}" https://github.com/gcclinux/EasyEdit/releases/download/latest/EasyEdit-x86_64.AppImage
-chmod +x "${FULL_PATH}/EasyEdit-x86_64.AppImage"# Download icon
+wget -P "${FULL_PATH}" https://github.com/gcclinux/EasyEdit/releases/download/latest/EasyEdit-arm64.AppImage
+chmod +x "${FULL_PATH}/EasyEdit-arm64.AppImage"
 
+# Download icon
 echo "Downloading icon..."
 wget -P "${FULL_PATH}" https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/icon.png
 chmod 644 "${FULL_PATH}/icon.png"
@@ -23,7 +24,7 @@ Version=1.0
 Type=Application
 Name=EasyEdit
 Comment=Text Editor Application
-Exec=${FULL_PATH}/EasyEdit-x86_64.AppImage
+Exec=${FULL_PATH}/EasyEdit-arm64.AppImage
 Icon=${FULL_PATH}/icon.png
 Terminal=false
 Categories=TextEditor;Utility;
