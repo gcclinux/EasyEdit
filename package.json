@@ -36,7 +36,12 @@
       "icon": "public/icon.ico",
       "fileAssociations": [
         {
-          "ext": ["txt", "md", "html", "css"],
+          "ext": [
+            "txt",
+            "md",
+            "html",
+            "css"
+          ],
           "description": "Text Files",
           "icon": "public/icon.ico"
         }
@@ -68,10 +73,12 @@
           "icon": "public/icon.png"
         }
       ],
-      "publish": [{
-        "provider": "generic",
-        "url": "https://github.com/gcclinux/EasyEdit/releases/tag/latest"
-      }],
+      "publish": [
+        {
+          "provider": "generic",
+          "url": "https://github.com/gcclinux/EasyEdit/releases/tag/latest"
+        }
+      ],
       "generateUpdatesFilesForAllChannels": true,
       "synopsis": "Simple Markdown editor",
       "description": "A lightweight Markdown editor built with Electron",
@@ -104,6 +111,7 @@
     "@eslint/js": "^9.13.0",
     "@types/file-saver": "^2.0.7",
     "@types/lodash.debounce": "^4.0.9",
+    "@types/mermaid": "^9.1.0",
     "@types/node": "^22.8.1",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",

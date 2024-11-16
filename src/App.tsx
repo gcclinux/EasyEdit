@@ -812,7 +812,7 @@ erDiagram
             .replace('```', '')
             .trim();
   
-          const { svg } = await mermaid.render('mermaid-' + i, diagramContent);
+          const svg = await mermaid.render('mermaid-' + i, diagramContent);
           const mermaidDiv = document.createElement('div');
           mermaidDiv.innerHTML = svg;
           container.appendChild(mermaidDiv);
