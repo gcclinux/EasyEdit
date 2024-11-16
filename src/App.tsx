@@ -814,7 +814,7 @@ erDiagram
   
           const svg = await mermaid.render('mermaid-' + i, diagramContent);
           const mermaidDiv = document.createElement('div');
-          mermaidDiv.innerHTML = svg;
+          mermaidDiv.innerHTML = svg.svg;
           container.appendChild(mermaidDiv);
   
           await new Promise(resolve => setTimeout(resolve, 100));
@@ -918,7 +918,7 @@ erDiagram
     }
   };
 
-  
+
   const saveToHTML = async () => {
     // Convert markdown to HTML
     const htmlContent = await marked(editorContent);
