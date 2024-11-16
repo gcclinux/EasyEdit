@@ -39,7 +39,7 @@ Exec=${FULL_PATH}/EasyEdit-arm64.AppImage
 Icon=${FULL_PATH}/icon.png
 Terminal=false
 Categories=TextEditor;Utility;
-MimeType=text/plain;
+MimeType=text/plain;text/markdown;text/x-markdown;
 StartupNotify=true
 StartupWMClass=EasyEdit
 EOL
@@ -54,5 +54,38 @@ update-desktop-database ~/.local/share/applications
 
 # Validate desktop file
 desktop-file-validate ~/.local/share/applications/easyedit.desktop
+
+# After desktop file installation, add MIME associations
+echo "Setting default application for Markdown files..."
+
+MIME_FILE="${HOME}/.config/mimeapps.list"
+MIME_DIR="${HOME}/.config"
+
+# Create .config directory if it doesn't exist
+mkdir -p "${MIME_DIR}"
+
+# Backup existing mimeapps.list if it exists
+if [ -f "${MIME_FILE}" ]; then
+    cp "${MIME_FILE}" "${MIME_FILE}.backup"
+fi
+
+# Add or update markdown associations
+{
+    if [ ! -f "${MIME_FILE}" ]; then
+        echo "[Default Applications]"
+    fi
+    
+    # Remove existing markdown associations if any
+    if [ -f "${MIME_FILE}" ]; then
+        sed -i '/^text\/markdown=/d' "${MIME_FILE}"
+        sed -i '/^text\/x-markdown=/d' "${MIME_FILE}"
+    fi
+
+    # Add new associations
+    echo "text/markdown=easyedit.desktop" >> "${MIME_FILE}"
+    echo "text/x-markdown=easyedit.desktop" >> "${MIME_FILE}"
+} >> "${MIME_FILE}"
+
+echo "Default application settings updated"
 
 echo "Installation complete! EasyEdit installed to ${FULL_PATH}"
