@@ -4,11 +4,30 @@
 read -p "Enter installation folder (relative to ${HOME}/): " INSTALL_DIR
 FULL_PATH="${HOME}/${INSTALL_DIR}"
 
-# Create installation directory
-mkdir -p "${FULL_PATH}"
+# Check and create installation directory if needed
+if [ -d "${FULL_PATH}" ]; then
+    echo "Installation directory already exists: ${FULL_PATH}"
+else
+    echo "Creating installation directory: ${FULL_PATH}"
+    mkdir -p "${FULL_PATH}"
+fi
+
+# Check if AppImage exists and set appropriate message
+if [ -f "${FULL_PATH}/EasyEdit-x86_64.AppImage" ]; then
+    echo "Upgrading EasyEdit..."
+    
+    # Remove old .pre if exists
+    if [ -f "${FULL_PATH}/EasyEdit-x86_64.AppImage.pre" ]; then
+        rm -f "${FULL_PATH}/EasyEdit-x86_64.AppImage.pre"
+    fi
+    
+    # Backup current version
+    mv "${FULL_PATH}/EasyEdit-x86_64.AppImage" "${FULL_PATH}/EasyEdit-x86_64.AppImage.pre"
+else
+    echo "Downloading EasyEdit..."
+fi
 
 # Download AppImage
-echo "Downloading EasyEdit..."
 if ! wget -P "${FULL_PATH}" https://github.com/gcclinux/EasyEdit/releases/download/latest/EasyEdit-x86_64.AppImage; then
     echo "Error: Failed to download EasyEdit AppImage"
     exit 1
@@ -22,9 +41,22 @@ if [ ! -s "${FULL_PATH}/EasyEdit-x86_64.AppImage" ]; then
 fi
 chmod +x "${FULL_PATH}/EasyEdit-x86_64.AppImage"
 
-# Download icon
-echo "Downloading icon..."
-wget -P "${FULL_PATH}" https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/icon.png
+# Download icon if not exists
+if [ -f "${FULL_PATH}/icon.png" ]; then
+    echo "Icon already exists, skipping download"
+else
+    echo "Downloading icon..."
+    if ! wget -P "${FULL_PATH}" https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/icon.png; then
+        echo "Error: Failed to download icon"
+        exit 1
+    fi
+    # Verify downloaded file
+    if [ ! -s "${FULL_PATH}/icon.png" ]; then
+        echo "Error: Downloaded icon is empty or missing"
+        rm -f "${FULL_PATH}/icon.png"
+        exit 1
+    fi
+fi
 chmod 644 "${FULL_PATH}/icon.png"
 
 # Create desktop file
@@ -84,7 +116,17 @@ fi
     echo "text/markdown=easyedit.desktop" >> "${MIME_FILE}"
     echo "text/x-markdown=easyedit.desktop" >> "${MIME_FILE}"
 } >> "${MIME_FILE}"
-
+sleep 1
 echo "Default application settings updated"
+
+# Copy install script to installation directory
+SCRIPT_NAME=$(basename "$0")
+if [ -f "${FULL_PATH}/${SCRIPT_NAME}" ]; then
+    echo "Install script already exists in installation directory"
+else
+    echo "Copying install script to installation directory..."
+    cp "$0" "${FULL_PATH}/${SCRIPT_NAME}"
+    chmod +x "${FULL_PATH}/${SCRIPT_NAME}"
+fi
 
 echo "Installation complete! EasyEdit installed to ${FULL_PATH}"
