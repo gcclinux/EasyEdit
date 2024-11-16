@@ -50,7 +50,37 @@
       ],
       "icon": "public/icon.png",
       "category": "Development;TextEditor;Utility",
-      "maintainer": "Ricardo Wagemaker"
+      "maintainer": "Ricardo Wagemaker",
+      "fileAssociations": [
+        {
+          "ext": "txt",
+          "description": "Text Files",
+          "icon": "public/icon.png"
+        },
+        {
+          "ext": "md",
+          "description": "Markdown Files",
+          "icon": "public/icon.png"
+        },
+        {
+          "ext": "html",
+          "description": "HTML Files",
+          "icon": "public/icon.png"
+        }
+      ],
+      "publish": [{
+        "provider": "generic",
+        "url": "https://github.com/gcclinux/EasyEdit/releases/tag/latest"
+      }],
+      "generateUpdatesFilesForAllChannels": true,
+      "synopsis": "Simple Markdown editor",
+      "description": "A lightweight Markdown editor built with Electron",
+      "desktop": {
+        "Name": "EasyEdit",
+        "Terminal": false,
+        "Type": "Application",
+        "Categories": "Development;TextEditor;Utility"
+      }
     }
   },
   "author": "Ricardo Wagemaker <wagemra@gmail.com>",
