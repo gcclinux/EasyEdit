@@ -11,6 +11,8 @@ import './App.css';
 import markdownMarkWhite from './assets/md.svg';
 import { IpcRendererEvent } from 'electron';
 const { ipcRenderer } = window.require('electron');
+import { marked } from 'marked';
+import { renderToString } from 'react-dom/server';
 
 const App = () => {
   const [editorContent, setEditorContent] = useState<string>('');
@@ -788,68 +790,147 @@ erDiagram
     saveAs(blob, "easyedit.md");
   };
 
-  const saveAsPDF = () => {
-    console.log("saveAsPDF called");
-    const previewElement = document.querySelector(
-      ".preview-horizontal, .preview-parallel"
-    ) as HTMLElement;
+  const saveAsPDF = async () => {
+    try {
+      const pdf = new jsPDF();
+      let currentY = 10;
   
-    if (previewElement) {
-      // Save original scroll position and dimensions
-      const originalScrollPos = previewElement.scrollTop;
-      const originalHeight = previewElement.style.height;
-      const originalOverflow = previewElement.style.overflow;
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      document.body.appendChild(container);
   
-      // Temporarily modify the element to show full content
-      previewElement.style.height = 'auto';
-      previewElement.style.overflow = 'visible';
-      const scrollHeight = previewElement.scrollHeight;
+      const sections = editorContent.split(/(```mermaid[\s\S]*?```)/);
   
-      html2canvas(previewElement, {
-        height: scrollHeight,
-        windowHeight: scrollHeight,
-        scrollY: -window.scrollY,
-        useCORS: true,
-        allowTaint: true
-      })
-        .then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
-          const pdf = new jsPDF();
-          const imgWidth = 190; // Width of the image in the PDF
-          const pageHeight = pdf.internal.pageSize.height;
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          let heightLeft = imgHeight;
-          let position = 10;
+      for (let i = 0; i < sections.length; i++) {
+        const section = sections[i];
   
-          pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
+        if (section.startsWith('```mermaid')) {
+          // Pre-calculate mermaid diagram height
+          const diagramContent = section
+            .replace('```mermaid', '')
+            .replace('```', '')
+            .trim();
   
-          while (heightLeft >= 0) {
-            position = heightLeft - imgHeight;
+          const { svg } = await mermaid.render('mermaid-' + i, diagramContent);
+          const mermaidDiv = document.createElement('div');
+          mermaidDiv.innerHTML = svg;
+          container.appendChild(mermaidDiv);
+  
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
+          const diagramCanvas = await html2canvas(mermaidDiv, {
+            logging: false,
+            scale: 2
+          });
+  
+          const imageHeight = (diagramCanvas.height * 190) / diagramCanvas.width;
+  
+          // Check if diagram needs new page
+          if (currentY + imageHeight > pdf.internal.pageSize.height - 10) {
             pdf.addPage();
-            pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
+            currentY = 10;
           }
   
-          pdf.save("easyedit.pdf");
+          pdf.addImage(
+            diagramCanvas.toDataURL('image/png'),
+            'PNG',
+            10,
+            currentY,
+            190,
+            imageHeight
+          );
+          currentY += imageHeight + 10;
+          container.removeChild(mermaidDiv);
+        } else if (section.trim()) {
+          const markdownDiv = document.createElement('div');
+          markdownDiv.className = 'markdown-body';
+          markdownDiv.style.width = '800px';
+          markdownDiv.style.padding = '20px';
+          markdownDiv.style.backgroundColor = 'white';
+          
+          const styleElement = document.createElement('style');
+          styleElement.textContent = `
+            .markdown-body table {
+              border-collapse: collapse;
+              width: 100%;
+              margin: 10px 0;
+            }
+            .markdown-body th, .markdown-body td {
+              border: 1px solid #ddd;
+              padding: 8px;
+              text-align: left;
+            }
+            .markdown-body pre {
+              background-color: #f6f8fa;
+              padding: 16px;
+              border-radius: 6px;
+              overflow: auto;
+            }
+            .markdown-body img {
+              max-width: 100%;
+            }
+          `;
+          markdownDiv.appendChild(styleElement);
   
-          // Restore original element properties
-          previewElement.style.height = originalHeight;
-          previewElement.style.overflow = originalOverflow;
-          previewElement.scrollTop = originalScrollPos;
-        })
-        .catch((error) => {
-          console.error("Error generating PDF:", error);
-          // Restore original element properties even if there's an error
-          previewElement.style.height = originalHeight;
-          previewElement.style.overflow = originalOverflow;
-          previewElement.scrollTop = originalScrollPos;
-        });
-    } else {
-      console.error("Preview element not found");
+          const markdownHtml = renderToString(
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {section}
+            </ReactMarkdown>
+          );
+          markdownDiv.innerHTML += markdownHtml;
+          container.appendChild(markdownDiv);
+  
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
+          const mdCanvas = await html2canvas(markdownDiv, {
+            logging: false,
+            scale: 2,
+            width: 800,
+            windowWidth: 800
+          });
+  
+          const contentHeight = (mdCanvas.height * 190) / mdCanvas.width;
+  
+          // Check if content needs new page
+          if (currentY + contentHeight > pdf.internal.pageSize.height - 10) {
+            pdf.addPage();
+            currentY = 10;
+          }
+  
+          pdf.addImage(
+            mdCanvas.toDataURL('image/png'),
+            'PNG',
+            10,
+            currentY,
+            190,
+            contentHeight
+          );
+          currentY += contentHeight + 10;
+          container.removeChild(markdownDiv);
+        }
+      }
+  
+      document.body.removeChild(container);
+      pdf.save('easyedit.pdf');
+    } catch (err) {
+      console.error('PDF generation error:', err);
     }
   };
+
   
+  const saveToHTML = async () => {
+    // Convert markdown to HTML
+    const htmlContent = await marked(editorContent);
+    
+    // Create blob with HTML content
+    const blob = new Blob([htmlContent], {
+      type: "text/html;charset=utf-8",
+    });
+    
+    // Save with .html extension
+    saveAs(blob, "easyedit.html");
+  };
 
   const handleOpenClick = () => {
     const input = document.createElement("input");
@@ -882,6 +963,9 @@ erDiagram
         </button>
         <button className="menu-item" onClick={saveToFile}>
           Save as MD
+        </button>
+        <button className="menu-item" onClick={saveToHTML}>
+          Save as HTML
         </button>
         <button className="menu-item" onClick={saveAsPDF}>
           Save as PDF
