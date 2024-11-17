@@ -6,9 +6,10 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
 - 1.1.0 - Additional graph plaintext and flowchart
 
 ## Latest built version
-- 1.0.8 - Windows (exe), Linux (AppImage)
+- 1.1.0 - Linux (AppImage)
 - - EasyEdit-x86_64.AppImage
 - - EasyEdit-arm64.AppImage
+- 1.0.8 - Windows (exe)
 - - EasyEdit.Setup.1.0.8.exe
 
 ## Bug Fix
