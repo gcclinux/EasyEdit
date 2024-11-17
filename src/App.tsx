@@ -782,9 +782,9 @@ gitGraph
        (User logged in)              |
                                      |
                                     Yes -> Continue user session.
-                                    No      +---------+
-                                            |         |
-                                  Display "Retried, please try again."
+                                    No         +---------+
+                                     |              |
+                                   Display "Retried, please try again."
 \`\`\``;
       const newText =
         editorContent.substring(0, start) +
