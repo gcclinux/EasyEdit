@@ -14,7 +14,7 @@ Required build dependacies
 - - remark-gfm
 - - electron
 
-<img src="screenshots/sample001.png" alt="Example" width="500" height="300">
+<img src="screenshots/sample003.png" alt="Example" width="500" height="300">
 
 ## Install the project
 ```
