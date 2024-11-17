@@ -65,3 +65,6 @@ flowchart TD
 | :--- | :--- | :--- |
 | row1 | col2 | col3 |
 | row2 | col2 | col3 |
+
+Example of a footnote[^1] within text.
+  [^1]: Description of footnote text
