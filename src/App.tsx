@@ -173,8 +173,6 @@ const App = () => {
     );
   });
 
-  const insertSymbol1 = () => insertSymbol("&#8894;");
-  const insertSymbol2 = () => insertSymbol("&#8704;");
   const insertSymbol3 = () => insertSymbol("&#8710;");
   const insertSymbol4 = () => insertSymbol("&#8711;");
   const insertSymbol5 = () => insertSymbol("&#8721;");
@@ -182,7 +180,6 @@ const App = () => {
   const insertSymbol7 = () => insertSymbol("&#8734;");
   const insertSymbol8 = () => insertSymbol("&#8735;");
   const insertSymbol9 = () => insertSymbol("&#8736;");
-  const insertSymbol10 = () => insertSymbol("&#8737;");
   const insertSymbol11 = () => insertSymbol("&#8743;");
   const insertSymbol12 = () => insertSymbol("&#8744;");
   const insertSymbol17 = () => insertSymbol("&#8756;");
@@ -633,12 +630,23 @@ mindmap
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
       const checkText = `\`\`\`mermaid
-flowchart TD
+flowchart RL
     A[Christmas] -->|Get money| B(Go shopping)
     B --> C{Let me think}
     C -->|One| D[Laptop]
     C -->|Two| E[iPhone]
     C -->|Three| F[fa:fa-car Car]
+
+\`\`\`
+
+\`\`\`mermaid
+flowchart LR
+    A[Christmas] -->|Get money| B(Go shopping)
+    B --> C{Let me think}
+    C -->|One| D[Laptop]
+    C -->|Two| E[iPhone]
+    C -->|Three| F[fa:fa-car Car]
+    
 \`\`\``;
       const newText =
         editorContent.substring(0, start) +
@@ -738,6 +746,45 @@ gitGraph
     merge develop
     commit
     commit
+\`\`\``;
+      const newText =
+        editorContent.substring(0, start) +
+        checkText +
+        editorContent.substring(end);
+      setEditorContent(newText);
+      setTimeout(() => {
+        const newCursorPosition = start + checkText.length;
+        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+        textarea.focus();
+      }, 0);
+    }
+  };
+
+  const inserterPlainFlowSyntax = () => {
+    if (textareaRef.current) {
+      const textarea = textareaRef.current;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const checkText = `\`\`\`plaintext
+                     Start
+                       |
+                +------------+
+                |            |
+          Enter Username   Is username valid?
+                /                 Yes /               No  -> No     Yes -> Password entered
++--------------+                      |                |
+| Check if password is correct for the given user. +---------+
++------------------+                                   |
+                |                                      |
+               Yes                   No --> Display "Invalid username or password."
+               /\                    |          |
+        Access granted              End     Retry login?
+       (User logged in)              |
+                                     |
+                                    Yes -> Continue user session.
+                                    No      +---------+
+                                            |         |
+                                  Display "Retried, please try again."
 \`\`\``;
       const newText =
         editorContent.substring(0, start) +
@@ -931,12 +978,6 @@ erDiagram
           <button className="button" onClick={insertCheckSyntax}>
             &#9745;
           </button>
-          <button className="button-html" onClick={insertSymbol1}>
-            &#8894;
-          </button>
-          <button className="button-html" onClick={insertSymbol2}>
-            &#8704;
-          </button>
           <button className="button-html" onClick={insertSymbol3}>
             &#8710;
           </button>
@@ -957,9 +998,6 @@ erDiagram
           </button>
           <button className="button-html" onClick={insertSymbol9}>
             &#8736;
-          </button>
-          <button className="button-html" onClick={insertSymbol10}>
-            &#8737;
           </button>
           <button className="button-html" onClick={insertSymbol11}>
             &#8743;
@@ -996,6 +1034,13 @@ erDiagram
           </button>
           <button className="button-html" onClick={insertSymbol26}>
             &#8869;
+          </button>
+          <button
+            className="button-mermaid"
+            onClick={inserterPlainFlowSyntax}
+            title="Insert Plaintext flowChart"
+          >
+            TextChart
           </button>
           <button
             className="button-mermaid"
