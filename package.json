@@ -88,6 +88,32 @@
         "Type": "Application",
         "Categories": "Development;TextEditor;Utility"
       }
+    },
+    "mac": {
+      "target": [
+      "dmg",
+      "zip"
+      ],
+      "category": "public.app-category.developer-tools",
+      "darkModeSupport": true,
+      "icon": "public/icon.png",
+      "fileAssociations": [
+      {
+        "ext": "txt",
+        "description": "Text Files",
+        "icon": "public/icon.png"
+      },
+      {
+        "ext": "md",
+        "description": "Markdown Files",
+        "icon": "public/icon.png"
+      },
+      {
+        "ext": "html",
+        "description": "HTML Files",
+        "icon": "public/icon.png"
+      }
+      ]
     }
   },
   "author": "Ricardo Wagemaker <wagemra@gmail.com>",
