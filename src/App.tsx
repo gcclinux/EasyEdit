@@ -21,13 +21,22 @@ import {
   inserterGitSyntax,
   insertererDiagramSyntax
 } from './insertMermaid.ts';
+import { TableGenerator } from './tableGenerator/TableGenerator.tsx';
+
+interface HistoryState {
+  content: string;
+  cursorPosition: number;
+}
 
 const App = () => {
   const [editorContent, setEditorContent] = useState<string>('');
+  const [documentHistory, setDocumentHistory] = useState<HistoryState[]>([]);
+  const [historyIndex, setHistoryIndex] = useState<number>(-1);
   const [isHorizontal, setIsHorizontal] = useState<boolean>(false);
   const previewRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const cursorPositionRef = useRef<number>(0);
+  const [tableModalOpen, setTableModalOpen] = useState(false);
 
   const initializeMermaid = useCallback(
     debounce(() => {
@@ -662,6 +671,54 @@ const App = () => {
     input.click();
   };
 
+   // Update history addition to include cursor position
+   const addToHistory = (content: string, cursorPos: number): void => {
+    const newHistory = documentHistory.slice(0, historyIndex + 1);
+    setDocumentHistory([...newHistory, { content, cursorPosition: cursorPos }]);
+    setHistoryIndex(newHistory.length);
+  };
+
+  // Update undo/redo to handle cursor position
+  const handleUndo = (): void => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      const { content, cursorPosition } = documentHistory[newIndex];
+      setEditorContent(content);
+      cursorPositionRef.current = cursorPosition;
+    }
+  };
+
+  const handleClear = (): void => {
+    setEditorContent("");
+  };
+
+  const handleRedo = (): void => {
+    if (historyIndex < documentHistory.length - 1) {
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      const { content, cursorPosition } = documentHistory[newIndex];
+      setEditorContent(content);
+      cursorPositionRef.current = cursorPosition;
+    }
+  };
+
+  // Update effect to include cursor position
+  useEffect(() => {
+    if (editorContent !== documentHistory[historyIndex]?.content) {
+      addToHistory(editorContent, cursorPositionRef.current);
+    }
+  }, [editorContent]);
+
+  // Update cursor position effect
+  useEffect(() => {
+    if (textareaRef.current) {
+      const pos = cursorPositionRef.current;
+      textareaRef.current.setSelectionRange(pos, pos);
+      textareaRef.current.focus();
+    }
+  }, [editorContent, historyIndex]);
+
   return (
     <div className="container">
       <div className="menubar">
@@ -863,8 +920,45 @@ const App = () => {
           >
             Journey
           </button>
-
+          <button
+            className='button-format'
+            onClick={() => setTableModalOpen(true)}
+          >
+            Create Custom Table
+          </button>
+          <TableGenerator
+            isOpen={tableModalOpen}
+            onClose={() => setTableModalOpen(false)}
+            onInsert={(tableText) => {
+              setEditorContent(editorContent + tableText);
+              setTableModalOpen(false);
+            }}
+          />
         </div>
+
+        <div className="menubar">
+          <button 
+            className="menu-item" 
+            onClick={handleUndo}
+            disabled={historyIndex <= 0}
+          >
+            Undo
+          </button>
+          <button
+            className="menu-item"
+            onClick={handleClear}
+          >
+            Clear
+          </button>
+          <button 
+            className="menu-item" 
+            onClick={handleRedo}
+            disabled={historyIndex >= documentHistory.length - 1}
+          >
+            Redo
+          </button>
+        </div>
+        
         <div
           className={
             isHorizontal
