@@ -9,8 +9,10 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
 - 1.1.0 - Linux (AppImage)
 - - EasyEdit-x86_64.AppImage
 - - EasyEdit-arm64.AppImage
-- 1.0.8 - Windows (exe)
-- - EasyEdit.Setup.1.0.8.exe
+- 1.1.0 - Windows (exe)
+- - EasyEdit.Setup.1.1.0.exe
+- 1.1.1 - MacOS (dmg)
+- - EasyEdit-1.1.1-arm64.dmg
 
 ## Bug Fix
 - 1.0.1 - Added detect-port in case App starts and default port is already in use by another App
