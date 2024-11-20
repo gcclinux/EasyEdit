@@ -19,15 +19,15 @@ async function setupServer(isDev) {
   } else {
     const availablePort = await detect(defaultPort);
     const app = express();
-    
+
     // Serve static files from dist
     app.use(express.static(path.join(__dirname, 'dist')));
-    
+
     // Handle SPA routing
     app.get('*', (req, res) => {
       res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     });
-    
+
     // Start server
     server = app.listen(availablePort);
     return `http://localhost:${availablePort}`;
@@ -77,7 +77,7 @@ async function handleFileOpen(filePath) {
 
     const content = await fsPromises.readFile(filePath, 'utf-8');
     console.log('File content loaded successfully');
-    
+
     return new Promise((resolve) => {
       if (mainWindow.webContents.isLoading()) {
         mainWindow.webContents.once('did-finish-load', () => {
@@ -109,7 +109,7 @@ function setupIPCHandlers() {
         { name: 'All Files', extensions: ['*'] }
       ]
     });
-    
+
     if (!canceled) {
       return await handleFileOpen(filePaths[0]);
     }
@@ -117,7 +117,7 @@ function setupIPCHandlers() {
 
   ipcMain.handle('dialog:saveFile', async (event, content) => {
     const { canceled, filePath } = await dialog.showSaveDialog(mainWindow);
-    
+
     if (!canceled) {
       await fsPromises.writeFile(filePath, content);
       return filePath;
@@ -191,7 +191,7 @@ function createMenuTemplate() {
             dialog.showMessageBox({
               type: 'info',
               title: 'EasyEdit',
-              message: 'EasyEdit v1.1.0 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to HTML & PDF. \n\nDeveloped by: Ricardo Wagemaker <wagemra@gmail.com> \nGitHub: https://github.com/gcclinux/EasyEdit \nLicense: MIT\n',
+              message: 'EasyEdit v1.1.1 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to HTML & PDF. \n\nDeveloped by: Ricardo Wagemaker <wagemra@gmail.com> \nGitHub: https://github.com/gcclinux/EasyEdit \nLicense: MIT\n',
               buttons: ['OK']
             });
           },
@@ -213,17 +213,17 @@ app.whenReady().then(async () => {
   await createMainWindow();
   setupMenu();
   setupIPCHandlers();
-  
+
   // Handle command line file opening
   if (process.argv.length > 1) {
-    const filePath = path.isAbsolute(process.argv[process.argv.length - 1]) 
+    const filePath = path.isAbsolute(process.argv[process.argv.length - 1])
       ? process.argv[process.argv.length - 1]
       : path.resolve(process.cwd(), process.argv[process.argv.length - 1]);
-      
+
     console.log('Attempting to open:', filePath);
     await handleFileOpen(filePath);
   }
-  
+
   app.on('activate', async () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       await createMainWindow();

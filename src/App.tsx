@@ -11,6 +11,16 @@ import { IpcRendererEvent } from 'electron';
 const { ipcRenderer } = window.require('electron');
 import { marked } from 'marked';
 import { saveAsPDF } from './saveAsPDF.tsx';
+import {
+  insertClassSyntax,
+  insertGanttSyntax,
+  insertGraphTDSyntax,
+  insertFlowchartRLSyntax,
+  insertJourneySyntax,
+  inserterBlockSyntax,
+  inserterGitSyntax,
+  insertererDiagramSyntax
+} from './insertMermaid.ts';
 
 const App = () => {
   const [editorContent, setEditorContent] = useState<string>('');
@@ -115,7 +125,7 @@ const App = () => {
     // Add new useEffect for auto-scrolling
     useEffect(() => {
       if (!previewRef.current) return;
-    
+
       // Create observer to watch for Mermaid diagram changes
       const observer = new MutationObserver(() => {
         if (previewRef.current) {
@@ -125,21 +135,21 @@ const App = () => {
           }, 100);
         }
       });
-    
+
       // Observe changes in the preview div
       observer.observe(previewRef.current, {
         childList: true,
         subtree: true,
         attributes: true
       });
-    
+
       // Initial scroll
       setTimeout(() => {
         if (previewRef.current) {
           previewRef.current.scrollTop = previewRef.current.scrollHeight;
         }
       }, 100);
-    
+
       // Cleanup
       return () => observer.disconnect();
     }, [editorContent]);
@@ -517,248 +527,46 @@ const App = () => {
     }
   };
 
-  const insertClassSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const checkText = `\`\`\`mermaid
-classDiagram
-    Animal <|-- Duck
-    Animal <|-- Fish
-    Animal <|-- Zebra
-    Animal : +int age
-    Animal : +String gender
-    Animal: +isMammal()
-    Animal: +mate()
-    class Duck{
-      +String beakColor
-      +swim()
-      +quack()
-    }
-    class Fish{
-      -int sizeInFeet
-      -canEat()
-    }
-    class Zebra{
-      +bool is_wild
-      +run()
-    }
-\`\`\``;
-      const newText =
-        editorContent.substring(0, start) +
-        checkText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + checkText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  // Insert Mermaid classDiagram Syntax
+  const handleInsertClass = () => {
+    insertClassSyntax(textareaRef, editorContent, setEditorContent);
   };
 
-  const insertGanttSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const checkText = `\`\`\`mermaid
-gantt
-    title A Gantt Diagram
-    dateFormat  YYYY-MM-DD
-    section Section
-    A task           :a1, 2014-01-01, 30d
-    Another task     :after a1  , 20d
-    section Another
-    Task in sec      :2014-01-12  , 12d
-    another task      : 24d
-\`\`\``;
-      const newText =
-        editorContent.substring(0, start) +
-        checkText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + checkText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  // Insert Mermaid GanttDiagram Syntax
+  const handleGanttInsert = () => {
+    insertGanttSyntax(textareaRef, editorContent, setEditorContent);
   };
 
-  const insertmindmapSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const checkText = `\`\`\`mermaid
-mindmap
-  root((mindmap))
-    Origins
-      Long history
-      ::icon(fa fa-book)
-      Popularisation
-        British popular psychology author Tony Buzan
-    Research
-      On effectivness<br/>and features
-      On Automatic creation
-        Uses
-            Creative techniques
-            Strategic planning
-            Argument mapping
-    Tools
-      Pen and paper
-      Mermaid
-\`\`\``;
-      const newText =
-        editorContent.substring(0, start) +
-        checkText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + checkText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  // Insert Mermaid GraphTD Syntax
+  const handleGraphTDInsert = () => {
+    insertGraphTDSyntax(textareaRef, editorContent, setEditorContent);
   };
 
-  const insertMermaidSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const checkText = `\`\`\`mermaid
-flowchart RL
-    A[Christmas] -->|Get money| B(Go shopping)
-    B --> C{Let me think}
-    C -->|One| D[Laptop]
-    C -->|Two| E[iPhone]
-    C -->|Three| F[fa:fa-car Car]
-
-\`\`\`
-
-\`\`\`mermaid
-flowchart LR
-    A[Christmas] -->|Get money| B(Go shopping)
-    B --> C{Let me think}
-    C -->|One| D[Laptop]
-    C -->|Two| E[iPhone]
-    C -->|Three| F[fa:fa-car Car]
-    
-\`\`\``;
-      const newText =
-        editorContent.substring(0, start) +
-        checkText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + checkText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  // Insert Mermaid FlowchartRL Syntax example
+  const handleFlowchartRLInsert = () => {
+    insertFlowchartRLSyntax(textareaRef, editorContent, setEditorContent);
   };
 
-  const insertjourneySyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const checkText = `\`\`\`mermaid
-journey
-    title My working day
-    section Go to work
-      Make tea: 5: Me
-      Go upstairs: 3: Me
-      Do work: 1: Me, Cat
-    section Go home
-      Go downstairs: 5: Me
-      Sit down: 3: Me
-\`\`\``;
-      const newText =
-        editorContent.substring(0, start) +
-        checkText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + checkText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  // Insert Mermaid Journey Syntax
+  const handleJourneyInsert = () => {
+    insertJourneySyntax(textareaRef, editorContent, setEditorContent);
   };
 
-  const inserterBlockSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const checkText = `\`\`\`mermaid
-block-beta
-    columns 3
-    doc>"Document"]:3
-    space down1<[" "]>(down) space
-
-  block:e:3
-          l["left"]
-          m("A wide one in the middle")
-          r["right"]
-  end
-    space down2<[" "]>(down) space
-    db[("DB")]:3
-    space:3
-    D space C
-    db --> D
-    C --> db
-    D --> C
-    style m fill:#d6d,stroke:#333,stroke-width:4px
-    
-\`\`\``;
-      const newText =
-        editorContent.substring(0, start) +
-        checkText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + checkText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  // Insert Mermaid Block example Syntax
+  const handleBlockInsert = () => {
+    inserterBlockSyntax(textareaRef, editorContent, setEditorContent);
   };
 
-  const inserterGitSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const checkText = `\`\`\`mermaid
-gitGraph
-    commit
-    commit
-    branch develop
-    checkout develop
-    commit
-    commit
-    checkout main
-    merge develop
-    commit
-    commit
-\`\`\``;
-      const newText =
-        editorContent.substring(0, start) +
-        checkText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + checkText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  // Insert Mermaid GitGraph Syntax
+  const handleGitInsert = () => {
+    inserterGitSyntax(textareaRef, editorContent, setEditorContent);
   };
+
+  // Insert Mermaid erDiagram Syntax
+  const handleErDiagramInsert = () => {
+    insertererDiagramSyntax(textareaRef, editorContent, setEditorContent);
+  };
+
 
   const inserterPlainFlowSyntax = () => {
     if (textareaRef.current) {
@@ -799,35 +607,7 @@ gitGraph
     }
   };
 
-  const inserterDiagramSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const checkText = `\`\`\`mermaid
-erDiagram
-    CUSTOMER }|..|{ DELIVERY-ADDRESS : has
-    CUSTOMER ||--o{ ORDER : places
-    CUSTOMER ||--o{ INVOICE : "liable for"
-    DELIVERY-ADDRESS ||--o{ ORDER : receives
-    INVOICE ||--|{ ORDER : covers
-    ORDER ||--|{ ORDER-ITEM : includes
-    PRODUCT-CATEGORY ||--|{ PRODUCT : contains
-    PRODUCT ||--o{ ORDER-ITEM : "ordered in"
-\`\`\``;
-      const newText =
-        editorContent.substring(0, start) +
-        checkText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + checkText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
-  };
-
+  // SaveToFile MD function
   const saveToFile = () => {
     const blob = new Blob([editorContent], {
       type: "text/markdown;charset=utf-8",
@@ -835,19 +615,29 @@ erDiagram
     saveAs(blob, "easyedit.md");
   };
 
+  // SaveAsPDF function
   const handleSaveAsPDF = () => {
     saveAsPDF(editorContent);
   };
 
+  // saveToTxT function
+  const saveToTxT = () => {
+    const blob = new Blob([editorContent], {
+      type: "text/plain;charset=utf-8",
+    });
+    saveAs(blob, "easyedit.txt");
+  };
+
+  // saveToHTML function
   const saveToHTML = async () => {
     // Convert markdown to HTML
     const htmlContent = await marked(editorContent);
-    
+
     // Create blob with HTML content
     const blob = new Blob([htmlContent], {
       type: "text/html;charset=utf-8",
     });
-    
+
     // Save with .html extension
     saveAs(blob, "easyedit.html");
   };
@@ -883,6 +673,9 @@ erDiagram
         </button>
         <button className="menu-item" onClick={saveToFile}>
           Save as MD
+        </button>
+        <button className="menu-item" onClick={saveToTxT}>
+          Save as Text
         </button>
         <button className="menu-item" onClick={saveToHTML}>
           Save as HTML
@@ -947,31 +740,31 @@ erDiagram
           </button>
           <button
             className="button-mermaid"
-            onClick={insertMermaidSyntax}
-            title="Insert Mermaid flowchart"
+            onClick={handleFlowchartRLInsert}
+            title="Insert Mermaid flowchartRL example"
           >
-            flowchart
+            Flowchart &#8866; | &#8867;
           </button>
           <button
             className="button-mermaid"
-            onClick={insertGanttSyntax}
+            onClick={handleGanttInsert}
             title="Insert Mermaid Gantt chart"
           >
-            Gantt
+            Gantt &#8760;
           </button>
           <button
             className="button-mermaid"
-            onClick={insertmindmapSyntax}
-            title="Insert Mermaid MindMap"
+            onClick={handleGraphTDInsert}
+            title="Insert Mermaid GraphTD example of a product life cycle"
           >
-            MindMap
+            GraphTD
           </button>
           <button
             className="button-mermaid"
-            onClick={inserterDiagramSyntax}
+            onClick={handleErDiagramInsert}
             title="Insert Mermaid erDiagram"
           >
-            erDiag
+            erDiag &#8757;
           </button>
         </div>
         <div className="toolbar">
@@ -1044,32 +837,33 @@ erDiagram
           </button>
           <button
             className="button-mermaid"
-            onClick={insertClassSyntax}
+            onClick={handleInsertClass}
             title="Insert Mermaid classDiag"
           >
             ClassDiag
           </button>
           <button
             className="button-mermaid"
-            onClick={inserterGitSyntax}
-            title="Insert Mermaid gitGraph"
+            onClick={handleGitInsert}
+            title="Insert Mermaid gitGraph example"
           >
             gitGraph
           </button>
           <button
             className="button-mermaid"
-            onClick={inserterBlockSyntax}
-            title="Insert Mermaid Block"
+            onClick={handleBlockInsert}
+            title="Insert Mermaid Block (beta) example"
           >
-            Block
+            Block &#8759;
           </button>
           <button
             className="button-mermaid"
-            onClick={insertjourneySyntax}
-            title="Insert Mermaid Journey"
+            onClick={handleJourneyInsert}
+            title="Insert Mermaid Journey example"
           >
             Journey
           </button>
+
         </div>
         <div
           className={
