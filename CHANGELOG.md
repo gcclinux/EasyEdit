@@ -6,12 +6,12 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
 - 1.2.0 - Implementation of custom tables by @Lewish1998
 
 ## Latest built version
-- 1.1.0 - Linux (AppImage)
+- 1.2.0 - Linux (AppImage)
 - - EasyEdit-x86_64.AppImage
 - - EasyEdit-arm64.AppImage
-- 1.1.0 - Windows (exe)
-- - EasyEdit.Setup.1.1.0.exe
-- 1.1.1 - MacOS (dmg)
+- 1.2.0 - Windows (exe)
+- - EasyEdit.Setup.1.2.0.exe
+- 1.2.0 - MacOS (dmg)
 - - EasyEdit-1.1.1-arm64.dmg
 
 ## Bug Fix
