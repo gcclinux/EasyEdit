@@ -6,6 +6,7 @@ const express = require('express');
 const detect = require('detect-port');
 const defaultPort = 3000;
 const viteDevPort = defaultPort; // Using same port for consistency
+const { shell } = require('electron');
 
 // Disable hardware acceleration
 app.disableHardwareAcceleration();
@@ -62,6 +63,12 @@ async function createMainWindow() {
   } catch (err) {
     console.error('Failed to start server:', err);
   }
+
+  // Open external links in the default browser
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
 
   return mainWindow;
 }
@@ -177,8 +184,17 @@ function createMenuTemplate() {
         { role: "resetzoom" },
         { role: "zoomin" },
         { role: "zoomout" },
-        { role: "togglefullscreen" },
         { type: "separator" },
+        {
+          label: "Go Back",
+          accelerator: "CommandOrControl+B",
+          click: () => {
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+            if (focusedWindow && focusedWindow.webContents.navigationHistory.canGoBack()) {
+              focusedWindow.webContents.navigationHistory.goBack();
+            }
+          },
+        },
         //{ role: "toggledevtools" },
       ],
     },
@@ -191,7 +207,7 @@ function createMenuTemplate() {
             dialog.showMessageBox({
               type: 'info',
               title: 'EasyEdit',
-              message: 'EasyEdit v1.2.0 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to HTML & PDF. \n\n'
+              message: 'EasyEdit v1.2.1 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to HTML & PDF. \n\n'
               +'Developed by: Ricardo Wagemaker https://github.com/gcclinux\n'
               +'Contributed by: Lewis Halstead https://github.com/Lewish1998\n\n'
               +'GitHub: https://github.com/gcclinux/EasyEdit \n'

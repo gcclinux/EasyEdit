@@ -2,14 +2,12 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import mermaid from 'mermaid';
-import { saveAs } from 'file-saver';
 import rehypeRaw from 'rehype-raw';
 import debounce from 'lodash.debounce';
 import './App.css';
 import markdownMarkWhite from './assets/md.svg';
 import { IpcRendererEvent } from 'electron';
 const { ipcRenderer } = window.require('electron');
-import { marked } from 'marked';
 import { saveAsPDF } from './saveAsPDF.tsx';
 import {
   insertClassSyntax,
@@ -22,15 +20,21 @@ import {
   insertererDiagramSyntax
 } from './insertMermaid.ts';
 import { TableGenerator } from './tableGenerator/TableGenerator.tsx';
-
-interface HistoryState {
-  content: string;
-  cursorPosition: number;
-}
+import { 
+  HistoryState, 
+  addToHistory, 
+  handleUndo, 
+  handleClear, 
+  handleRedo,
+  handleOpenClick,
+  saveToFile,
+  saveToTxT,
+  saveToHTML 
+} from './mainHandler.ts';
 
 const App = () => {
-  const [editorContent, setEditorContent] = useState<string>('');
   const [documentHistory, setDocumentHistory] = useState<HistoryState[]>([]);
+  const [editorContent, setEditorContent] = useState<string>('');
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
   const [isHorizontal, setIsHorizontal] = useState<boolean>(false);
   const previewRef = useRef<HTMLDivElement>(null);
@@ -451,12 +455,45 @@ const App = () => {
     }
   };
 
+  // insertImageSyntax function inserts a default and extended image syntax for Markdown
   const insertImageSyntax = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
-      const imageText = `Default MarkDown Example\n![alt text](image url)\n\nExtended HTML Example\n<img src="image url" alt="alt text" width="300" height="200">\n\n`;
+      const imageText = `
+### *Markdown Image*
+![alt text](image url "Image Title")
+
+#### Example:
+![EasyEdit](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png  "EasyEdit")
+`;
+      const newText =
+        editorContent.substring(0, start) +
+        imageText +
+        editorContent.substring(end);
+      setEditorContent(newText);
+      setTimeout(() => {
+        const newCursorPosition = start + imageText.length;
+        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+        textarea.focus();
+      }, 0);
+    }
+  };
+
+  // insertURLSyntax function inserts a url example syntax for Markdown
+  const insertURLSyntax = () => {
+    if (textareaRef.current) {
+      const textarea = textareaRef.current;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const imageText = `
+### *Markdown Text URL Example*
+[GitHub Project Link](https://github.com/gcclinux/EasyEdit)
+
+### *Markdown Image URL Example*
+[![GitHub Project](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png "EasyEdit")](https://github.com/gcclinux/EasyEdit)
+`;
       const newText =
         editorContent.substring(0, start) +
         imageText +
@@ -616,97 +653,22 @@ const App = () => {
     }
   };
 
-  // SaveToFile MD function
-  const saveToFile = () => {
-    const blob = new Blob([editorContent], {
-      type: "text/markdown;charset=utf-8",
-    });
-    saveAs(blob, "easyedit.md");
-  };
-
   // SaveAsPDF function
   const handleSaveAsPDF = () => {
     saveAsPDF(editorContent);
   };
 
-  // saveToTxT function
-  const saveToTxT = () => {
-    const blob = new Blob([editorContent], {
-      type: "text/plain;charset=utf-8",
-    });
-    saveAs(blob, "easyedit.txt");
-  };
-
-  // saveToHTML function
-  const saveToHTML = async () => {
-    // Convert markdown to HTML
-    const htmlContent = await marked(editorContent);
-
-    // Create blob with HTML content
-    const blob = new Blob([htmlContent], {
-      type: "text/html;charset=utf-8",
-    });
-
-    // Save with .html extension
-    saveAs(blob, "easyedit.html");
-  };
-
-  const handleOpenClick = () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".md";
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const contents = e.target?.result;
-          if (typeof contents === "string") {
-            setEditorContent(contents);
-          }
-        };
-        reader.readAsText(file);
-      }
-    };
-    input.click();
-  };
-
-   // Update history addition to include cursor position
-   const addToHistory = (content: string, cursorPos: number): void => {
-    const newHistory = documentHistory.slice(0, historyIndex + 1);
-    setDocumentHistory([...newHistory, { content, cursorPosition: cursorPos }]);
-    setHistoryIndex(newHistory.length);
-  };
-
-  // Update undo/redo to handle cursor position
-  const handleUndo = (): void => {
-    if (historyIndex > 0) {
-      const newIndex = historyIndex - 1;
-      setHistoryIndex(newIndex);
-      const { content, cursorPosition } = documentHistory[newIndex];
-      setEditorContent(content);
-      cursorPositionRef.current = cursorPosition;
-    }
-  };
-
-  const handleClear = (): void => {
-    setEditorContent("");
-  };
-
-  const handleRedo = (): void => {
-    if (historyIndex < documentHistory.length - 1) {
-      const newIndex = historyIndex + 1;
-      setHistoryIndex(newIndex);
-      const { content, cursorPosition } = documentHistory[newIndex];
-      setEditorContent(content);
-      cursorPositionRef.current = cursorPosition;
-    }
-  };
-
   // Update effect to include cursor position
   useEffect(() => {
     if (editorContent !== documentHistory[historyIndex]?.content) {
-      addToHistory(editorContent, cursorPositionRef.current);
+      addToHistory(
+        editorContent, 
+        cursorPositionRef.current,
+        documentHistory,
+        historyIndex,
+        setDocumentHistory,
+        setHistoryIndex
+      );
     }
   }, [editorContent]);
 
@@ -723,20 +685,20 @@ const App = () => {
     <div className="container">
       <div className="menubar">
         <button className="menu-item" onClick={toggleLayout}>
-          Toggle Layout
+          Toggle Layout &#8646;
         </button>
-        <button className="menu-item" onClick={handleOpenClick}>
-          Load Document
-        </button>
-        <button className="menu-item" onClick={saveToFile}>
-          Save as MD
-        </button>
-        <button className="menu-item" onClick={saveToTxT}>
-          Save as Text
-        </button>
-        <button className="menu-item" onClick={saveToHTML}>
-          Save as HTML
-        </button>
+        <button className="menu-item" onClick={() => handleOpenClick(setEditorContent)}>
+            Load Document 
+          </button>  
+        <button className="menu-item" onClick={() => saveToFile(editorContent)}>
+            Save as MD 
+          </button>
+          <button className="menu-item" onClick={() => saveToTxT(editorContent)}>
+            Save as Text
+          </button>
+          <button className="menu-item" onClick={() => saveToHTML(editorContent)}>
+            Save as HTML
+          </button>
         <button className="menu-item" onClick={handleSaveAsPDF}>
           Save as PDF
         </button>
@@ -772,28 +734,32 @@ const App = () => {
             &lt;code&gt;
           </button>
           <button className="button" onClick={insertRulerSyntax}>
-            --Ruler--
+            Ruler &#8213;
           </button>
           <button className="button" onClick={insertIndent1Syntax}>
             Indent &ge;
           </button>
           <button className="button" onClick={insertIndent2Syntax}>
-            Indent &ge;&gt;
+            Indent &ge; &ge;
           </button>
           <button className="button" onClick={insertList1Syntax}>
-            List &#10625;
+            List  &#10687;
           </button>
           <button className="button" onClick={insertList2Syntax}>
-            List &#10625; &#10625;
+            List &#10687; &#10687;
           </button>
           <button className="button" onClick={insertImageSyntax}>
-            Image
+            Image &#128443;
           </button>
           <button className="button" onClick={insertTableSyntax}>
-            Table
+            Table &#128196;
           </button>
+          <button className="button" onClick={insertURLSyntax}>
+            URL &#128279;
+          </button>
+          
           <button className="button" onClick={insertFootSyntax}>
-            FootNote
+            FootNote  &#9870;
           </button>
           <button
             className="button-mermaid"
@@ -890,21 +856,21 @@ const App = () => {
             onClick={inserterPlainFlowSyntax}
             title="Insert Plaintext flowChart"
           >
-            TextChart
+            TextChart &#9781;
           </button>
           <button
             className="button-mermaid"
             onClick={handleInsertClass}
             title="Insert Mermaid classDiag"
           >
-            ClassDiag
+            ClassDiag &#8756;
           </button>
           <button
             className="button-mermaid"
             onClick={handleGitInsert}
             title="Insert Mermaid gitGraph example"
           >
-            gitGraph
+            gitGraph &#9903;
           </button>
           <button
             className="button-mermaid"
@@ -918,13 +884,13 @@ const App = () => {
             onClick={handleJourneyInsert}
             title="Insert Mermaid Journey example"
           >
-            Journey
+            Journey &#9948;
           </button>
           <button
             className='button-format'
             onClick={() => setTableModalOpen(true)}
           >
-            Create Custom Table
+            Custom Table
           </button>
           <TableGenerator
             isOpen={tableModalOpen}
@@ -937,22 +903,22 @@ const App = () => {
         </div>
 
         <div className="menubar">
-          <button 
+        <button 
             className="menu-item" 
-            onClick={handleUndo}
+            onClick={() => handleUndo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
             disabled={historyIndex <= 0}
           >
             Undo
           </button>
           <button
             className="menu-item"
-            onClick={handleClear}
+            onClick={() => handleClear(setEditorContent)}
           >
             Clear
           </button>
           <button 
             className="menu-item" 
-            onClick={handleRedo}
+            onClick={() => handleRedo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
             disabled={historyIndex >= documentHistory.length - 1}
           >
             Redo
