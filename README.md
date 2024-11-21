@@ -1,20 +1,10 @@
 ## EasyEdit
 
-Required build dependacies
+EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and preview it in real-time. You can save, load .md files and export to HTML,TXT & PDF. All notable changes to this project will be documented in this file.
 
-- - npm
-- - vite
-- - file-saver
-- - html2canvas
-- - jspdf
-- - mermaid
-- - react
-- - react-dom
-- - react-markdown
-- - remark-gfm
-- - electron
+## Latest Example implementing custom tables...
 
-<img src="screenshots/sample003.png" alt="Example" width="500" height="300">
+<img src="screenshots/sample004.png" alt="Example" width="500" height="300">
 
 ## Install the project
 ```
