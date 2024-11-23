@@ -123,9 +123,9 @@ html,
 }
 
 .toolbar {
-  padding: 10px;
-  border-radius: 5px;
-  margin: 10px auto;
+  padding: 1px;
+  border-radius: 1px;
+  margin: 1px auto;
 }
 
 .toolbar button {
@@ -134,10 +134,10 @@ html,
 
 .markdown-mark {
   margin-right: 5px;
-  margin-Bottom: -14px;
+  margin-Bottom: -10px;
   width: 55px;
-  height: 40px;
-  line-height: 30px;
+  height: 32px;
+  line-height: 12px;
   background-color: purple;
   color: white;
   font-family: Arial, sans-serif;
@@ -149,8 +149,8 @@ html,
 
 .button {
   margin-top: 2px;
-  height: 40px;
-  line-height: 20px;
+  height: 32px;
+  line-height: 12px;
   background-color: purple;
   color: white;
   font-family: Arial, sans-serif;
@@ -161,9 +161,9 @@ html,
 }
 
 .button-mermaid { 
-  margin-top: 2px;
-  height: 40px;
-  line-height: 20px;
+  margin-bottom: 10px;
+  height: 32px;
+  line-height: 12px;
   background-color: rgb(19, 0, 128);
   color: white;
   font-family: Arial, sans-serif;
@@ -175,8 +175,8 @@ html,
 
 .button-html { 
   margin-top: 2px;
-  height: 40px;
-  line-height: 20px;
+  height: 32px;
+  line-height: 12px;
   background-color: rgb(136, 116, 248);
   color: white;
   font-family: Arial, sans-serif;
@@ -188,8 +188,8 @@ html,
 
 .button-format { 
   margin-top: 2px;
-  height: 40px;
-  line-height: 20px;
+  height: 32px;
+  line-height: 12px;
   background-color: rgb(30, 68, 38);
   color: white;
   font-family: Arial, sans-serif;
@@ -226,7 +226,7 @@ html,
 .menu-item {
   color: white;
   text-align: center;
-  padding: 14px 20px;
+  padding: 10px 14px;
   text-decoration: none;
   font-size: 17px;
   background-color: rgb(59, 59, 61);
@@ -235,5 +235,5 @@ html,
 }
 
 .menu-item:hover {
-  background-color: #575757;
+  background-color: #7d7d7d;
 }
