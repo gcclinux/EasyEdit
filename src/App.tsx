@@ -684,24 +684,44 @@ const App = () => {
   return (
     <div className="container">
       <div className="menubar">
-        <button className="menu-item" onClick={toggleLayout}>
+      <button className="menu-item" onClick={toggleLayout}>
           Toggle Layout &#8646;
         </button>
-        <button className="menu-item" onClick={() => handleOpenClick(setEditorContent)}>
-            Load Document 
+          <button className="menu-item" onClick={() => handleOpenClick(setEditorContent)}>
+            Load Document &#128194;
           </button>  
-        <button className="menu-item" onClick={() => saveToFile(editorContent)}>
-            Save as MD 
+          <button 
+            className="menu-item" 
+            onClick={() => handleUndo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
+            disabled={historyIndex <= 0}
+          >
+            Undo &#8630;
+          </button>
+          <button
+            className="menu-item"
+            onClick={() => handleClear(setEditorContent)}
+          >
+            Clear &#128465;
+          </button>
+          <button 
+            className="menu-item" 
+            onClick={() => handleRedo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
+            disabled={historyIndex >= documentHistory.length - 1}
+          >
+            Redo &#8631;
+          </button>
+          <button className="menu-item" onClick={() => saveToFile(editorContent)}>
+            Save as MD &#128190;
           </button>
           <button className="menu-item" onClick={() => saveToTxT(editorContent)}>
-            Save as Text
+            Save as Text &#128462;
           </button>
           <button className="menu-item" onClick={() => saveToHTML(editorContent)}>
-            Save as HTML
+            Save as HTML &#128462;
           </button>
-        <button className="menu-item" onClick={handleSaveAsPDF}>
-          Save as PDF
-        </button>
+          <button className="menu-item" onClick={handleSaveAsPDF}>
+            Save as PDF &#128462;
+          </button>
       </div>
       <div className="editor">
         <div className="toolbar">
@@ -740,7 +760,7 @@ const App = () => {
             Indent &ge;
           </button>
           <button className="button" onClick={insertIndent2Syntax}>
-            Indent &ge; &ge;
+            Indent &ge;&gt;
           </button>
           <button className="button" onClick={insertList1Syntax}>
             List  &#10687;
@@ -757,9 +777,22 @@ const App = () => {
           <button className="button" onClick={insertURLSyntax}>
             URL &#128279;
           </button>
-          
+          <button
+            className='button'
+            onClick={() => setTableModalOpen(true)}
+          >
+            Custom Table
+          </button>
+          <TableGenerator
+            isOpen={tableModalOpen}
+            onClose={() => setTableModalOpen(false)}
+            onInsert={(tableText) => {
+              setEditorContent(editorContent + tableText);
+              setTableModalOpen(false);
+            }}
+          />
           <button className="button" onClick={insertFootSyntax}>
-            FootNote  &#9870;
+            FootNote &#9870;
           </button>
           <button
             className="button-mermaid"
@@ -885,43 +918,6 @@ const App = () => {
             title="Insert Mermaid Journey example"
           >
             Journey &#9948;
-          </button>
-          <button
-            className='button-format'
-            onClick={() => setTableModalOpen(true)}
-          >
-            Custom Table
-          </button>
-          <TableGenerator
-            isOpen={tableModalOpen}
-            onClose={() => setTableModalOpen(false)}
-            onInsert={(tableText) => {
-              setEditorContent(editorContent + tableText);
-              setTableModalOpen(false);
-            }}
-          />
-        </div>
-
-        <div className="menubar">
-        <button 
-            className="menu-item" 
-            onClick={() => handleUndo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
-            disabled={historyIndex <= 0}
-          >
-            Undo
-          </button>
-          <button
-            className="menu-item"
-            onClick={() => handleClear(setEditorContent)}
-          >
-            Clear
-          </button>
-          <button 
-            className="menu-item" 
-            onClick={() => handleRedo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
-            disabled={historyIndex >= documentHistory.length - 1}
-          >
-            Redo
           </button>
         </div>
         

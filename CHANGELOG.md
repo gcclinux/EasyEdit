@@ -3,7 +3,7 @@
 EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and preview it in real-time. You can save, load .md files and export to HTML,TXT & PDF. All notable changes to this project will be documented in this file.
 
 ## Latest code version
-- 1.2.1 - Cosmetics & saveToHTML improvements
+- 1.2.2 - Improved screen/buttons Layout for smaller screen resolution
 
 ## Latest built version
 - 1.2.1 - Linux (AppImage)
@@ -21,6 +21,7 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
 - 1.0.5 - Improved the package build format for Linux & Windows
 - 1.0.7 - Improved pdf export to include code, mermaid image and tables
 - 1.2.1 - Cosmetics & saveToHTML improvements
+- 1.2.2 - Improved screen/buttons Layout for smaller screen resolution
 
 ## New Features
 - 1.0.0 - Initial version distributed

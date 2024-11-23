@@ -4,7 +4,7 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
 
 ## Latest Example implementing custom tables...
 
-<img src="screenshots/sample004.png" alt="Example" width="500" height="300">
+<img src="screenshots/sample005.png" alt="Example" width="500" height="300">
 
 ## Install the project
 ```
