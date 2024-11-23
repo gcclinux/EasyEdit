@@ -14,6 +14,14 @@ app.disableHardwareAcceleration();
 let mainWindow = null;
 let server = null;
 
+function saveWindowBounds(window) {
+  const bounds = window.getBounds();
+  const configPath = path.join(app.getPath('userData'), '.config.json');
+  //console.log('Saving window bounds to:', configPath);
+  fs.writeFileSync(configPath, JSON.stringify(bounds, null, 2));
+  //console.log('Window bounds saved:', bounds);
+}
+
 async function setupServer(isDev) {
   if (isDev) {
     return `http://localhost:${viteDevPort}`; // Using defaultPort for Vite
@@ -39,8 +47,9 @@ async function createMainWindow() {
   const isDev = (await import('electron-is-dev')).default;
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   const iconPath = path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
+  const configPath = path.join(app.getPath('userData'), '.config.json');
 
-  mainWindow = new BrowserWindow({
+  let windowOptions = {
     width: width,
     height: height,
     icon: iconPath,
@@ -48,10 +57,23 @@ async function createMainWindow() {
       nodeIntegration: true,
       contextIsolation: false
     }
-  });
+  };
+
+    // Check if config file exists and read bounds
+    if (fs.existsSync(configPath)) {
+      try {
+        const bounds = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+        if (bounds && bounds.width && bounds.height && bounds.x !== undefined && bounds.y !== undefined) {
+          windowOptions = { ...windowOptions, ...bounds };
+        }
+      } catch (error) {
+        console.error('Error reading config file:', error);
+      }
+    }
 
   try {
     const serverUrl = await setupServer(isDev);
+    mainWindow = new BrowserWindow(windowOptions);
     await mainWindow.loadURL(serverUrl);
 
     // Handle command line file opening after window loads
@@ -70,6 +92,10 @@ async function createMainWindow() {
     return { action: 'deny' };
   });
 
+  mainWindow.on('close', () => {
+    saveWindowBounds(mainWindow);
+  });
+
   return mainWindow;
 }
 
@@ -83,7 +109,7 @@ async function handleFileOpen(filePath) {
     }
 
     const content = await fsPromises.readFile(filePath, 'utf-8');
-    console.log('File content loaded successfully');
+    //console.log('File content loaded successfully');
 
     return new Promise((resolve) => {
       if (mainWindow.webContents.isLoading()) {
@@ -159,7 +185,9 @@ function createMenuTemplate() {
         {
           label: "Exit",
           click: () => {
+            saveWindowBounds(mainWindow);
             app.quit();
+
           },
         },
       ],
@@ -195,7 +223,7 @@ function createMenuTemplate() {
             }
           },
         },
-        //{ role: "toggledevtools" },
+        { role: "toggledevtools" },
       ],
     },
     {
@@ -207,7 +235,7 @@ function createMenuTemplate() {
             dialog.showMessageBox({
               type: 'info',
               title: 'EasyEdit',
-              message: 'EasyEdit v1.2.2 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to HTML & PDF. \n\n'
+              message: 'EasyEdit v1.2.3 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to HTML & PDF. \n\n'
               +'Developed by: Ricardo Wagemaker https://github.com/gcclinux\n'
               +'Contributed by: Lewis Halstead https://github.com/Lewish1998\n\n'
               +'GitHub: https://github.com/gcclinux/EasyEdit \n'
@@ -240,7 +268,7 @@ app.whenReady().then(async () => {
       ? process.argv[process.argv.length - 1]
       : path.resolve(process.cwd(), process.argv[process.argv.length - 1]);
 
-    console.log('Attempting to open:', filePath);
+    //console.log('Attempting to open:', filePath);
     await handleFileOpen(filePath);
   }
 
@@ -260,4 +288,4 @@ app.on('window-all-closed', () => {
   }
 });
 
-module.exports = { mainWindow };
+module.exports = { mainWindow, saveWindowBounds };
