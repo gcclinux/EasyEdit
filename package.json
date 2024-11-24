@@ -1,12 +1,12 @@
 {
   "name": "easyedit",
-  "private": true,
+  "description": "EasyEdit - A simple Markdown editor",
   "version": "1.2.3",
   "type": "module",
   "scripts": {
     "start": "concurrently \"vite --host\" \"wait-on http://localhost:3000 && electron .\"",
     "build": "vite build",
-    "electron:build": "npm run build && electron-builder"
+    "electron:build": "npm run build && electron-builder build -l"
   },
   "main": "main.cjs",
   "build": {
@@ -51,11 +51,23 @@
     },
     "linux": {
       "target": [
-        "AppImage"
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        }
       ],
       "icon": "public/icon.png",
       "category": "Development;TextEditor;Utility",
       "maintainer": "Ricardo Wagemaker",
+      "description": "A lightweight Markdown editor built with Electron",
+      "synopsis": "Simple Markdown editor",
+      "desktop": {
+        "Name": "EasyEdit",
+        "Terminal": false,
+        "Type": "Application",
+        "Categories": "Development;TextEditor;Utility"
+      },
+      "artifactName": "EasyEdit-${version}-${arch}.AppImage",
       "fileAssociations": [
         {
           "ext": "txt",
@@ -72,49 +84,44 @@
           "description": "HTML Files",
           "icon": "public/icon.png"
         }
-      ],
-      "publish": [
-        {
-          "provider": "generic",
-          "url": "https://github.com/gcclinux/EasyEdit/releases/tag/latest"
-        }
-      ],
-      "generateUpdatesFilesForAllChannels": true,
-      "synopsis": "Simple Markdown editor",
-      "description": "A lightweight Markdown editor built with Electron",
-      "desktop": {
-        "Name": "EasyEdit",
-        "Terminal": false,
-        "Type": "Application",
-        "Categories": "Development;TextEditor;Utility"
-      }
+      ]
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "gcclinux",
+      "repo": "EasyEdit",
+      "channel": "latest",
+      "private": true,
+      "publishAutoUpdate": true,
+      "updaterCacheDirName": "easyedit-updater",
+      "vPrefixedTagName": false
     },
     "mac": {
       "target": [
       "dmg",
       "zip"
       ],
-      "category": "public.app-category.developer-tools",
-      "darkModeSupport": true,
-      "icon": "public/icon.png",
-      "fileAssociations": [
-      {
-        "ext": "txt",
-        "description": "Text Files",
-        "icon": "public/icon.png"
-      },
-      {
-        "ext": "md",
-        "description": "Markdown Files",
-        "icon": "public/icon.png"
-      },
-      {
-        "ext": "html",
-        "description": "HTML Files",
-        "icon": "public/icon.png"
-      }
+        "category": "public.app-category.developer-tools",
+        "darkModeSupport": true,
+        "icon": "public/icon.png",
+        "fileAssociations": [
+        {
+          "ext": "txt",
+          "description": "Text Files",
+          "icon": "public/icon.png"
+        },
+        {
+          "ext": "md",
+          "description": "Markdown Files",
+          "icon": "public/icon.png"
+        },
+        {
+          "ext": "html",
+          "description": "HTML Files",
+          "icon": "public/icon.png"
+        }
       ]
-    }
+      }
   },
   "author": "Ricardo Wagemaker <wagemra@gmail.com>",
   "license": "MIT",
