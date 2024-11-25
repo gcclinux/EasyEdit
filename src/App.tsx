@@ -19,7 +19,8 @@ import {
   inserterGitSyntax,
   insertererDiagramSyntax
 } from './insertMermaid.ts';
-import { TableGenerator } from './tableGenerator/TableGenerator.tsx';
+import { TableGenerator } from './autoGenerator/TableGenerator.tsx';
+import { GanttGenerator } from './autoGenerator/GanttGenerator.tsx';
 import { 
   HistoryState, 
   addToHistory, 
@@ -41,6 +42,7 @@ const App = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const cursorPositionRef = useRef<number>(0);
   const [tableModalOpen, setTableModalOpen] = useState(false);
+  const [ganttModalOpen, setGanttModalOpen] = useState(false);
 
   const initializeMermaid = useCallback(
     debounce(() => {
@@ -780,8 +782,9 @@ const App = () => {
           <button
             className='button'
             onClick={() => setTableModalOpen(true)}
+            title="Support Creating a Markdown Table"
           >
-            Custom Table
+            Custom Table &#8711;
           </button>
           <TableGenerator
             isOpen={tableModalOpen}
@@ -813,7 +816,7 @@ const App = () => {
             onClick={handleGraphTDInsert}
             title="Insert Mermaid GraphTD example of a product life cycle"
           >
-            GraphTD
+            GraphTD &#9797;
           </button>
           <button
             className="button-mermaid"
@@ -822,6 +825,21 @@ const App = () => {
           >
             erDiag &#8757;
           </button>
+          <button
+            className='button-mermaid'
+            onClick={() => setGanttModalOpen(true)}
+            title="Support Creating a Mermaid Gantt Chart"
+          >
+            Custom Gantt &#8711;
+          </button>
+          <GanttGenerator
+            isOpen={ganttModalOpen}
+            onClose={() => setGanttModalOpen(false)}
+            onInsert={(ganttText) => {
+              setEditorContent(editorContent + ganttText);
+              setGanttModalOpen(false);
+            }}
+          />
         </div>
         <div className="toolbar">
           <button className="button" onClick={insertCheckSyntax}>
