@@ -39,14 +39,16 @@ flowchart TD
     C -->|Three| F[fa:fa-car Car]
 ```
 
-## Tables as code
-```
-
-| header1 | header2 | header3 |
-| :--- | :--- | :--- |
-| row1 | col2 | col3 |
-| row2 | col2 | col3 |
-
+## Gantt graph as code
+```mermaid
+gantt
+    title Create EasyEdit
+    dateFormat YYYY-MM-DD
+    section Tasks
+    Initial App :task1, 2024-11-11, 14d
+    Add features :task2, 2024-11-18, 14d
+    Run test :task3, 2024-11-25, 3d
+    Deliver Product :task4, 2024-11-31 , 3d
 ```
 
 ## Table displayed

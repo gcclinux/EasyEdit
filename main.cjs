@@ -235,7 +235,7 @@ function createMenuTemplate() {
             dialog.showMessageBox({
               type: 'info',
               title: 'EasyEdit',
-              message: 'EasyEdit v1.2.3 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to HTML & PDF. \n\n'
+              message: 'EasyEdit v1.2.4 \n\n EasyEdit is an easy markdown editor that allows you to write MarkDown (MD) and preview it in real-time. You can save, load .md files and export to HTML & PDF. \n\n'
               +'Developed by: Ricardo Wagemaker https://github.com/gcclinux\n'
               +'Contributed by: Lewis Halstead https://github.com/Lewish1998\n\n'
               +'GitHub: https://github.com/gcclinux/EasyEdit \n'
