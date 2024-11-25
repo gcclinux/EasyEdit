@@ -6,7 +6,7 @@
   "scripts": {
     "start": "concurrently \"vite --host\" \"wait-on http://localhost:3000 && electron .\"",
     "build": "vite build",
-    "electron:build": "npm run build && electron-builder build -l"
+    "electron:build": "npm run build && electron-builder"
   },
   "main": "main.cjs",
   "build": {
