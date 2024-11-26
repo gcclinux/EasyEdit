@@ -32,6 +32,18 @@ import {
   saveToTxT,
   saveToHTML 
 } from './mainHandler.ts';
+import { 
+  insertBoldSyntax,
+  inserth1Syntax,
+  inserth2Syntax,
+  inserth3Syntax,
+  inserth4Syntax,
+  inserth5Syntax,
+  inserth6Syntax,
+  insertItalicSyntax,
+  insertNewLineSyntax,
+  insertStrikethroughSyntax
+} from './insertMarkdown.ts';
 
 const App = () => {
   const [documentHistory, setDocumentHistory] = useState<HistoryState[]>([]);
@@ -43,6 +55,7 @@ const App = () => {
   const cursorPositionRef = useRef<number>(0);
   const [tableModalOpen, setTableModalOpen] = useState(false);
   const [ganttModalOpen, setGanttModalOpen] = useState(false);
+  const [showHeaderDropdown, setShowHeaderDropdown] = useState(false);
 
   const initializeMermaid = useCallback(
     debounce(() => {
@@ -76,25 +89,33 @@ const App = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
-      textareaRef.current.focus();
-    }
-  }, [editorContent]);
+  // useEffect(() => {
+  //   if (textareaRef.current) {
+  //     textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
+  //     textareaRef.current.focus();
+  //   }
+  // }, [editorContent]);
 
   const toggleLayout = () => {
     setIsHorizontal(!isHorizontal);
   };
 
   const insertSymbol = (symbol: string) => {
-    const newText = editorContent + symbol;
-    setEditorContent(newText);
-
     if (textareaRef.current) {
-      textareaRef.current.value = newText;
-      textareaRef.current.setSelectionRange(newText.length, newText.length);
-      textareaRef.current.focus();
+      const textarea = textareaRef.current;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const newText =
+        editorContent.substring(0, start) +
+        symbol +
+        editorContent.substring(end);
+  
+      setEditorContent(newText);
+  
+      setTimeout(() => {
+        textarea.setSelectionRange(start + symbol.length, start + symbol.length);
+        textarea.focus();
+      }, 0);
     }
   };
 
@@ -120,10 +141,7 @@ const App = () => {
             e.preventDefault();
             const target = e.target as HTMLTextAreaElement;
             const { selectionStart, selectionEnd } = target;
-            const newValue =
-              editorContent.substring(0, selectionStart) +
-              '\n' +
-              editorContent.substring(selectionEnd);
+            const newValue = editorContent.substring(0, selectionStart) +'\n' + editorContent.substring(selectionEnd);
             cursorPositionRef.current = selectionStart + 1;
             setEditorContent(newValue);
           }
@@ -132,6 +150,7 @@ const App = () => {
     );
   });
 
+  // PreviewComponent is a memoized component that renders the preview of the Markdown content
   const PreviewComponent = React.memo(() => {
     useEffect(() => {
       initializeMermaid();
@@ -218,160 +237,55 @@ const App = () => {
   const insertSymbol25 = () => insertSymbol("&#8868;");
   const insertSymbol26 = () => insertSymbol("&#8869;");
 
+//TODO
   // insertBoldSyntax function inserts a bold syntax for Markdown
-  const insertBoldSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const selectedText = editorContent.substring(start, end);
-      let listText = '';      
-      if (selectedText === '') {
-        listText = `**Bold Text**`;
-      } else {
-        listText = `**${selectedText}**`;
-      }
-      const newText =
-        editorContent.substring(0, start) +
-        listText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + listText.length - 2;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  const handleBoldSyntax = () => {
+    insertBoldSyntax(textareaRef, editorContent, setEditorContent);
+  };
+
+  // insertNewLineSyntax function inserts a new line syntax for Markdown
+  const handleNewLineSyntax = () => {
+    insertNewLineSyntax(textareaRef, editorContent, setEditorContent);
   };
 
   // insertItalicSyntax function inserts an italic syntax for Markdown
-  const insertItalicSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const selectedText = editorContent.substring(start, end);
-      let listText = '';      
-      if (selectedText === '') {
-        listText = `*Italic Text*`;
-      } else {
-        listText = `*${selectedText}*`;
-      }
-      const newText =
-        editorContent.substring(0, start) +
-        listText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + listText.length - 1;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  const handlerItalicSyntax = () => {
+    insertItalicSyntax(textareaRef, editorContent, setEditorContent); 
   };
 
   // insertStrikethroughSyntax function inserts a strikethrough syntax for Markdown
-  const insertStrikethroughSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const selectedText = editorContent.substring(start, end);
-      let listText = '';      
-      if (selectedText === '') {
-        listText = `~~Strike Text~~`;
-      } else {
-        listText = `~~${selectedText}~~`;
-      }
-      const newText =
-        editorContent.substring(0, start) +
-        listText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + listText.length - 2;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  const handlerStrikethroughSyntax = () => {
+    insertStrikethroughSyntax(textareaRef, editorContent, setEditorContent);
   };
 
   // inserth1Syntax function inserts a h1 syntax for Markdown
-  const inserth1Syntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const selectedText = editorContent.substring(start, end);
-      let listText = '';      
-      if (selectedText === '') {
-        listText = `# Header 1`;
-      } else {
-        listText = `# ${selectedText}`;
-      }
-      const newText =
-        editorContent.substring(0, start) +
-        listText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + listText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  const handlerinserth1Syntax = () => {
+    inserth1Syntax(textareaRef, editorContent, setEditorContent);
   };
 
   // inserth2Syntax function inserts a h2 syntax for Markdown
-  const inserth2Syntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const selectedText = editorContent.substring(start, end);
-      let listText = '';      
-      if (selectedText === '') {
-        listText = `## Header 2`;
-      } else {
-        listText = `## ${selectedText}`;
-      }
-      const newText =
-        editorContent.substring(0, start) +
-        listText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + listText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  const handlerinserth2Syntax = () => {
+    inserth2Syntax(textareaRef, editorContent, setEditorContent);
   };
 
   // inserth3Syntax function inserts a h3 syntax for Markdown
-  const inserth3Syntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const selectedText = editorContent.substring(start, end);
-      let listText = '';      
-      if (selectedText === '') {
-        listText = `### Header 3`;
-      } else {
-        listText = `### ${selectedText}`;
-      }
-      const newText =
-        editorContent.substring(0, start) +
-        listText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + listText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  const handlerinserth3Syntax = () => {
+    inserth3Syntax(textareaRef, editorContent, setEditorContent);
+  };
+
+  // inserth4Syntax function inserts a h4 syntax for Markdown
+  const handlerinserth4Syntax = () => {
+    inserth4Syntax(textareaRef, editorContent, setEditorContent);
+  };
+
+  // inserth5Syntax function inserts a h5 syntax for Markdown
+  const handlerinserth5Syntax = () => {
+    inserth5Syntax(textareaRef, editorContent, setEditorContent);
+  };
+
+  // inserth6Syntax function inserts a h6 syntax for Markdown
+  const handlerinserth6Syntax = () => {
+    inserth6Syntax(textareaRef, editorContent, setEditorContent);
   };
 
   // insertRulerSyntax function inserts a ruler syntax for Markdown
@@ -774,25 +688,70 @@ const App = () => {
             src={markdownMarkWhite}
             alt="MD"
             onClick={() => window.location.reload()} title="Refresh"/>
-          <button className="button-format" onClick={inserth1Syntax} title="Markdown Large Header">
-            H1
-          </button>
-          <button className="button-format" onClick={inserth2Syntax} title="Markdown Header size 2">
-            H2
-          </button>
-          <button className="button-format" onClick={inserth3Syntax} title="Markdown Header size 3">
-            H3
-          </button>
-          <button className="button-format" onClick={insertBoldSyntax} title="Markdown make Text Bold">
+
+            <div className="dropdown-container">
+              <button 
+                className="button-format"
+                onClick={() => setShowHeaderDropdown(!showHeaderDropdown)}
+                title="Header Options"
+              >
+                Headers
+              </button>
+              {showHeaderDropdown && (
+                <div className="header-dropdown">
+                  <button 
+                    className="dropdown-item" 
+                    onClick={() => {
+                      handlerinserth1Syntax();
+                      setShowHeaderDropdown(false);
+                    }}> Header 1 </button>
+                  <button 
+                    className="dropdown-item" 
+                    onClick={() => {
+                      handlerinserth2Syntax();
+                      setShowHeaderDropdown(false);
+                    }}> Header 2 </button>
+                  <button 
+                    className="dropdown-item" 
+                    onClick={() => {
+                      handlerinserth3Syntax();
+                      setShowHeaderDropdown(false);
+                    }}> Header 3 </button>
+                  <button 
+                    className="dropdown-item" 
+                    onClick={() => {
+                      handlerinserth4Syntax();
+                      setShowHeaderDropdown(false);
+                    }}>Header 4 </button>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      handlerinserth5Syntax();
+                      setShowHeaderDropdown(false);
+                    }}>Header 5 </button>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      handlerinserth6Syntax();
+                      setShowHeaderDropdown(false);
+                    }}>Header 6 </button>
+                </div>
+              )}
+            </div>
+
+          <button className="button-format" onClick={handleBoldSyntax} title="Markdown make Text Bold">
             Bold
           </button>
-          <button className="button-format" onClick={insertItalicSyntax} title="Markdown make Text Italic">
+          <button className="button-format" onClick={handlerItalicSyntax} title="Markdown make Text Italic">
             Italic
           </button>
-          <button className="button-format" onClick={insertStrikethroughSyntax} title="Markdown Strikethrough Text">
+          <button className="button-format" onClick={handlerStrikethroughSyntax} title="Markdown Strikethrough Text">
             <s>Strike</s>
           </button>
-
+          <button className="button-format" onClick={handleNewLineSyntax} title="Markdown Strikethrough Text">
+            NewLine &#11022;
+          </button>
+          &#8741;&nbsp;
           <button className="button" onClick={insertCodeSyntax} title="Markdown mark text as code">
             &lt;code&gt;
           </button>
@@ -820,12 +779,27 @@ const App = () => {
           <button className="button" onClick={insertTableSyntax} title="Markdown pre-defined table example">
             Table &#128196;
           </button>
-          <button
-            className='button'
-            onClick={() => setTableModalOpen(true)}
-            title="Support Creating a Markdown Table"
-          >
-            Custom Table &#8711;
+          <button className="button" onClick={insertFootSyntax}>
+            FootNote &#9870;
+          </button>
+          <button className="button-mermaid" onClick={handleJourneyInsert} title="Insert Mermaid Journey example">
+            Journey &#9948;
+          </button>
+          <button className="button-mermaid" onClick={handleFlowchartRLInsert} title="Insert Mermaid flowchartRL example">
+            Flowchart &#8866; | &#8867;
+          </button>
+          <button className="button-mermaid" onClick={handleGanttInsert} title="Insert Mermaid Gantt chart" >
+            Gantt &#8760;
+          </button>
+          <button className="button-mermaid" onClick={handleGraphTDInsert} title="Insert Mermaid GraphTD example of a product life cycle">
+            GraphTD &#9797;
+          </button>
+          <button className="button-mermaid" onClick={handleErDiagramInsert} title="Insert Mermaid erDiagram">
+            erDiag &#8757;
+          </button>
+          &#8741;&nbsp;
+          <button className='button-mermaid' onClick={() => setTableModalOpen(true)} title="Support Creating a Markdown Table">
+            Auto Table &#8711;
           </button>
           <TableGenerator
             isOpen={tableModalOpen}
@@ -835,43 +809,8 @@ const App = () => {
               setTableModalOpen(false);
             }}
           />
-          <button className="button" onClick={insertFootSyntax}>
-            FootNote &#9870;
-          </button>
-          <button
-            className="button-mermaid"
-            onClick={handleFlowchartRLInsert}
-            title="Insert Mermaid flowchartRL example"
-          >
-            Flowchart &#8866; | &#8867;
-          </button>
-          <button
-            className="button-mermaid"
-            onClick={handleGanttInsert}
-            title="Insert Mermaid Gantt chart"
-          >
-            Gantt &#8760;
-          </button>
-          <button
-            className="button-mermaid"
-            onClick={handleGraphTDInsert}
-            title="Insert Mermaid GraphTD example of a product life cycle"
-          >
-            GraphTD &#9797;
-          </button>
-          <button
-            className="button-mermaid"
-            onClick={handleErDiagramInsert}
-            title="Insert Mermaid erDiagram"
-          >
-            erDiag &#8757;
-          </button>
-          <button
-            className='button-mermaid'
-            onClick={() => setGanttModalOpen(true)}
-            title="Support Creating a Mermaid Gantt Chart"
-          >
-            Custom Gantt &#8711;
+          <button className='button-mermaid' onClick={() => setGanttModalOpen(true)} title="Support Creating a Mermaid Gantt Chart">
+            Auto Gantt &#8711;
           </button>
           <GanttGenerator
             isOpen={ganttModalOpen}
@@ -879,8 +818,7 @@ const App = () => {
             onInsert={(ganttText) => {
               setEditorContent(editorContent + ganttText);
               setGanttModalOpen(false);
-            }}
-          />
+            }}/>
         </div>
         <div className="toolbar">
           <button className="button" onClick={insertCheckSyntax}>
@@ -970,13 +908,6 @@ const App = () => {
             title="Insert Mermaid Block (beta) example"
           >
             Block &#8759;
-          </button>
-          <button
-            className="button-mermaid"
-            onClick={handleJourneyInsert}
-            title="Insert Mermaid Journey example"
-          >
-            Journey &#9948;
           </button>
         </div>
         
