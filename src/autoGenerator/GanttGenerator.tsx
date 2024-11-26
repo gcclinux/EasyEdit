@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './StyleGenerator.css';
+import './autoGenerator.css';
 
 interface GanttGeneratorProps {
   isOpen: boolean;
@@ -11,6 +11,7 @@ interface Task {
   id: number;
   name: string;
   startDate: string;
+  section: string;
   duration: number;
   dependency?: string;
 }
@@ -18,7 +19,7 @@ interface Task {
 export const GanttGenerator: React.FC<GanttGeneratorProps> = ({ isOpen, onClose, onInsert }) => {
   const [projectTitle, setProjectTitle] = useState('Project Schedule');
   const [tasks, setTasks] = useState<Task[]>([
-    { id: 1, name: 'Task 1', startDate: '', duration: 3 }
+    { id: 1, name: 'Task 1', startDate: '', section: '', duration: 3 }
   ]);
 
   const addTask = () => {
@@ -26,7 +27,8 @@ export const GanttGenerator: React.FC<GanttGeneratorProps> = ({ isOpen, onClose,
       id: tasks.length + 1,
       name: `Task ${tasks.length + 1}`,
       startDate: '',
-      duration: 3
+      section: '',
+      duration: 5
     };
     setTasks([...tasks, newTask]);
   };
@@ -44,14 +46,15 @@ export const GanttGenerator: React.FC<GanttGeneratorProps> = ({ isOpen, onClose,
   const createGanttChart = () => {
     let gantt = '```mermaid\ngantt\n';
     gantt += `    title ${projectTitle}\n`;
-    gantt += '    dateFormat YYYY-MM-DD\n';
-    gantt += '    section Tasks\n';
+    gantt += '    section Initial\n';
 
-    tasks.forEach((task, index) => {
+    tasks.forEach((task) => {
       const taskId = `task${task.id}`;
+      if (task.startDate !== '') {
+        if (task.section !== '') {
+          gantt += `    section ${task.section}\n`;
+        }
       gantt += `    ${task.name} :${taskId}, ${task.startDate}, ${task.duration}d\n`;
-      if (task.dependency) {
-        gantt += `    ${task.name} :after ${task.dependency}\n`;
       }
     });
 
@@ -75,6 +78,23 @@ export const GanttGenerator: React.FC<GanttGeneratorProps> = ({ isOpen, onClose,
             />
           </label>
         </div>
+        <div className="input-group">
+          <div className='task-title'>
+            <label>Task Name</label>
+          </div>
+          <div className='task-date'>
+            <label>Start Date</label>
+          </div>
+          <div className='task-select'>
+            <label>Section Name</label>
+          </div>
+          <div className='task-duration'>
+            <label>&#8987; days</label>
+          </div>
+          <div className='task-dep'>
+            <label>Task Dependency</label>
+          </div>
+        </div>
 
         {tasks.map((task, index) => (
           <div key={task.id} className="task-inputs">
@@ -90,6 +110,13 @@ export const GanttGenerator: React.FC<GanttGeneratorProps> = ({ isOpen, onClose,
               onChange={e => updateTask(index, 'startDate', e.target.value)}
             />
             <input
+              type="text"
+              placeholder="Section name"
+              value={task.section}
+              onChange={e => updateTask(index, 'section', e.target.value)}
+            />
+            <input
+            className='input-days'
               type="number"
               min="1"
               placeholder="Duration (days)"

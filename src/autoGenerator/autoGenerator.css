@@ -31,7 +31,7 @@
     padding: 20px;
     border-radius: 8px;
     min-width: 500px;
-    max-width: 800px;
+    max-width: 1024px;
     color: #ffffff;
   }
   
@@ -81,15 +81,19 @@
   }
 
   .project-title {
-    width: 300px !important;
+    width: 400px !important;
+    height: 20px !important;
     flex: 1 1 auto !important;
     border: 1px solid #3d3d3d;
     padding: 8px;
     border-radius: 4px;
+    font-size: larger;
+    font-weight: regular;
   }
   
   .input-group input.project-title {
-    min-width: 300px;
+    min-width: 400px;
+    min-height: 20px;
     width: calc(100% - 120px) !important;
   }
 
@@ -139,4 +143,33 @@
     color: #ffffff;
     padding: 8px;
     border-radius: 4px;
+  }
+
+  .input-days {
+    max-width: 40px;
+  }
+
+  .task-title{
+    width: 100%;
+    margin-left: -55px;
+  }
+
+  .task-date{
+    width: 100%;
+    margin-left: -1px;
+  }
+
+  .task-select{
+    width: 100%;
+    margin-left: -30px;
+  }
+
+  .task-duration {
+    width: 100%;
+    margin-left: -20px;
+  }
+
+  .task-dep {
+    width: 80%;
+    margin-left: -50px;
   }

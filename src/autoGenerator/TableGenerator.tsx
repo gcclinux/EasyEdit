@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './StyleGenerator.css';
+import './autoGenerator.css';
 
 interface TableGeneratorProps {
   isOpen: boolean;
