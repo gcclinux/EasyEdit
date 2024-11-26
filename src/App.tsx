@@ -218,13 +218,19 @@ const App = () => {
   const insertSymbol25 = () => insertSymbol("&#8868;");
   const insertSymbol26 = () => insertSymbol("&#8869;");
 
+  // insertBoldSyntax function inserts a bold syntax for Markdown
   const insertBoldSyntax = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
       const selectedText = editorContent.substring(start, end);
-      const listText = `**${selectedText}**`;
+      let listText = '';      
+      if (selectedText === '') {
+        listText = `**Bold Text**`;
+      } else {
+        listText = `**${selectedText}**`;
+      }
       const newText =
         editorContent.substring(0, start) +
         listText +
@@ -238,13 +244,19 @@ const App = () => {
     }
   };
 
+  // insertItalicSyntax function inserts an italic syntax for Markdown
   const insertItalicSyntax = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
       const selectedText = editorContent.substring(start, end);
-      const listText = `*${selectedText}*`;
+      let listText = '';      
+      if (selectedText === '') {
+        listText = `*Italic Text*`;
+      } else {
+        listText = `*${selectedText}*`;
+      }
       const newText =
         editorContent.substring(0, start) +
         listText +
@@ -258,13 +270,19 @@ const App = () => {
     }
   };
 
+  // insertStrikethroughSyntax function inserts a strikethrough syntax for Markdown
   const insertStrikethroughSyntax = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
       const selectedText = editorContent.substring(start, end);
-      const listText = `~~${selectedText}~~`;
+      let listText = '';      
+      if (selectedText === '') {
+        listText = `~~Strike Text~~`;
+      } else {
+        listText = `~~${selectedText}~~`;
+      }
       const newText =
         editorContent.substring(0, start) +
         listText +
@@ -278,13 +296,19 @@ const App = () => {
     }
   };
 
+  // inserth1Syntax function inserts a h1 syntax for Markdown
   const inserth1Syntax = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
       const selectedText = editorContent.substring(start, end);
-      const listText = `# ${selectedText}`;
+      let listText = '';      
+      if (selectedText === '') {
+        listText = `# Header 1`;
+      } else {
+        listText = `# ${selectedText}`;
+      }
       const newText =
         editorContent.substring(0, start) +
         listText +
@@ -298,13 +322,19 @@ const App = () => {
     }
   };
 
+  // inserth2Syntax function inserts a h2 syntax for Markdown
   const inserth2Syntax = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
       const selectedText = editorContent.substring(start, end);
-      const listText = `## ${selectedText}`;
+      let listText = '';      
+      if (selectedText === '') {
+        listText = `## Header 2`;
+      } else {
+        listText = `## ${selectedText}`;
+      }
       const newText =
         editorContent.substring(0, start) +
         listText +
@@ -318,13 +348,19 @@ const App = () => {
     }
   };
 
+  // inserth3Syntax function inserts a h3 syntax for Markdown
   const inserth3Syntax = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
       const selectedText = editorContent.substring(start, end);
-      const listText = `### ${selectedText}`;
+      let listText = '';      
+      if (selectedText === '') {
+        listText = `### Header 3`;
+      } else {
+        listText = `### ${selectedText}`;
+      }
       const newText =
         editorContent.substring(0, start) +
         listText +
@@ -338,6 +374,7 @@ const App = () => {
     }
   };
 
+  // insertRulerSyntax function inserts a ruler syntax for Markdown
   const insertRulerSyntax = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
@@ -357,6 +394,7 @@ const App = () => {
     }
   };
 
+  // insertCodeSyntax function inserts a code syntax for Markdown
   const insertCodeSyntax = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
@@ -377,6 +415,7 @@ const App = () => {
     }
   };
 
+  // insertIndent1Syntax function inserts an indent1 syntax for Markdown
   const insertIndent1Syntax = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
@@ -397,6 +436,7 @@ const App = () => {
     }
   };
 
+  // insertIndent2Syntax function inserts an indent2 syntax for Markdown
   const insertIndent2Syntax = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
@@ -417,6 +457,7 @@ const App = () => {
     }
   };
 
+  // insertList1Syntax function inserts a list1 syntax for Markdown
   const insertList1Syntax = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
@@ -437,6 +478,7 @@ const App = () => {
     }
   };
 
+  // insertList2Syntax function inserts a list2 syntax for Markdown
   const insertList2Syntax = () => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
@@ -731,53 +773,52 @@ const App = () => {
             className="markdown-mark"
             src={markdownMarkWhite}
             alt="MD"
-            onClick={() => window.location.reload()}
-          />
-          <button className="button-format" onClick={inserth1Syntax}>
+            onClick={() => window.location.reload()} title="Refresh"/>
+          <button className="button-format" onClick={inserth1Syntax} title="Markdown Large Header">
             H1
           </button>
-          <button className="button-format" onClick={inserth2Syntax}>
+          <button className="button-format" onClick={inserth2Syntax} title="Markdown Header size 2">
             H2
           </button>
-          <button className="button-format" onClick={inserth3Syntax}>
+          <button className="button-format" onClick={inserth3Syntax} title="Markdown Header size 3">
             H3
           </button>
-          <button className="button-format" onClick={insertBoldSyntax}>
+          <button className="button-format" onClick={insertBoldSyntax} title="Markdown make Text Bold">
             Bold
           </button>
-          <button className="button-format" onClick={insertItalicSyntax}>
+          <button className="button-format" onClick={insertItalicSyntax} title="Markdown make Text Italic">
             Italic
           </button>
-          <button className="button-format" onClick={insertStrikethroughSyntax}>
+          <button className="button-format" onClick={insertStrikethroughSyntax} title="Markdown Strikethrough Text">
             <s>Strike</s>
           </button>
 
-          <button className="button" onClick={insertCodeSyntax}>
+          <button className="button" onClick={insertCodeSyntax} title="Markdown mark text as code">
             &lt;code&gt;
           </button>
-          <button className="button" onClick={insertRulerSyntax}>
+          <button className="button" onClick={insertRulerSyntax} title="Markdown ruler / page split">
             Ruler &#8213;
           </button>
-          <button className="button" onClick={insertIndent1Syntax}>
+          <button className="button" onClick={insertIndent1Syntax} title="Markdown indent level 1">
             Indent &ge;
           </button>
-          <button className="button" onClick={insertIndent2Syntax}>
-            Indent &ge;&gt;
+          <button className="button" onClick={insertIndent2Syntax} title="Markdown indent level 2">
+            Indent &gt;&gt;
           </button>
-          <button className="button" onClick={insertList1Syntax}>
+          <button className="button" onClick={insertList1Syntax} title="Markdown list level 1">
             List  &#10687;
           </button>
-          <button className="button" onClick={insertList2Syntax}>
+          <button className="button" onClick={insertList2Syntax} title="Markdown list level 2">
             List &#10687; &#10687;
           </button>
-          <button className="button" onClick={insertImageSyntax}>
+          <button className="button" onClick={insertImageSyntax} title="Markdown insert image example">
             Image &#128443;
           </button>
-          <button className="button" onClick={insertTableSyntax}>
-            Table &#128196;
-          </button>
-          <button className="button" onClick={insertURLSyntax}>
+          <button className="button" onClick={insertURLSyntax} title="Markdown insert URL example">
             URL &#128279;
+          </button>
+          <button className="button" onClick={insertTableSyntax} title="Markdown pre-defined table example">
+            Table &#128196;
           </button>
           <button
             className='button'
