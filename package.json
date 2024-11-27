@@ -53,7 +53,9 @@
       "target": [
         {
           "target": "AppImage",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "icon": "public/icon.png",
@@ -98,13 +100,13 @@
     },
     "mac": {
       "target": [
-      "dmg",
-      "zip"
+        "dmg",
+        "zip"
       ],
-        "category": "public.app-category.developer-tools",
-        "darkModeSupport": true,
-        "icon": "public/icon.png",
-        "fileAssociations": [
+      "category": "public.app-category.developer-tools",
+      "darkModeSupport": true,
+      "icon": "public/icon.png",
+      "fileAssociations": [
         {
           "ext": "txt",
           "description": "Text Files",
@@ -121,7 +123,7 @@
           "icon": "public/icon.png"
         }
       ]
-      }
+    }
   },
   "author": "Ricardo Wagemaker <wagemra@gmail.com>",
   "license": "MIT",

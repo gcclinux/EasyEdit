@@ -252,6 +252,7 @@ html,
   border: 1px solid #3d3d3d;
   border-radius: 4px;
   z-index: 1000;
+  width: 130px;
 }
 
 .dropdown-item {
@@ -267,4 +268,23 @@ html,
 
 .dropdown-item:hover {
   background-color: #3d3d3d;
+}
+
+.header1-button {
+  font-size: 24px;
+}
+.header2-button {
+  font-size: 20px;
+}
+.header3-button {
+  font-size: 16px;
+}
+.header4-button {
+  font-size: 14px;
+}
+.header5-button {
+  font-size: 12px;
+}
+.header6-button {
+  font-size: 10px;
 }
