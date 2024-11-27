@@ -42,7 +42,7 @@
             "html",
             "css"
           ],
-          "description": "Text Files",
+          "description": "Markdown Files",
           "icon": "public/icon.ico"
         }
       ],
