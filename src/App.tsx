@@ -31,7 +31,7 @@ import {
   saveToFile,
   saveToTxT,
   saveToHTML 
-} from './mainHandler.ts';
+} from './insertSave.ts';
 import { 
   insertBoldSyntax,
   inserth1Syntax,
@@ -40,8 +40,21 @@ import {
   inserth4Syntax,
   inserth5Syntax,
   inserth6Syntax,
+  insertURLSyntax,
+  insertImageSyntax,
+  insertCodeSyntax,
+  insertRulerSyntax,
+  insertCheckSyntax,
+  insertFootSyntax,
+  insertTableSyntax,
   insertItalicSyntax,
+  insertList1Syntax,
+  insertList2Syntax,
+  insertIndent1Syntax,
+  insertIndent2Syntax,
   insertNewLineSyntax,
+  insertBlockquoteSyntax,
+  inserterPlainFlowSyntax,
   insertStrikethroughSyntax
 } from './insertMarkdown.ts';
 
@@ -89,12 +102,13 @@ const App = () => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   if (textareaRef.current) {
-  //     textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
-  //     textareaRef.current.focus();
-  //   }
-  // }, [editorContent]);
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
+      textareaRef.current.focus();
+      console.log('Cursor cursorPositionRef App.tsx insertion:', cursorPositionRef.current);
+    }
+  }, [editorContent]);
 
   const toggleLayout = () => {
     setIsHorizontal(!isHorizontal);
@@ -111,9 +125,10 @@ const App = () => {
         editorContent.substring(end);
   
       setEditorContent(newText);
+      cursorPositionRef.current = start + symbol.length; // Update cursor position ref
   
       setTimeout(() => {
-        textarea.setSelectionRange(start + symbol.length, start + symbol.length);
+        textarea.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
         textarea.focus();
       }, 0);
     }
@@ -135,15 +150,23 @@ const App = () => {
         ref={textareaRef}
         value={editorContent}
         onChange={handleChange}
+        //onChange={(e) => setEditorContent(e.target.value)}
         className={isHorizontal ? 'textarea-horizontal' : 'textarea-parallel'}
+        // Inside the onKeyDown event handler
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             e.preventDefault();
             const target = e.target as HTMLTextAreaElement;
             const { selectionStart, selectionEnd } = target;
-            const newValue = editorContent.substring(0, selectionStart) +'\n' + editorContent.substring(selectionEnd);
-            cursorPositionRef.current = selectionStart + 1;
+            const newValue = editorContent.substring(0, selectionStart) + '   \n' + editorContent.substring(selectionEnd);
             setEditorContent(newValue);
+            setTimeout(() => {
+              if (textareaRef.current) {
+                textareaRef.current.value = newValue; // Explicitly set the value of the textarea
+                cursorPositionRef.current = selectionStart + 4; // Update cursor position
+                textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current); // Move cursor after the new line
+              }
+            }, 0);
           }
         }}
       />
@@ -240,7 +263,7 @@ const App = () => {
 //TODO
   // insertBoldSyntax function inserts a bold syntax for Markdown
   const handleBoldSyntax = () => {
-    insertBoldSyntax(textareaRef, editorContent, setEditorContent);
+    insertBoldSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // insertNewLineSyntax function inserts a new line syntax for Markdown
@@ -250,285 +273,102 @@ const App = () => {
 
   // insertItalicSyntax function inserts an italic syntax for Markdown
   const handlerItalicSyntax = () => {
-    insertItalicSyntax(textareaRef, editorContent, setEditorContent); 
+    insertItalicSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // insertStrikethroughSyntax function inserts a strikethrough syntax for Markdown
   const handlerStrikethroughSyntax = () => {
-    insertStrikethroughSyntax(textareaRef, editorContent, setEditorContent);
+    insertStrikethroughSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // inserth1Syntax function inserts a h1 syntax for Markdown
   const handlerinserth1Syntax = () => {
-    inserth1Syntax(textareaRef, editorContent, setEditorContent);
+    inserth1Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // inserth2Syntax function inserts a h2 syntax for Markdown
   const handlerinserth2Syntax = () => {
-    inserth2Syntax(textareaRef, editorContent, setEditorContent);
+    inserth2Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // inserth3Syntax function inserts a h3 syntax for Markdown
   const handlerinserth3Syntax = () => {
-    inserth3Syntax(textareaRef, editorContent, setEditorContent);
+    inserth3Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // inserth4Syntax function inserts a h4 syntax for Markdown
   const handlerinserth4Syntax = () => {
-    inserth4Syntax(textareaRef, editorContent, setEditorContent);
+    inserth4Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // inserth5Syntax function inserts a h5 syntax for Markdown
   const handlerinserth5Syntax = () => {
-    inserth5Syntax(textareaRef, editorContent, setEditorContent);
+    inserth5Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // inserth6Syntax function inserts a h6 syntax for Markdown
   const handlerinserth6Syntax = () => {
-    inserth6Syntax(textareaRef, editorContent, setEditorContent);
+    inserth6Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // insertRulerSyntax function inserts a ruler syntax for Markdown
-  const insertRulerSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const listText = `- - -`;
-      const newText =
-        editorContent.substring(0, start) +
-        listText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + listText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  const handlerinsertRulerSyntax = () => {
+    insertRulerSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // insertCodeSyntax function inserts a code syntax for Markdown
-  const insertCodeSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const selectedText = editorContent.substring(start, end);
-      const codeText = `\`\`\`\n${selectedText}\n\`\`\``;
-      const newText =
-        editorContent.substring(0, start) +
-        codeText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + codeText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  const handlerinsertCodeSyntax = () => {
+    insertCodeSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
+  };
+
+  // insertBlockquoteSyntax function inserts a blockquote syntax for Markdown
+  const handlerinsertBlockCodeSyntax = () => {
+    insertBlockquoteSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // insertIndent1Syntax function inserts an indent1 syntax for Markdown
-  const insertIndent1Syntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const selectedText = editorContent.substring(start, end);
-      const listText = `> ${selectedText}`;
-      const newText =
-        editorContent.substring(0, start) +
-        listText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + listText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  const handlerinsertIndent1Syntax = () => {
+    insertIndent1Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // insertIndent2Syntax function inserts an indent2 syntax for Markdown
-  const insertIndent2Syntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const selectedText = editorContent.substring(start, end);
-      const listText = `>> ${selectedText}`;
-      const newText =
-        editorContent.substring(0, start) +
-        listText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + listText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  const handlerinsertIndent2Syntax = () => {
+    insertIndent2Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
-  // insertList1Syntax function inserts a list1 syntax for Markdown
-  const insertList1Syntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const selectedText = editorContent.substring(start, end);
-      const listText = `- ${selectedText}`;
-      const newText =
-        editorContent.substring(0, start) +
-        listText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + listText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  // insertList1Syntax function inserts a list2 syntax for Markdown
+  const handlerinsertList1Syntax = () => {
+    insertList1Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // insertList2Syntax function inserts a list2 syntax for Markdown
-  const insertList2Syntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const selectedText = editorContent.substring(start, end);
-      const listText = `- - ${selectedText}`;
-      const newText =
-        editorContent.substring(0, start) +
-        listText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + listText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  const handlerinsertList2Syntax = () => {
+    insertList2Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // insertImageSyntax function inserts a default and extended image syntax for Markdown
-  const insertImageSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const imageText = `
-### *Markdown Image*
-![alt text](image url "Image Title")
-
-#### Example:
-![EasyEdit](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png  "EasyEdit")
-`;
-      const newText =
-        editorContent.substring(0, start) +
-        imageText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + imageText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  const handlerImageSyntax = () => {
+    insertImageSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
-  // insertURLSyntax function inserts a url example syntax for Markdown
-  const insertURLSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const imageText = `
-### *Markdown Text URL Example*
-[GitHub Project Link](https://github.com/gcclinux/EasyEdit)
-
-### *Markdown Image URL Example*
-[![GitHub Project](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png "EasyEdit")](https://github.com/gcclinux/EasyEdit)
-`;
-      const newText =
-        editorContent.substring(0, start) +
-        imageText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-
-      // Move cursor to the end of the inserted image syntax
-      setTimeout(() => {
-        const newCursorPosition = start + imageText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  // insertURLSyntax function inserts a default and extended URL syntax for Markdown
+  const handlerURLSyntax = () => {
+    insertURLSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
-  const insertCheckSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const checkText = `- [ ] This item is unchecked 
-- [X] This item is checked`;
-      const newText =
-        editorContent.substring(0, start) +
-        checkText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + checkText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  // insertTableSyntax function inserts a default and extended table syntax for Markdown
+  const handlerTableSyntax = () => {
+    insertTableSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
-  const insertFootSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const footnoteText = `Example of a footnote[^1] within text.
-  [^1]: Description of footnote text`;
-      const newText =
-        editorContent.substring(0, start) +
-        footnoteText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + footnoteText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  // insertCheckSyntax function inserts a default and extended check syntax for Markdown
+  const handlerCheckSyntax = () => {
+    insertCheckSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
-  const insertTableSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const tableText = `| header1 | header2 | header3 |
-| :--- | :--- | :--- |
-| row1 | col2 | col3 |
-| row2 | col2 | col3 |`;
-      const newText =
-        editorContent.substring(0, start) +
-        tableText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-
-      // Move cursor to the end of the inserted table
-      setTimeout(() => {
-        const newCursorPosition = start + tableText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  // insertFootSyntax function inserts a default and extended foot syntax for Markdown
+  const handlerFootSyntax = () => {
+    insertFootSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // Insert Mermaid classDiagram Syntax
@@ -571,44 +411,9 @@ const App = () => {
     insertererDiagramSyntax(textareaRef, editorContent, setEditorContent);
   };
 
-
-  const inserterPlainFlowSyntax = () => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const checkText = `\`\`\`plaintext
-                     Start
-                       |
-                +------------+
-                |            |
-          Enter Username   Is username valid?
-                /                 Yes /               No  -> No     Yes -> Password entered
-+--------------+                      |                |
-| Check if password is correct for the given user. +---------+
-+------------------+                                   |
-                |                                      |
-               Yes                   No --> Display "Invalid username or password."
-               /\                    |          |
-        Access granted              End     Retry login?
-       (User logged in)              |
-                                     |
-                                    Yes -> Continue user session.
-                                    No         +---------+
-                                     |              |
-                                   Display "Retried, please try again."
-\`\`\``;
-      const newText =
-        editorContent.substring(0, start) +
-        checkText +
-        editorContent.substring(end);
-      setEditorContent(newText);
-      setTimeout(() => {
-        const newCursorPosition = start + checkText.length;
-        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-        textarea.focus();
-      }, 0);
-    }
+  // inserterPlainFlowSyntax function inserts a plain flow syntax for Mermaid
+  const handleInsertPlainFlow = () => {
+    inserterPlainFlowSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // SaveAsPDF function
@@ -700,37 +505,37 @@ const App = () => {
               {showHeaderDropdown && (
                 <div className="header-dropdown">
                   <button 
-                    className="dropdown-item" 
+                    className="dropdown-item header1-button" 
                     onClick={() => {
                       handlerinserth1Syntax();
                       setShowHeaderDropdown(false);
                     }}> Header 1 </button>
                   <button 
-                    className="dropdown-item" 
+                    className="dropdown-item header2-button" 
                     onClick={() => {
                       handlerinserth2Syntax();
                       setShowHeaderDropdown(false);
                     }}> Header 2 </button>
                   <button 
-                    className="dropdown-item" 
+                    className="dropdown-item header3-button" 
                     onClick={() => {
                       handlerinserth3Syntax();
                       setShowHeaderDropdown(false);
                     }}> Header 3 </button>
                   <button 
-                    className="dropdown-item" 
+                    className="dropdown-item header4-button" 
                     onClick={() => {
                       handlerinserth4Syntax();
                       setShowHeaderDropdown(false);
                     }}>Header 4 </button>
                   <button
-                    className="dropdown-item"
+                    className="dropdown-item header5-button"
                     onClick={() => {
                       handlerinserth5Syntax();
                       setShowHeaderDropdown(false);
                     }}>Header 5 </button>
                   <button
-                    className="dropdown-item"
+                    className="dropdown-item header6-button"
                     onClick={() => {
                       handlerinserth6Syntax();
                       setShowHeaderDropdown(false);
@@ -752,34 +557,37 @@ const App = () => {
             NewLine &#11022;
           </button>
           &#8741;&nbsp;
-          <button className="button" onClick={insertCodeSyntax} title="Markdown mark text as code">
-            &lt;code&gt;
+          <button className="button" onClick={handlerinsertCodeSyntax} title="Markdown set text line as code">
+            CodeLine &#10070;
           </button>
-          <button className="button" onClick={insertRulerSyntax} title="Markdown ruler / page split">
+          <button className="button" onClick={handlerinsertBlockCodeSyntax} title="Markdown set text block as code">
+            CodeBlock &#10070;
+          </button>
+          <button className="button" onClick={handlerinsertRulerSyntax} title="Markdown ruler / page split">
             Ruler &#8213;
           </button>
-          <button className="button" onClick={insertIndent1Syntax} title="Markdown indent level 1">
+          <button className="button" onClick={handlerinsertIndent1Syntax} title="Markdown indent level 1">
             Indent &ge;
           </button>
-          <button className="button" onClick={insertIndent2Syntax} title="Markdown indent level 2">
+          <button className="button" onClick={handlerinsertIndent2Syntax} title="Markdown indent level 2">
             Indent &gt;&gt;
           </button>
-          <button className="button" onClick={insertList1Syntax} title="Markdown list level 1">
+          <button className="button" onClick={handlerinsertList1Syntax} title="Markdown list level 1">
             List  &#10687;
           </button>
-          <button className="button" onClick={insertList2Syntax} title="Markdown list level 2">
+          <button className="button" onClick={handlerinsertList2Syntax} title="Markdown list level 2">
             List &#10687; &#10687;
           </button>
-          <button className="button" onClick={insertImageSyntax} title="Markdown insert image example">
+          <button className="button" onClick={handlerImageSyntax} title="Markdown insert image example">
             Image &#128443;
           </button>
-          <button className="button" onClick={insertURLSyntax} title="Markdown insert URL example">
+          <button className="button" onClick={handlerURLSyntax} title="Markdown insert URL example">
             URL &#128279;
           </button>
-          <button className="button" onClick={insertTableSyntax} title="Markdown pre-defined table example">
+          <button className="button" onClick={handlerTableSyntax} title="Markdown pre-defined table example">
             Table &#128196;
           </button>
-          <button className="button" onClick={insertFootSyntax}>
+          <button className="button" onClick={handlerFootSyntax} title="Markdown pre-defined foot note example">   
             FootNote &#9870;
           </button>
           <button className="button-mermaid" onClick={handleJourneyInsert} title="Insert Mermaid Journey example">
@@ -821,8 +629,8 @@ const App = () => {
             }}/>
         </div>
         <div className="toolbar">
-          <button className="button" onClick={insertCheckSyntax}>
-            &#9745;
+          <button className="button" onClick={handlerCheckSyntax} title="Markdown check / uncheck example">
+          &#9744;&nbsp;&#8741;&nbsp;&#9745;
           </button>
           <button className="button-html" onClick={insertSymbol3}>
             &#8710;
@@ -882,10 +690,7 @@ const App = () => {
             &#8869;
           </button>
           <button
-            className="button-mermaid"
-            onClick={inserterPlainFlowSyntax}
-            title="Insert Plaintext flowChart"
-          >
+            className="button-mermaid" onClick={handleInsertPlainFlow} title="Insert Plaintext flowChart">
             TextChart &#9781;
           </button>
           <button
