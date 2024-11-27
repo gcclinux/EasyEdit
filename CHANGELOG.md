@@ -3,16 +3,17 @@
 EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and preview it in real-time. You can save, load .md files and export to HTML,TXT & PDF. All notable changes to this project will be documented in this file.
 
 ## Latest CODE version
-- 1.2.4 - Implementation of auto Gantt graph generator
+- 1.2.5 - Implementation new Headers & Code cleanup
 
 ## Latest BUILD version
-- Build 1.2.2 - Linux (AppImage)
-- - EasyEdit-x86_64.AppImage
-- - EasyEdit-arm64.AppImage
-- Build 1.2.4 - Windows (exe)
-- - EasyEdit.Setup.1.2.4.exe
-- Build 1.2.2 - MacOS (dmg)
-- - EasyEdit-1.2.2-arm64.dmg
+- ### Build 1.2.4 - Linux (AppImage)
+- - EasyEdit-1.2.4-x86_64.AppImage
+- - EasyEdit-1.2.4-arm64.AppImage
+- - EasyEdit-1.2.4-armv7l.AppImage
+- ### Build 1.2.4 - Windows (exe)
+- - EasyEdit.Setup.1.2.5.exe
+- ### Build 1.2.4 - MacOS (dmg)
+- - EasyEdit-1.2.4-arm64.dmg
 
 ## New Features
 - 1.0.0 - Initial version distributed
@@ -25,6 +26,7 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
 - 1.2.0 - Implementation of custom tables by @Lewish1998
 - 1.2.3 - Saving window bounds and open App with saved bounds
 - 1.2.4 - Implementation of auto Gantt graph generator
+- 1.2.5 - Implementation new Headers & Code cleanup
 
 ## Bug Fix
 - 1.0.1 - Added detect-port in case App starts and default port is already in use by another App
