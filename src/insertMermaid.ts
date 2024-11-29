@@ -315,12 +315,6 @@ export const insertTimeLineSyntax = (
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const checkText = `\`\`\`mermaid
-%%{int: {'loglevel':'debug','theme':'default', 'themeVariables':{   
-           'cScale0': '#80AAFF',   
-           'cScale1': '#8180FF',   
-           'cScale2': '#AA80FF',   
-           'cScale3': '#DC7DFF'
-}}}%%   
 timeline   
 section Q4 2024   
     Dec 24 : WPA Doc Conversion to MD: Embed WPA MD Docs: Initiate Quality Assurance: Initiate Risk gov: Stand up Test Env: Specific measures of success   
