@@ -30,32 +30,6 @@ export const insertItalicSyntax = (
   }
 };
 
-// insertBoldSyntax function inserts a bold syntax for Markdown
-export const insertBoldSyntax = (
-textareaRef: TextAreaRef,
-editorContent: string,
-setEditorContent: (content: string) => void,
-cursorPositionRef: React.MutableRefObject<number>
-) => {
-    if (textareaRef.current) {
-        const textarea = textareaRef.current;
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const selectedText = editorContent.substring(start, end);
-        let listText = '';      
-        if (selectedText === '') {
-        listText = `**Bold Text**`;
-        } else {
-        listText = `**${selectedText}**`;
-        }
-        const newText =
-        editorContent.substring(0, start) +
-        listText +
-        editorContent.substring(end);
-        setEditorContent(newText);
-        cursorPositionRef.current = start + listText.length;
-    }
-};
 
 // insertBoldSyntax function inserts a bold syntax for Markdown
 export const insertNewLineSyntax = (
@@ -119,6 +93,39 @@ export const insertNewLineSyntax = (
     }
   };
 
+// insertBoldSyntax function inserts a bold syntax for Markdown
+export const insertBoldSyntax = (
+  textareaRef: TextAreaRef,
+  editorContent: string,
+  setEditorContent: (content: string) => void,
+  cursorPositionRef: React.MutableRefObject<number>
+  ) => {
+      if (textareaRef.current) {
+          const textarea = textareaRef.current;
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          const selectedText = editorContent.substring(start, end);
+
+          console.log('Textarea:', textarea);
+          console.log('Selection start:', start);
+          console.log('Selection end:', end);
+          console.log('Selected text:', selectedText);
+  
+          let listText = '';      
+          if (selectedText === '') {
+          listText = `**Bold Text**`;
+          } else {
+          listText = `**${selectedText}**`;
+          }
+          const newText =
+          editorContent.substring(0, start) +
+          listText +
+          editorContent.substring(end);
+          setEditorContent(newText);
+          cursorPositionRef.current = start + listText.length;
+      }
+  };
+
 // inserth1Syntax function inserts a h1 syntax for Markdown
 export const inserth1Syntax = (
   textareaRef: TextAreaRef,
@@ -131,6 +138,13 @@ export const inserth1Syntax = (
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const selectedText = editorContent.substring(start, end);
+
+      // Debugging logs
+      console.log('Textarea:', textarea);
+      console.log('Selection start:', start);
+      console.log('Selection end:', end);
+      console.log('Selected text:', selectedText);
+            
     let listText = '';      
     if (selectedText === '') {
       listText = `# Header 1`;
