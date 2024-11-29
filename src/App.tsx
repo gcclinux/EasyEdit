@@ -71,6 +71,19 @@ const App = () => {
   const [ganttModalOpen, setGanttModalOpen] = useState(false);
   const [showHeaderDropdown, setShowHeaderDropdown] = useState(false);
 
+
+  // Selection state fixing the issue with the Headers selection
+  const [selectionStart, setSelectionStart] = useState<number | null>(null);
+  const [selectionEnd, setSelectionEnd] = useState<number | null>(null);
+  const cacheSelection = () => {
+    if (textareaRef.current) {
+      setSelectionStart(textareaRef.current.selectionStart);
+      setSelectionEnd(textareaRef.current.selectionEnd);
+    }
+  };
+
+
+  // Initialize Mermaid diagrams
   const initializeMermaid = useCallback(
     debounce(() => {
       if (previewRef.current) {
@@ -285,35 +298,44 @@ const App = () => {
   //TODO
   // inserth1Syntax function inserts a h1 syntax for Markdown
   const handlerinserth1Syntax = () => {
-    if (textareaRef.current) {
-      textareaRef.current.focus(); // Ensure the textarea is focused
-      inserth1Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
-    }
+      if (selectionStart !== null && selectionEnd !== null) {
+        inserth1Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef, selectionStart, selectionEnd);
+      }
   };
 
   // inserth2Syntax function inserts a h2 syntax for Markdown
   const handlerinserth2Syntax = () => {
-    inserth2Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
+    if (selectionStart !== null && selectionEnd !== null) {
+      inserth2Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef, selectionStart, selectionEnd);
+    }
   };
 
   // inserth3Syntax function inserts a h3 syntax for Markdown
   const handlerinserth3Syntax = () => {
-    inserth3Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
+    if (selectionStart !== null && selectionEnd !== null) {
+      inserth3Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef, selectionStart, selectionEnd);
+    }
   };
 
   // inserth4Syntax function inserts a h4 syntax for Markdown
   const handlerinserth4Syntax = () => {
-    inserth4Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
+    if (selectionStart !== null && selectionEnd !== null) {
+      inserth4Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef, selectionStart, selectionEnd);
+    }
   };
 
   // inserth5Syntax function inserts a h5 syntax for Markdown
   const handlerinserth5Syntax = () => {
-    inserth5Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
+    if (selectionStart !== null && selectionEnd !== null) {
+      inserth5Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef, selectionStart, selectionEnd);
+    }
   };
 
   // inserth6Syntax function inserts a h6 syntax for Markdown
   const handlerinserth6Syntax = () => {
-    inserth6Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
+    if (selectionStart !== null && selectionEnd !== null) {
+      inserth6Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef, selectionStart, selectionEnd);
+    }
   };
 
   // insertRulerSyntax function inserts a ruler syntax for Markdown
@@ -509,6 +531,7 @@ const App = () => {
                 className="button-format"
                 onMouseDown={(e) => {
                   e.preventDefault(); // Prevent default behavior to retain focus
+                  cacheSelection();
                   setShowHeaderDropdown(!showHeaderDropdown);
                 }}
                 title="Header Options"
@@ -624,7 +647,7 @@ const App = () => {
           </button>
           
           &#8741;&nbsp;
-          <button className='button-mermaid' onClick={() => setTableModalOpen(true)} title="Support Creating a Markdown Table">
+          <button className='button-auto' onClick={() => setTableModalOpen(true)} title="Support Creating a Markdown Table">
             Auto Table &#8711;
           </button>
           <TableGenerator
@@ -635,7 +658,7 @@ const App = () => {
               setTableModalOpen(false);
             }}
           />
-          <button className='button-mermaid' onClick={() => setGanttModalOpen(true)} title="Support Creating a Mermaid Gantt Chart">
+          <button className='button-auto' onClick={() => setGanttModalOpen(true)} title="Support Creating a Mermaid Gantt Chart">
             Auto Gantt &#8711;
           </button>
           <GanttGenerator
