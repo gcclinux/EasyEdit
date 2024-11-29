@@ -131,19 +131,14 @@ export const inserth1Syntax = (
   textareaRef: TextAreaRef,
   editorContent: string,
   setEditorContent: (content: string) => void,
-  cursorPositionRef: React.MutableRefObject<number>
+  cursorPositionRef: React.MutableRefObject<number>,  
+  selectionStart: number,
+  selectionEnd: number
   ) => {
   if (textareaRef.current) {
-    const textarea = textareaRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
+    const start = selectionStart;
+    const end = selectionEnd;
     const selectedText = editorContent.substring(start, end);
-
-      // Debugging logs
-      console.log('Textarea:', textarea);
-      console.log('Selection start:', start);
-      console.log('Selection end:', end);
-      console.log('Selected text:', selectedText);
             
     let listText = '';      
     if (selectedText === '') {
@@ -165,12 +160,13 @@ export const inserth1Syntax = (
     textareaRef: TextAreaRef,
     editorContent: string,
     setEditorContent: (content: string) => void,
-    cursorPositionRef: React.MutableRefObject<number>
+    cursorPositionRef: React.MutableRefObject<number>,  
+    selectionStart: number,
+    selectionEnd: number
     ) => {
     if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
+      const start = selectionStart;
+      const end = selectionEnd;
       const selectedText = editorContent.substring(start, end);
       let listText = '';      
       if (selectedText === '') {
@@ -192,12 +188,13 @@ export const inserth1Syntax = (
     textareaRef: TextAreaRef,
     editorContent: string,
     setEditorContent: (content: string) => void,
-    cursorPositionRef: React.MutableRefObject<number>
+    cursorPositionRef: React.MutableRefObject<number>, 
+    selectionStart: number,
+    selectionEnd: number
     ) => {
     if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
+      const start = selectionStart;
+      const end = selectionEnd;
       const selectedText = editorContent.substring(start, end);
       let listText = '';      
       if (selectedText === '') {
@@ -218,12 +215,13 @@ export const inserth4Syntax = (
     textareaRef: TextAreaRef,
     editorContent: string,
     setEditorContent: (content: string) => void,
-    cursorPositionRef: React.MutableRefObject<number>
+    cursorPositionRef: React.MutableRefObject<number>,  
+    selectionStart: number,
+    selectionEnd: number
 ) => {
     if (textareaRef.current) {
-        const textarea = textareaRef.current;
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
+        const start = selectionStart;
+        const end = selectionEnd;
         const selectedText = editorContent.substring(start, end);
         let listText = '';      
         if (selectedText === '') {
@@ -245,12 +243,13 @@ export const inserth5Syntax = (
     textareaRef: TextAreaRef,
     editorContent: string,
     setEditorContent: (content: string) => void,
-    cursorPositionRef: React.MutableRefObject<number>
+    cursorPositionRef: React.MutableRefObject<number>,  
+    selectionStart: number,
+    selectionEnd: number
 ) => {
     if (textareaRef.current) {
-        const textarea = textareaRef.current;
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
+        const start = selectionStart;
+        const end = selectionEnd;
         const selectedText = editorContent.substring(start, end);
         let listText = '';      
         if (selectedText === '') {
@@ -272,12 +271,13 @@ export const inserth6Syntax = (
     textareaRef: TextAreaRef,
     editorContent: string,
     setEditorContent: (content: string) => void,
-    cursorPositionRef: React.MutableRefObject<number>
+    cursorPositionRef: React.MutableRefObject<number>,  
+    selectionStart: number,
+    selectionEnd: number
 ) => {
     if (textareaRef.current) {
-        const textarea = textareaRef.current;
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
+        const start = selectionStart;
+        const end = selectionEnd;
         const selectedText = editorContent.substring(start, end);
         let listText = '';      
         if (selectedText === '') {
