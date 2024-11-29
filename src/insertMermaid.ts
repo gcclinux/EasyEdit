@@ -7,7 +7,8 @@ interface TextAreaRef {
 export const insertClassSyntax = (
   textareaRef: TextAreaRef,
   editorContent: string,
-  setEditorContent: (content: string) => void
+  setEditorContent: (content: string) => void,
+  cursorPositionRef: React.MutableRefObject<number>
 ) => {
   if (textareaRef.current) {
     const textarea = textareaRef.current;
@@ -41,11 +42,7 @@ export const insertClassSyntax = (
       checkText +
       editorContent.substring(end);
     setEditorContent(newText);
-    setTimeout(() => {
-      const newCursorPosition = start + checkText.length;
-      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-      textarea.focus();
-    }, 0);
+    cursorPositionRef.current = start + checkText.length;
   }
 };
 
@@ -53,7 +50,8 @@ export const insertClassSyntax = (
 export const insertGanttSyntax = (
   textareaRef: TextAreaRef,
   editorContent: string,
-  setEditorContent: (content: string) => void
+  setEditorContent: (content: string) => void,
+  cursorPositionRef: React.MutableRefObject<number>
 ) => {
   if (textareaRef.current) {
     const textarea = textareaRef.current;
@@ -75,11 +73,7 @@ export const insertGanttSyntax = (
       checkText +
       editorContent.substring(end);
     setEditorContent(newText);
-    setTimeout(() => {
-      const newCursorPosition = start + checkText.length;
-      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-      textarea.focus();
-    }, 0);
+    cursorPositionRef.current = start + checkText.length;
   }
 };
 
@@ -87,7 +81,8 @@ export const insertGanttSyntax = (
 export const insertGraphTDSyntax = (
   textareaRef: TextAreaRef,
   editorContent: string,
-  setEditorContent: (content: string) => void
+  setEditorContent: (content: string) => void,
+  cursorPositionRef: React.MutableRefObject<number>
 ) => {
   if (textareaRef.current) {
     const textarea = textareaRef.current;
@@ -129,11 +124,7 @@ graph TD
       checkText +
       editorContent.substring(end);
     setEditorContent(newText);
-    setTimeout(() => {
-      const newCursorPosition = start + checkText.length;
-      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-      textarea.focus();
-    }, 0);
+    cursorPositionRef.current = start + checkText.length;
   }
 };
 
@@ -141,7 +132,8 @@ graph TD
 export const insertFlowchartRLSyntax = (
   textareaRef: TextAreaRef,
   editorContent: string,
-  setEditorContent: (content: string) => void
+  setEditorContent: (content: string) => void,
+  cursorPositionRef: React.MutableRefObject<number>
 ) => {
   if (textareaRef.current) {
     const textarea = textareaRef.current;
@@ -171,11 +163,7 @@ flowchart LR
       checkText +
       editorContent.substring(end);
     setEditorContent(newText);
-    setTimeout(() => {
-      const newCursorPosition = start + checkText.length;
-      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-      textarea.focus();
-    }, 0);
+    cursorPositionRef.current = start + checkText.length;
   }
 };
 
@@ -183,7 +171,8 @@ flowchart LR
 export const insertJourneySyntax = (
   textareaRef: TextAreaRef,
   editorContent: string,
-  setEditorContent: (content: string) => void
+  setEditorContent: (content: string) => void,
+  cursorPositionRef: React.MutableRefObject<number>
 ) => {
   if (textareaRef.current) {
     const textarea = textareaRef.current;
@@ -205,11 +194,7 @@ journey
       checkText +
       editorContent.substring(end);
     setEditorContent(newText);
-    setTimeout(() => {
-      const newCursorPosition = start + checkText.length;
-      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-      textarea.focus();
-    }, 0);
+    cursorPositionRef.current = start + checkText.length;
   }
 };
 
@@ -217,7 +202,8 @@ journey
 export const inserterBlockSyntax = (
   textareaRef: TextAreaRef,
   editorContent: string,
-  setEditorContent: (content: string) => void
+  setEditorContent: (content: string) => void,
+  cursorPositionRef: React.MutableRefObject<number>
 ) => {
   if (textareaRef.current) {
     const textarea = textareaRef.current;
@@ -249,11 +235,7 @@ block-beta
       checkText +
       editorContent.substring(end);
     setEditorContent(newText);
-    setTimeout(() => {
-      const newCursorPosition = start + checkText.length;
-      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-      textarea.focus();
-    }, 0);
+    cursorPositionRef.current = start + checkText.length;
   }
 };
 
@@ -261,7 +243,8 @@ block-beta
 export const inserterGitSyntax = (
   textareaRef: TextAreaRef,
   editorContent: string,
-  setEditorContent: (content: string) => void
+  setEditorContent: (content: string) => void,
+  cursorPositionRef: React.MutableRefObject<number>
 ) => {
   if (textareaRef.current) {
     const textarea = textareaRef.current;
@@ -285,11 +268,7 @@ gitGraph
       checkText +
       editorContent.substring(end);
     setEditorContent(newText);
-    setTimeout(() => {
-      const newCursorPosition = start + checkText.length;
-      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-      textarea.focus();
-    }, 0);
+    cursorPositionRef.current = start + checkText.length;
   }
 };
 
@@ -297,7 +276,8 @@ gitGraph
 export const insertererDiagramSyntax = (
   textareaRef: TextAreaRef,
   editorContent: string,
-  setEditorContent: (content: string) => void
+  setEditorContent: (content: string) => void,
+  cursorPositionRef: React.MutableRefObject<number>
 ) => {
   if (textareaRef.current) {
     const textarea = textareaRef.current;
@@ -319,10 +299,43 @@ erDiagram
       checkText +
       editorContent.substring(end);
     setEditorContent(newText);
-    setTimeout(() => {
-      const newCursorPosition = start + checkText.length;
-      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-      textarea.focus();
-    }, 0);
+    cursorPositionRef.current = start + checkText.length;
+  }
+};
+
+// insertTimeLineSyntax Mermaid timeLne Diagram
+export const insertTimeLineSyntax = (
+  textareaRef: TextAreaRef,
+  editorContent: string,
+  setEditorContent: (content: string) => void,
+  cursorPositionRef: React.MutableRefObject<number>
+) => {
+  if (textareaRef.current) {
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const checkText = `\`\`\`mermaid
+%%{int: {'loglevel':'debug','theme':'default', 'themeVariables':{   
+           'cScale0': '#80AAFF',   
+           'cScale1': '#8180FF',   
+           'cScale2': '#AA80FF',   
+           'cScale3': '#DC7DFF'
+}}}%%   
+timeline   
+section Q4 2024   
+    Dec 24 : WPA Doc Conversion to MD: Embed WPA MD Docs: Initiate Quality Assurance: Initiate Risk gov: Stand up Test Env: Specific measures of success   
+section Q1 2025   
+    Jan 25: Prompt Logic: Testing & Verify (Test Env) : Stand up Prod Env : Identify Beta Test Group   
+    Feb 25: Beta Testing (prod Env) : Ratify Benefits: Tuning & SIgn off   
+    Mar 25: Promote to Prod as POV / controlled use : Tuning Optimisation   
+section Q2 2025:   
+    Apr 25: Monitoring : Continual Cross ref testing   
+\`\`\``;
+    const newText =
+      editorContent.substring(0, start) +
+      checkText +
+      editorContent.substring(end);
+    setEditorContent(newText);
+    cursorPositionRef.current = start + checkText.length;
   }
 };
