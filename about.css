@@ -1,0 +1,42 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.popup {
+    width: 550px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #dbd8d8;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.popup h2 {
+    margin-top: 0;
+}
+
+.popup a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.popup a:hover {
+    text-decoration: underline;
+}
+
+#closeBtn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+#closeBtn:hover {
+    background-color: #0056b3;
+}
