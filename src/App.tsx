@@ -107,7 +107,7 @@ const App = () => {
     if (textareaRef.current) {
       textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
       textareaRef.current.focus();
-      console.log('Cursor cursorPositionRef App.tsx insertion:', cursorPositionRef.current);
+      //console.log('Cursor cursorPositionRef App.tsx insertion:', cursorPositionRef.current);
     }
   }, [editorContent]);
 
@@ -282,9 +282,13 @@ const App = () => {
     insertStrikethroughSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
+  //TODO
   // inserth1Syntax function inserts a h1 syntax for Markdown
   const handlerinserth1Syntax = () => {
-    inserth1Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
+    if (textareaRef.current) {
+      textareaRef.current.focus(); // Ensure the textarea is focused
+      inserth1Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
+    }
   };
 
   // inserth2Syntax function inserts a h2 syntax for Markdown
@@ -501,9 +505,12 @@ const App = () => {
             onClick={() => window.location.reload()} title="Refresh"/>
 
             <div className="dropdown-container">
-              <button 
+            <button 
                 className="button-format"
-                onClick={() => setShowHeaderDropdown(!showHeaderDropdown)}
+                onMouseDown={(e) => {
+                  e.preventDefault(); // Prevent default behavior to retain focus
+                  setShowHeaderDropdown(!showHeaderDropdown);
+                }}
                 title="Header Options"
               >
                 Headers
@@ -515,7 +522,8 @@ const App = () => {
                     onClick={() => {
                       handlerinserth1Syntax();
                       setShowHeaderDropdown(false);
-                    }}> Header 1 </button>
+                    }}> Header 1 
+                  </button>
                   <button 
                     className="dropdown-item header2-button" 
                     onClick={() => {
