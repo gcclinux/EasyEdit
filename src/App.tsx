@@ -17,6 +17,7 @@ import {
   insertJourneySyntax,
   inserterBlockSyntax,
   inserterGitSyntax,
+  insertTimeLineSyntax,
   insertererDiagramSyntax
 } from './insertMermaid.ts';
 import { TableGenerator } from './autoGenerator/TableGenerator.tsx';
@@ -373,43 +374,48 @@ const App = () => {
 
   // Insert Mermaid classDiagram Syntax
   const handleInsertClass = () => {
-    insertClassSyntax(textareaRef, editorContent, setEditorContent);
+    insertClassSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // Insert Mermaid GanttDiagram Syntax
   const handleGanttInsert = () => {
-    insertGanttSyntax(textareaRef, editorContent, setEditorContent);
+    insertGanttSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // Insert Mermaid GraphTD Syntax
   const handleGraphTDInsert = () => {
-    insertGraphTDSyntax(textareaRef, editorContent, setEditorContent);
+    insertGraphTDSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // Insert Mermaid FlowchartRL Syntax example
   const handleFlowchartRLInsert = () => {
-    insertFlowchartRLSyntax(textareaRef, editorContent, setEditorContent);
+    insertFlowchartRLSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // Insert Mermaid Journey Syntax
   const handleJourneyInsert = () => {
-    insertJourneySyntax(textareaRef, editorContent, setEditorContent);
+    insertJourneySyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // Insert Mermaid Block example Syntax
   const handleBlockInsert = () => {
-    inserterBlockSyntax(textareaRef, editorContent, setEditorContent);
+    inserterBlockSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // Insert Mermaid GitGraph Syntax
   const handleGitInsert = () => {
-    inserterGitSyntax(textareaRef, editorContent, setEditorContent);
+    inserterGitSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
   // Insert Mermaid erDiagram Syntax
   const handleErDiagramInsert = () => {
-    insertererDiagramSyntax(textareaRef, editorContent, setEditorContent);
+    insertererDiagramSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
+
+  //
+  const handleTimeLineSyntax = () => {
+    insertTimeLineSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
+  }
 
   // inserterPlainFlowSyntax function inserts a plain flow syntax for Mermaid
   const handleInsertPlainFlow = () => {
@@ -605,6 +611,10 @@ const App = () => {
           <button className="button-mermaid" onClick={handleErDiagramInsert} title="Insert Mermaid erDiagram">
             erDiag &#8757;
           </button>
+          <button className="button-mermaid" onClick={handleTimeLineSyntax} title="Markdown pre-defined TimeLine example">
+            TimeLine &#8868;
+          </button>
+          
           &#8741;&nbsp;
           <button className='button-mermaid' onClick={() => setTableModalOpen(true)} title="Support Creating a Markdown Table">
             Auto Table &#8711;
