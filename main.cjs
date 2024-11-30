@@ -43,6 +43,7 @@ async function setupServer(isDev) {
   }
 }
 
+// Create a new BrowserWindow when `app` is ready
 async function createMainWindow() {
   const isDev = (await import('electron-is-dev')).default;
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
@@ -230,12 +231,34 @@ function createMenuTemplate() {
       label: "Help",
       submenu: [
         {
+          label: 'Check for Updates',
+          click: () => {
+            const iconPath = path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
+            const releaseWindow = new BrowserWindow({
+              width: 600,
+              height: 480,
+              modal: true,
+              icon: iconPath,
+              parent: mainWindow,
+              webPreferences: {
+                nodeIntegration: true,
+                contextIsolation: false,
+              },
+            });
+            releaseWindow.setMenuBarVisibility(false);
+            releaseWindow.loadFile(path.join(__dirname, 'release','release.html'));
+          },
+        },
+        { type: "separator" },
+        {
           label: 'About',
           click: () => {
+            const iconPath = path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
             const aboutWindow = new BrowserWindow({
               width: 600,
-              height: 330,
+              height: 525,
               modal: true,
+              icon: iconPath,
               parent: mainWindow,
               webPreferences: {
                 nodeIntegration: true,

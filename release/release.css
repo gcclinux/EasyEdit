@@ -42,3 +42,29 @@ body {
 #closeBtn:hover {
     background-color: #0056b3;
 }
+
+.placeholder {
+    opacity: 0.6;
+    font-style: italic;
+    color: #666;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 0.3; }
+    100% { opacity: 0.6; }
+}
+
+#version-check {
+    min-height: 20px;
+    display: block;
+    transition: opacity 0.3s ease;
+}
+
+#version-check:not(.placeholder) {
+    opacity: 1;
+    font-style: normal;
+    color: inherit;
+    animation: none;
+}
