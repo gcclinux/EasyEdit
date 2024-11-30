@@ -43,6 +43,23 @@ async function setupServer(isDev) {
   }
 }
 
+const openLinkInNewWindow = (url) => {
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  const configPath = path.join(app.getPath('userData'), '.config.json');
+  const newWindow = new BrowserWindow({
+    width: width / 2 + width / 4,
+    height: height / 2 + height / 4,
+    icon: path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png'),
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+  
+  newWindow.setMenuBarVisibility(false);
+  newWindow.loadURL(url);
+};
+
 // Create a new BrowserWindow when `app` is ready
 async function createMainWindow() {
   const isDev = (await import('electron-is-dev')).default;
@@ -224,7 +241,7 @@ function createMenuTemplate() {
             }
           },
         },
-        { role: "toggledevtools" },
+        //{ role: "toggledevtools" },
       ],
     },
     {
@@ -234,7 +251,7 @@ function createMenuTemplate() {
           label: 'Check for Updates',
           click: () => {
             const iconPath = path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
-            const releaseWindow = new BrowserWindow({
+            releaseWindow = new BrowserWindow({
               width: 600,
               height: 480,
               modal: true,
@@ -247,6 +264,15 @@ function createMenuTemplate() {
             });
             releaseWindow.setMenuBarVisibility(false);
             releaseWindow.loadFile(path.join(__dirname, 'release','release.html'));
+            releaseWindow.webContents.on('will-navigate', (event, url) => {
+              event.preventDefault();
+              openLinkInNewWindow(url);
+            });
+            
+            releaseWindow.webContents.setWindowOpenHandler(({ url }) => {
+              openLinkInNewWindow(url);
+              return { action: 'deny' };
+            });
           },
         },
         { type: "separator" },
