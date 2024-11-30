@@ -4,6 +4,6 @@
 3. Working with existing ask before saving & overriding, then update .history.json
 4. Create buttons in pop-up window listing the history with a open button for each file that is listed in .history.json
 5. Currently split screen availble by default need to implement single screen without preview also.
-6. Check for update online and download / install updated version
+6. ~~Check for update online and download / install updated version~~
 7. ~~Custom Mermaid Gantt Diagram the same as Markdown table.~~  
 8. ~~Fix issue custom Gantt creation needs to prompt if no date selected for task before creating diagram.~~
