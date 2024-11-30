@@ -8,7 +8,7 @@ var version = "1.2.5";
 document.getElementById('version').textContent = version;
 
 // Fetch the remote version from version.json
-fetch('https://raw.githubusercontent.com/gcclinux/EasyEdit/main/release/version.json')
+fetch('https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/release/version.json')
 .then(response => {
     if (!response.ok) {
         throw new Error('Network response was not ok ' + response.statusText);
