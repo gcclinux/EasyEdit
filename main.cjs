@@ -243,7 +243,7 @@ function createMenuTemplate() {
               },
             });
             aboutWindow.setMenuBarVisibility(false);
-            aboutWindow.loadFile(path.join(__dirname, 'about.html'));
+            aboutWindow.loadFile(path.join(__dirname, 'about','about.html'));
           },
         },
       ],

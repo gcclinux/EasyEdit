@@ -15,6 +15,7 @@
     "files": [
       "dist/**/*",
       "src/*",
+      "about/*",
       "src/assets/*",
       "public/*",
       "screenshots/*",
