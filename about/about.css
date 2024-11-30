@@ -7,6 +7,8 @@ body {
     border-radius: 100px;
     width: 550px;
     padding: 5px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     border: 1px solid #ccc;
     background-color: #dbd8d8;
     position: fixed;

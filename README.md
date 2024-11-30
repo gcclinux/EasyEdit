@@ -2,6 +2,8 @@
 
 EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and preview it in real-time. You can save, load .md files and export to HTML,TXT & PDF. All notable changes to this project will be documented in this file.
 
+*EasyEdit is a free and open-source project. You can use it for free and modify it as you like.*
+
 ## Latest Example implementing custom tables...
 
 <a><img src="screenshots/sample006.png" alt="Example" width="500" height="300"> <img src="screenshots/sample007.png" alt="Example" width="500" height="300"></a>

@@ -1,14 +1,23 @@
 // Author: Ricardo Wagemaker
+
+const path = require('path');
+const fs = require('fs');
+
+// fucntion to close the window
 document.getElementById('closeBtn').addEventListener('click', function() {
     window.close();
 });
 
 // Set version number
-var version = "1.2.5";
+const packageJsonPath = path.join(__dirname, '../package.json');
+const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+
+// Retrieve the version from package.json
+var version = packageJson.version;
 document.getElementById('version').textContent = version;
 
 // Fetch the remote version from version.json
-fetch('https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/release/version.json')
+fetch('https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/release/latest.json')
 .then(response => {
     if (!response.ok) {
         throw new Error('Network response was not ok ' + response.statusText);
@@ -17,8 +26,6 @@ fetch('https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/relea
 })
 .then(data => {
     var remoteVersion = data.version;
-    console.log('Current version:', version);
-    console.log('Remote version:', remoteVersion);
     document.getElementById('remoteVersion').textContent = remoteVersion;
 })
 .catch(error => console.error('Error fetching version:', error));
