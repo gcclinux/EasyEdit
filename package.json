@@ -34,7 +34,20 @@
       "output": "dist"
     },
     "win": {
-      "target": "nsis",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
       "icon": "public/icon.ico",
       "fileAssociations": [
         {
@@ -54,7 +67,25 @@
     "linux": {
       "target": [
         {
+          "target": "snap",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
           "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
           "arch": [
             "x64"
           ]
@@ -71,7 +102,7 @@
         "Type": "Application",
         "Categories": "Development;TextEditor;Utility"
       },
-      "artifactName": "EasyEdit-${version}-${arch}.AppImage",
+      "artifactName": "EasyEdit-${version}-${arch}.${ext}",
       "fileAssociations": [
         {
           "ext": "txt",
