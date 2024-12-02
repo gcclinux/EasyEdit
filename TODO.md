@@ -7,3 +7,4 @@
 6. ~~Check for update online and download / install updated version~~
 7. ~~Custom Mermaid Gantt Diagram the same as Markdown table.~~  
 8. ~~Fix issue custom Gantt creation needs to prompt if no date selected for task before creating diagram.~~
+9. ~~Implement ability to lod the app inside a browser raher than standalone app~~
