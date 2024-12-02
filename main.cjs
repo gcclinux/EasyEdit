@@ -92,6 +92,14 @@ async function createMainWindow() {
   try {
     const serverUrl = await setupServer(isDev);
     mainWindow = new BrowserWindow(windowOptions);
+
+  // Inject custom CSS to hide the scrollbar and disable scrolling
+    mainWindow.webContents.on('did-finish-load', () => {
+      mainWindow.webContents.insertCSS(`
+        body::-webkit-scrollbar { display: none; }
+        body { overflow: hidden; }
+      `);
+    });
     await mainWindow.loadURL(serverUrl);
 
     // Handle command line file opening after window loads
