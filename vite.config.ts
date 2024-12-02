@@ -16,9 +16,9 @@ export default defineConfig({
     host: true,
     ...(useHttps ? {
       https: {
-        key: fs.readFileSync(path.resolve('/server/certbot/shared/wagemaker.uk/privkey.pem')),
-        cert: fs.readFileSync(path.resolve('/server/certbot/shared/wagemaker.uk/cert.pem')),
-        ca: fs.readFileSync(path.resolve('/server/certbot/shared/wagemaker.uk/chain.pem')),
+        key: fs.readFileSync(path.resolve('/certbot/domain/privkey.pem')),
+        cert: fs.readFileSync(path.resolve('/certbot/domain/cert.pem')),
+        ca: fs.readFileSync(path.resolve('/certbot/domain/chain.pem')),
       }
     } : {})
   },
