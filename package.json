@@ -5,10 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "cross-env VITE_APP_ENV=http vite --port 3024 --host",
-    "dev": "export USE_HTTPS=false && vite --port 3024",
-    "prd": "export USE_HTTPS=true && vite --port 3024 --host",
+    "prd": "cross-env VITE_APP_ENV=http && export USE_HTTPS=true && vite --port 3024 --host",
     "start": "concurrently \"cross-env VITE_APP_ENV=electron vite --host\" \"wait-on http://localhost:3000 && electron .\"",
-    "build": "vite build",
     "electron:build": "npm run build && electron-builder"
   },
   "main": "main.cjs",
