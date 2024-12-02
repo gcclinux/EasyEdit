@@ -16,9 +16,9 @@ export default defineConfig({
     host: true,
     ...(useHttps ? {
       https: {
-        key: fs.readFileSync(path.resolve(__dirname, '/certbot/domain/privkey.pem')),
-        cert: fs.readFileSync(path.resolve(__dirname, '/certbot/domain/cert.pem')),
-        ca: fs.readFileSync(path.resolve(__dirname, '/certbot/domain/chain.pem')),
+        key: fs.readFileSync(path.resolve('/certbot/domain/privkey.pem')),
+        cert: fs.readFileSync(path.resolve('/certbot/domain/cert.pem')),
+        ca: fs.readFileSync(path.resolve('/certbot/domain/chain.pem')),
       }
     } : {})
   },
