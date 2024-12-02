@@ -8,14 +8,19 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
 - 1.3.1 - Minor cosmetic improvements and Implementation standalove option
 
 ## Latest BUILD version
-- ### Build 1.3.0 - Linux (AppImage)
+- ### Build 1.3.0 - Linux
 - - EasyEdit-1.3.0-x86_64.AppImage
 - - EasyEdit-1.3.0-arm64.AppImage
 - - EasyEdit-1.3.0-armv7l.AppImage
-- ### Build 1.3.0 - Windows (exe)
-- - EasyEdit.Setup.1.3.0.exe
+- - EasyEdit-1.3.0-amd64.snap
+- - EasyEdit-1.3.0-amd64.deb
+- ### Build 1.3.1 - Windows (exe)
+- - EasyEdit.Setup.1.3.1.exe
 - ### Build 1.3.0 - MacOS (dmg)
 - - EasyEdit-1.3.0-arm64.dmg
+- ### Build 1.3.0 - (Experimental)
+- - EasyEdit-1.3.0-x64-linux.zip
+- - EasyEdit-1.3.0-win.zip
 
 ## Version changes
 - 1.3.1 - Minor cosmetic improvements and Implementation standalove option
