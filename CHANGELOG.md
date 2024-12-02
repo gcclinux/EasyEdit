@@ -5,7 +5,7 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
 *EasyEdit is a free and open-source project. You can use it for free and modify it as you like.*
 
 ## Latest CODE version
-- 1.3.0 - Implementation version check and improved About 
+- 1.3.1 - Minor cosmetic improvements and Implementation standalove option
 
 ## Latest BUILD version
 - ### Build 1.3.0 - Linux (AppImage)
@@ -18,6 +18,7 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
 - - EasyEdit-1.3.0-arm64.dmg
 
 ## Version changes
+- 1.3.1 - Minor cosmetic improvements and Implementation standalove option
 - 1.3.0 - Implementation version check and improved About
 - 1.2.5 - Implementation new Headers & Code cleanup
 - 1.2.4 - Implementation auto Gantt graph generator
