@@ -20,15 +20,24 @@ $ npm install
 ```
 
 
-## Run the project
+## Run the Standalone Project
 ```
 $ npm start
+```
+
+## Run Project for localhost OR hosting https
+```
+$ npm run local
+OR
+$ npm run prd
 ```
 
 ## Build as an standalone App (Windows & Linux)
 ```
 $ npm run electron:build
 ```
+
+
 
 ## Mermeid example
 
