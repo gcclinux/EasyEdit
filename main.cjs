@@ -290,7 +290,7 @@ function createMenuTemplate() {
             const iconPath = path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
             const aboutWindow = new BrowserWindow({
               width: 600,
-              height: 525,
+              height: 550,
               modal: true,
               icon: iconPath,
               parent: mainWindow,
