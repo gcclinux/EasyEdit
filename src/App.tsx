@@ -6,8 +6,6 @@ import rehypeRaw from 'rehype-raw';
 import debounce from 'lodash.debounce';
 import './App.css';
 import markdownMarkWhite from './assets/md.svg';
-import { IpcRendererEvent } from 'electron';
-const { ipcRenderer } = window.require('electron');
 import { saveAsPDF } from './saveAsPDF.tsx';
 import {
   insertClassSyntax,
@@ -105,22 +103,34 @@ const App = () => {
     setEditorContent(e.target.value);
   };
 
+  // File opened event listener for electron main window in renderer
   useEffect(() => {
-    ipcRenderer.on('file-opened', (_event: IpcRendererEvent, content: string) => {
-      setEditorContent(content);
-    });
-
-    // Cleanup listener
-    return () => {
-      ipcRenderer.removeAllListeners('file-opened');
+    window.electron.debugLog('Setting up file handler');
+    
+    const fileOpenedHandler = (_event: any, content: string) => {
+      window.electron.debugLog('Received file content in renderer');
+      try {
+        setEditorContent(content);
+        window.electron.debugLog('Editor content updated');
+      } catch (err) {
+        if (err instanceof Error) {
+          console.error('Failed to update editor:', err);
+          window.electron.debugLog(`Error: ${err.message}`);
+        } else {
+          console.error('Failed to update editor with unknown error:', err);
+          window.electron.debugLog('Unknown error occurred');
+        }
+      }
     };
+  
+    const cleanup = window.electron.onFileOpened(fileOpenedHandler);
+    return cleanup;
   }, []);
 
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
       textareaRef.current.focus();
-      //console.log('Cursor cursorPositionRef App.tsx insertion:', cursorPositionRef.current);
     }
   }, [editorContent]);
 

@@ -23,6 +23,7 @@
       "public/*",
       "screenshots/*",
       "index.html",
+      "preload.cjs",
       "LICENSE",
       "package.json",
       "tsconfig.app.json",
@@ -37,12 +38,6 @@
     },
     "win": {
       "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        },
         {
           "target": "zip",
           "arch": [
