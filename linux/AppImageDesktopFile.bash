@@ -1,50 +1,33 @@
 #!/usr/bin/env bash
 
-# Prompt for installation directory
-read -p "Enter installation folder (relative to ${HOME}/): " INSTALL_DIR
-FULL_PATH="${HOME}/${INSTALL_DIR}"
+FULL_PATH="$(pwd)"
 
-# Check and create installation directory if needed
-if [ -d "${FULL_PATH}" ]; then
-    echo "Installation directory already exists: ${FULL_PATH}"
-else
-    echo "Creating installation directory: ${FULL_PATH}"
-    mkdir -p "${FULL_PATH}"
+# New output and user prompt
+echo "You are about to create AppImage Desktop file in the current directory ${FULL_PATH}"
+echo "Do you want to continue? (YES|yes or NO|no)"
+
+read user_input
+
+if [[ "$user_input" == "NO" || "$user_input" == "no" ]]; then
+    echo "Move the script to the currect folder where your AppImage is located and start Again"
+    exit
 fi
 
-# Check if AppImage exists and set appropriate message
-if [ -f "${FULL_PATH}/EasyEdit-arm64.AppImage" ]; then
-    echo "Upgrading EasyEdit..."
-    
-    # Remove old .pre if exists
-    if [ -f "${FULL_PATH}/EasyEdit-arm64.AppImage.pre" ]; then
-        rm -f "${FULL_PATH}/EasyEdit-arm64.AppImage.pre"
-    fi
-    
-    # Backup current version
-    mv "${FULL_PATH}/EasyEdit-arm64.AppImage" "${FULL_PATH}/EasyEdit-arm64.AppImage.pre"
-else
-    echo "Downloading EasyEdit..."
-fi
-
-# Download AppImage
-if ! wget -P "${FULL_PATH}" https://github.com/gcclinux/EasyEdit/releases/download/latest/EasyEdit-arm64.AppImage; then
-    echo "Error: Failed to download EasyEdit AppImage"
-    exit 1
-fi
+# Enter the name of the AppImage file
+read -p "Enter the name of the AppImage NEW file: " IMAGE_NAME_NEW
 
 # Verify downloaded file
-if [ ! -s "${FULL_PATH}/EasyEdit-arm64.AppImage" ]; then
-    echo "Error: Downloaded AppImage is empty or missing"
-    rm -f "${FULL_PATH}/EasyEdit-arm64.AppImage"
+if [ ! -s "${FULL_PATH}/${IMAGE_NAME_NEW}" ]; then
+    echo "Error: AppImage is empty, missing or incorrect name"
     exit 1
+else
+    echo "AppImage file found: ${FULL_PATH}/${IMAGE_NAME_NEW}"
+    chmod +x "${FULL_PATH}/${IMAGE_NAME_NEW}"
 fi
-chmod +x "${FULL_PATH}/EasyEdit-arm64.AppImage"
+
 
 # Download icon if not exists
-if [ -f "${FULL_PATH}/icon.png" ]; then
-    echo "Icon already exists, skipping download"
-else
+if [ ! -f "${FULL_PATH}/icon.png" ]; then
     echo "Downloading icon..."
     if ! wget -P "${FULL_PATH}" https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/icon.png; then
         echo "Error: Failed to download icon"
@@ -66,7 +49,7 @@ Version=1.0
 Type=Application
 Name=EasyEdit
 Comment=Text Editor Application
-Exec=${FULL_PATH}/EasyEdit-arm64.AppImage
+Exec=${FULL_PATH}/${IMAGE_NAME_NEW}
 Icon=${FULL_PATH}/icon.png
 Terminal=false
 Categories=TextEditor;Utility;

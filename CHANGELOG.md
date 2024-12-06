@@ -1,23 +1,17 @@
 # Changelog
 
+![EasyEdit](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png)
+
 EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and preview it in real-time. You can save, load .md files and export to HTML,TXT & PDF. All notable changes to this project will be documented in this file.
 
 *EasyEdit is a free and open-source project. You can use it for free and modify it as you like.*
 
 ## Latest CODE version
-- 1.3.0 - Implementation version check and improved About 
-
-## Latest BUILD version
-- ### Build 1.3.0 - Linux (AppImage)
-- - EasyEdit-1.3.0-x86_64.AppImage
-- - EasyEdit-1.3.0-arm64.AppImage
-- - EasyEdit-1.3.0-armv7l.AppImage
-- ### Build 1.3.0 - Windows (exe)
-- - EasyEdit.Setup.1.3.0.exe
-- ### Build 1.3.0 - MacOS (dmg)
-- - EasyEdit-1.3.0-arm64.dmg
+- 1.3.2 - Removed web-host for now until BUG #4 is fixed
 
 ## Version changes
+- 1.3.2 - Removed web-host for now until BUG #4 is fixed
+- 1.3.1 - Minor cosmetic improvements and Implementation standalove option
 - 1.3.0 - Implementation version check and improved About
 - 1.2.5 - Implementation new Headers & Code cleanup
 - 1.2.4 - Implementation auto Gantt graph generator
