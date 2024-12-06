@@ -1,18 +1,12 @@
 const fs = require('fs');
 const fsPromises = fs.promises;
-const { app, BrowserWindow, screen, Menu, dialog } = require('electron');
+const { app, BrowserWindow, screen, Menu, dialog, ipcMain } = require('electron');
 const path = require('path');
 const express = require('express');
 const detect = require('detect-port');
 const defaultPort = 3000;
 const viteDevPort = defaultPort; // Using same port for consistency
 const { shell } = require('electron');
-
-// Add IPC handler for debugging
-const { ipcMain } = require('electron');
-ipcMain.on('debug-channel', (event, message) => {
-  console.log('[Main Debug]:', message);
-});
 
 // Disable hardware acceleration
 app.disableHardwareAcceleration();
@@ -26,65 +20,30 @@ function saveWindowBounds(window) {
   fs.writeFileSync(configPath, JSON.stringify(bounds, null, 2));
 }
 
-// async function setupServer(isDev) {
-//   if (isDev) {
-//     console.log('[Main] Dev mode: Using Vite server');
-//     return `http://localhost:${viteDevPort}`; // Using defaultPort for Vite
-//   } else {
-//     console.log('[Main] Prod mode: Loading local files');
-//     const availablePort = await detect(defaultPort);
-//     const app = express();
-
-//     // Serve static files from dist
-//     app.use(express.static(path.join(__dirname, 'dist')));
-
-//     // Handle SPA routing
-//     app.get('*', (req, res) => {
-//       res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-//     });
-
-//     // Start server
-//     server = app.listen(availablePort);
-//     return `http://localhost:${availablePort}`;
-//   }
-// }
-
 async function setupServer(isDev) {
   if (isDev) {
-    console.log('[Main] Dev mode: Using Vite server');
-    return `http://localhost:${viteDevPort}`;
+    return `http://localhost:${viteDevPort}`; // Using defaultPort for Vite
   } else {
-    console.log('[Main] Prod mode: Starting Express server');
     const availablePort = await detect(defaultPort);
-    const expressApp = express();
+    const app = express();
 
     // Serve static files from dist
-    const distPath = path.join(__dirname, isDev ? '' : 'dist');
-    console.log('[Main] Serving static files from:', distPath);
-    expressApp.use(express.static(distPath));
+    app.use(express.static(path.join(__dirname, 'dist')));
 
     // Handle SPA routing
-    expressApp.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     });
 
-    // Start server with error handling
-    return new Promise((resolve, reject) => {
-      server = expressApp.listen(availablePort, (err) => {
-        if (err) {
-          console.error('[Main] Server failed to start:', err);
-          reject(err);
-          return;
-        }
-        console.log(`[Main] Server started on port ${availablePort}`);
-        resolve(`http://localhost:${availablePort}`);
-      });
-    });
+    // Start server
+    server = app.listen(availablePort);
+    return `http://localhost:${availablePort}`;
   }
 }
 
 const openLinkInNewWindow = (url) => {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  const configPath = path.join(app.getPath('userData'), '.config.json');
   const newWindow = new BrowserWindow({
     width: width / 2 + width / 4,
     height: height / 2 + height / 4,
@@ -105,30 +64,28 @@ async function createMainWindow() {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   const iconPath = path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
   const configPath = path.join(app.getPath('userData'), '.config.json');
-  const preLoader = path.join(__dirname, 'preload.cjs');
 
   let windowOptions = {
     width: width,
     height: height,
     icon: iconPath,
     webPreferences: {
-      preload: preLoader,
-      contextIsolation: true,    
-      nodeIntegration: false
+      nodeIntegration: true,
+      contextIsolation: false
     }
   };
 
-  // Check if config file exists and read bounds
-  if (fs.existsSync(configPath)) {
-    try {
-      const bounds = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-      if (bounds && bounds.width && bounds.height && bounds.x !== undefined && bounds.y !== undefined) {
-        windowOptions = { ...windowOptions, ...bounds };
+    // Check if config file exists and read bounds
+    if (fs.existsSync(configPath)) {
+      try {
+        const bounds = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+        if (bounds && bounds.width && bounds.height && bounds.x !== undefined && bounds.y !== undefined) {
+          windowOptions = { ...windowOptions, ...bounds };
+        }
+      } catch (error) {
+        console.error('Error reading config file:', error);
       }
-    } catch (error) {
-      console.error('Error reading config file:', error);
     }
-  }
 
   try {
     const serverUrl = await setupServer(isDev);
@@ -166,8 +123,66 @@ async function createMainWindow() {
   return mainWindow;
 }
 
-function createMenuTemplate() {
+async function handleFileOpen(filePath) {
+  try {
+    // First check if path exists and is not a directory
+    const stats = fs.statSync(filePath);
+    if (stats.isDirectory()) {
+      //console.log('Path is a directory, skipping:', filePath);
+      return;
+    }
 
+    const content = await fsPromises.readFile(filePath, 'utf-8');
+    //console.log('File content loaded successfully');
+
+    return new Promise((resolve) => {
+      if (mainWindow.webContents.isLoading()) {
+        mainWindow.webContents.once('did-finish-load', () => {
+          mainWindow.webContents.send('file-opened', content);
+          resolve();
+        });
+      } else {
+        mainWindow.webContents.send('file-opened', content);
+        resolve();
+      }
+    });
+  } catch (err) {
+    if (err.code === 'EISDIR') {
+      console.log('Skipping directory:', filePath);
+    } else if (err.code === 'ENOENT') {
+      console.error('File not found:', filePath);
+    } else {
+      console.error('Error reading file:', err);
+    }
+  }
+}
+
+function setupIPCHandlers() {
+  ipcMain.handle('dialog:openFile', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openFile'],
+      filters: [
+        { name: 'Text Files', extensions: ['txt', 'md'] },
+        { name: 'All Files', extensions: ['*'] }
+      ]
+    });
+
+    if (!canceled) {
+      return await handleFileOpen(filePaths[0]);
+    }
+  });
+
+  ipcMain.handle('dialog:saveFile', async (event, content) => {
+    const { canceled, filePath } = await dialog.showSaveDialog(mainWindow);
+
+    if (!canceled) {
+      await fsPromises.writeFile(filePath, content);
+      return filePath;
+    }
+  });
+}
+
+function createMenuTemplate() {
   const menuTemplate = [
     {
       label: "File",
@@ -176,32 +191,20 @@ function createMenuTemplate() {
           label: "Open File",
           accelerator: "CmdOrCtrl+O",
           click: async () => {
-            console.log('[Main] Open File clicked');
             const result = await dialog.showOpenDialog({
               properties: ['openFile']
             });
-            
             if (!result.canceled) {
               try {
                 const filePath = result.filePaths[0];
-                console.log('[Main] Reading file:', filePath);
                 const content = await fsPromises.readFile(filePath, 'utf-8');
-                console.log('[Main] File loaded, length:', content.length);
-                
-                if (!mainWindow) {
-                  console.error('[Main] mainWindow is null!');
-                  return;
-                }
-    
                 mainWindow.webContents.send('file-opened', content);
-                console.log('[Main] Sent file-opened event');
               } catch (err) {
-                console.error('[Main] Error reading file:', err);
+                console.error('Error reading file:', err);
               }
             }
           }
         },
-        { type: 'separator' },
         { role: "reload" },
         {
           label: "Exit",
@@ -244,7 +247,7 @@ function createMenuTemplate() {
             }
           },
         },
-        { role: "toggledevtools" },
+        //{ role: "toggledevtools" },
       ],
     },
     {
@@ -310,9 +313,27 @@ function setupMenu() {
   Menu.setApplicationMenu(menu);
 }
 
+// App lifecycle management
 app.whenReady().then(async () => {
   await createMainWindow();
   setupMenu();
+  setupIPCHandlers();
+
+  // Handle command line file opening
+  if (process.argv.length > 1) {
+    const filePath = path.isAbsolute(process.argv[process.argv.length - 1])
+      ? process.argv[process.argv.length - 1]
+      : path.resolve(process.cwd(), process.argv[process.argv.length - 1]);
+
+    //console.log('Attempting to open:', filePath);
+    await handleFileOpen(filePath);
+  }
+
+  app.on('activate', async () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      await createMainWindow();
+    }
+  });
 });
 
 app.on('window-all-closed', () => {
@@ -321,13 +342,6 @@ app.on('window-all-closed', () => {
   }
   if (process.platform !== 'darwin') {
     app.quit();
-  }
-});
-
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    mainWindow = createMainWindow();
-    setupMenu();
   }
 });
 
