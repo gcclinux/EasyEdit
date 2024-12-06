@@ -1,12 +1,10 @@
 {
   "name": "easyedit",
   "description": "EasyEdit - A simple Markdown editor",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "type": "module",
   "scripts": {
-    "local": "cross-env VITE_APP_ENV=http vite --port 3024 --host",
-    "prd": "cross-env VITE_APP_ENV=http USE_HTTPS=true vite --port 3024 --host",
-    "start": "concurrently \"cross-env VITE_APP_ENV=electron vite --host\" \"wait-on http://localhost:3000 && electron .\"",
+    "start": "concurrently \"vite --host\" \"wait-on http://localhost:3000 && electron .\"",
     "build": "vite build",
     "electron:build": "npm run build && electron-builder"
   },
@@ -23,7 +21,6 @@
       "public/*",
       "screenshots/*",
       "index.html",
-      "preload.cjs",
       "LICENSE",
       "package.json",
       "tsconfig.app.json",
@@ -38,6 +35,12 @@
     },
     "win": {
       "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
         {
           "target": "zip",
           "arch": [
@@ -182,7 +185,6 @@
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "concurrently": "^9.1.0",
-    "cross-env": "^7.0.3",
     "electron": "^33.2.0",
     "electron-builder": "^25.1.8",
     "eslint": "^9.13.0",
