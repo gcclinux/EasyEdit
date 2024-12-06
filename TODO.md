@@ -1,3 +1,7 @@
+## EasyEdit
+
+![EasyEdit](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png)
+
 1. ~~When closing the application store current windows size & location into .config.json (DONE)~~
 2. ~~When launching application check if windows size & location exists to open in the same place & size (DONE)~~
 3. Store file name, path, date, time, action (open,closed,saved) in .history.json everytime
@@ -7,3 +11,4 @@
 6. ~~Check for update online and download / install updated version~~
 7. ~~Custom Mermaid Gantt Diagram the same as Markdown table.~~  
 8. ~~Fix issue custom Gantt creation needs to prompt if no date selected for task before creating diagram.~~
+9. ~~Implement ability to lod the app inside a browser raher than standalone app~~
