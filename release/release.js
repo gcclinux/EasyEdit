@@ -56,7 +56,7 @@ function checkVersion() {
 
     if (compareVersions(remoteVersion, version) > 0) {
         versionCheck.classList.remove('placeholder');
-        versionCheck.innerHTML = 'New version available <a href="https://github.com/gcclinux/EasyEdit/releases/tag/latest">here</a>';
+        versionCheck.innerHTML = 'New version available <a href="https://github.com/gcclinux/EasyEdit/releases">here</a>';
     } else {
         versionCheck.classList.remove('placeholder');
         versionCheck.textContent = 'You are using the latest version of EasyEdit.';
