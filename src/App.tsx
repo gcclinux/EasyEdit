@@ -120,7 +120,6 @@ const App = () => {
     if (textareaRef.current) {
       textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
       textareaRef.current.focus();
-      //console.log('Cursor cursorPositionRef App.tsx insertion:', cursorPositionRef.current);
     }
   }, [editorContent]);
 
@@ -236,16 +235,33 @@ const App = () => {
           components={{
             code({ className, children, ...props }) {
               const match = /language-mermaid/.test(className || "");
-              return match ? (
-                <div className="mermaid">
-                  {String(children).replace(/\n$/, "")}
-                </div>
-              ) : (
-                <code className={className} {...props}>
+              if (match) {
+                return (
+                  <div className="mermaid">
+                    {String(children).replace(/\n$/, "")}
+                  </div>
+                );
+              }
+          
+              // Check if it's an inline code (no language class means inline)
+              const isInline = !className;
+              
+              return (
+                <code 
+                  className={`${isInline ? 'inline-code' : 'code-block'} ${className || ''}`} 
+                  {...props}
+                >
                   {children}
                 </code>
               );
             },
+            pre({ children }) {
+              return (
+                <pre className="code-block-container">
+                  {children}
+                </pre>
+              );
+            }
           }}
         >
           {editorContent}
