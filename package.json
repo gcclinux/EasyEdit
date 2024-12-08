@@ -71,11 +71,17 @@
       "legalTrademarks": "EasyEdit"
     },
     "linux": {
+      "extraResources": [
+        {
+          "from": "build/linux/metainfo/easyedit.appdata.xml",
+          "to": "usr/share/metainfo/easyedit.appdata.xml"
+        }
+      ],
       "target": [
         {
           "target": "snap",
           "arch": [
-            "x64",
+            "x64"
             "arm64",
             "armv7l"
           ]
@@ -92,7 +98,8 @@
           "target": "deb",
           "arch": [
             "x64",
-            "arm64"
+            "arm64",
+            "armv7l"
           ]
         },
         {
