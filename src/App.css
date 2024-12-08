@@ -18,6 +18,32 @@ html,
   width: 100%;
 }
 
+.code-block-container {
+  background-color: #e3e3e3;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin: 4px 0;
+  white-space: pre-wrap; /* Only preserve whitespace in code blocks */
+  word-break: break-word;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.inline-code {
+  background-color: #e3e3e3;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: monospace;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 4px 0;
+}
+
+.code-block {
+  font-family: monospace;
+}
+
 /* Textarea Parallel */
 .textarea-parallel {
   border: 1px solid #ccc;
@@ -39,13 +65,15 @@ html,
   text-align: left;
   font-family: Arial, sans-serif;
   font-size: 16px;
-  overflow: auto; /* Enable scrolling */
+  overflow-y: auto;    /* Vertical scrolling */
+  overflow-x: hidden;  /* Hide horizontal scrollbar */
   box-sizing: border-box;
+  word-break: break-word; /* Better handling of long words */
+  max-width: 100%;     /* Ensure content stays within container */
 }
 
 .textarea-parallel,
 .preview-parallel {
-  overflow: auto;
   width: 49%;
   margin: 0;
   box-sizing: border-box;
