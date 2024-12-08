@@ -21,7 +21,6 @@ $ cd EasyEdit
 $ npm install
 ```
 
-
 ## Run the Standalone Project
 ```
 $ npm start
@@ -38,8 +37,6 @@ $ npm run prd
 ```
 $ npm run electron:build
 ```
-
-
 
 ## Mermeid example
 

@@ -7,9 +7,10 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
 *EasyEdit is a free and open-source project. You can use it for free and modify it as you like.*
 
 ## Latest CODE version
-- 1.3.2 - Removed web-host for now until BUG #4 is fixed
+- 1.3.4 - Feature implemented Toggle Edit AND Toggle Preview full screen
 
 ## Version changes
+- 1.3.3 - Cosmetic added inline-code and block-code grey background as code
 - 1.3.2 - Removed web-host for now until BUG #4 is fixed
 - 1.3.1 - Minor cosmetic improvements and Implementation standalove option
 - 1.3.0 - Implementation version check and improved About
