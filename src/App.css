@@ -44,6 +44,90 @@ html,
   font-family: monospace;
 }
 
+.textarea-horizontal-full {
+  /* Base textarea styles */
+  width: 98%;
+  padding: 10px;
+  margin: 1px 0;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: black;
+  color: white;
+  resize: block;
+  flex-grow: 1;
+  height: 75vh;
+  overflow: auto;
+  box-sizing: border-box;
+  font-family: monospace;
+  
+  /* Container styles */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /* Table styles */
+  & table {
+    width: 95%;
+    margin: 10px 0;
+    border-collapse: collapse;
+  }
+
+  & th,
+  & td {
+    border: 1px solid #000;
+    padding: 8px;
+    text-align: left;
+  }
+
+  & th {
+    background-color: #f2f2f2;
+  }
+}
+
+/* Full preview */
+.preview-horizontal-full {
+  /* Base preview styles */
+  width: 98%;
+  border: 1px solid #000000;
+  padding: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+  text-align: left;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
+  flex-grow: 1;
+  height: 75vh;
+  overflow: auto;
+  box-sizing: border-box;
+
+  /* Container styles */
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+
+  /* Table styles */
+  & table {
+    width: 95%;
+    margin: 10px 0;
+    border-collapse: collapse;
+  }
+
+  & th,
+  & td {
+    border: 1px solid #000;
+    padding: 8px;
+    text-align: left;
+  }
+
+  & th {
+    background-color: #f2f2f2;
+  }
+}
+
 /* Textarea Parallel */
 .textarea-parallel {
   border: 1px solid #ccc;
@@ -100,7 +184,7 @@ html,
   color: white;
   resize: block; 
   flex-grow: 1; 
-  height: 40vh;
+  height: 37.5vh;
   overflow: auto; /* Enable scrolling */
   box-sizing: border-box;
 }
@@ -118,7 +202,7 @@ html,
   font-style: normal;
   text-decoration: none;
   flex-grow: 1;
-  height: 40vh;
+  height: 37.5vh;
   overflow: auto; /* Enable scrolling */
   box-sizing: border-box;
 }

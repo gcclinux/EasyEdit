@@ -70,6 +70,8 @@ const App = () => {
   const [tableModalOpen, setTableModalOpen] = useState(false);
   const [ganttModalOpen, setGanttModalOpen] = useState(false);
   const [showHeaderDropdown, setShowHeaderDropdown] = useState(false);
+  const [isEditFull, setIsEditFull] = useState<boolean>(false);
+  const [isPreviewFull, setIsPreviewFull] = useState<boolean>(false);
 
 
   // Selection state fixing the issue with the Headers selection
@@ -124,7 +126,33 @@ const App = () => {
   }, [editorContent]);
 
   const toggleLayout = () => {
-    setIsHorizontal(!isHorizontal);
+    if (!isEditFull && !isPreviewFull) {
+      setIsHorizontal(!isHorizontal);
+    }
+  };
+  
+  // toggleEdit function
+  const toggleEdit = () => {
+    setIsEditFull(!isEditFull);
+    setIsPreviewFull(false);
+    if (!isEditFull) {
+      // No change needed when entering full mode
+    } else {
+      // When exiting full mode (isEditFull becoming false)
+      setIsHorizontal(false);
+    }
+  };
+
+  // togglePreview function
+  const togglePreview = () => {
+    setIsPreviewFull(!isPreviewFull);
+    setIsEditFull(false);
+    if (!isPreviewFull) {
+      // No change needed when entering full mode
+    } else {
+      // When exiting full mode
+      setIsHorizontal(false);
+    }
   };
 
   const insertSymbol = (symbol: string) => {
@@ -164,7 +192,13 @@ const App = () => {
         value={editorContent}
         onChange={handleChange}
         //onChange={(e) => setEditorContent(e.target.value)}
-        className={isHorizontal ? 'textarea-horizontal' : 'textarea-parallel'}
+        className={
+          isEditFull 
+            ? 'textarea-horizontal-full'
+            : isHorizontal 
+              ? 'textarea-horizontal' 
+              : 'textarea-parallel'
+        }
         // Inside the onKeyDown event handler
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
@@ -226,7 +260,13 @@ const App = () => {
 
     return (
       <div
-        className={isHorizontal ? 'preview-horizontal' : 'preview-parallel'}
+      className={
+        isPreviewFull
+          ? 'preview-horizontal-full'
+          : isHorizontal
+            ? 'preview-horizontal'
+            : 'preview-parallel'
+      }
         ref={previewRef}
       >
         <ReactMarkdown
@@ -492,11 +532,27 @@ const App = () => {
     }
   }, [editorContent, historyIndex]);
 
+  // Add this function near other utility functions
+  const getEditorPreviewContainerClass = () => {
+    if (isEditFull) {
+      return "editor-preview-container-horizontal"; // Always use horizontal container in full mode
+    }
+    return isHorizontal 
+      ? "editor-preview-container-horizontal"
+      : "editor-preview-container-parallel";
+  };
+
   return (
     <div className="container">
       <div className="menubar">
-      <button className="menu-item" onClick={toggleLayout}>
-          Toggle Layout &#8646;
+      {/* <button className="menu-item" onClick={toggleLayout}>
+          Toggle Dual &#8646;
+        </button> */}
+        <button className="menu-item" onClick={toggleEdit}>
+          Toggle Edit &#8646;
+        </button>
+        <button className="menu-item" onClick={togglePreview}>
+          Toggle Preview &#8646;
         </button>
           <button className="menu-item" onClick={() => handleOpenClick(setEditorContent)}>
             Load Document &#128194;
@@ -775,14 +831,10 @@ const App = () => {
         <p></p>
         
         <div
-          className={
-            isHorizontal
-              ? "editor-preview-container-horizontal"
-              : "editor-preview-container-parallel"
-          }
+          className={getEditorPreviewContainerClass()}
         >
-          <TextareaComponent />
-          <PreviewComponent />
+        {!isPreviewFull && <TextareaComponent />}
+        {!isEditFull && <PreviewComponent />}
         </div>
       </div>
     </div>
