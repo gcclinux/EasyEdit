@@ -94,15 +94,15 @@ html,
 
   /* Adjust spacing between elements */
   & p {
-    margin: 0.1em 0; /* Reduce from default 1em */
+    margin: 0.3em 0; /* Reduce from default 1em */
   }
 
   & h1, & h2, & h3, & h4, & h5, & h6 {
-    margin: 0.1em 0; /* Consistent spacing for headers */
+    margin: 0.3em 0; /* Consistent spacing for headers */
   }
 
   & ul, & ol {
-    margin: 0.1em 0;
+    margin: 0.3em 0;
     padding-left: 1.5em;
   }
 }
