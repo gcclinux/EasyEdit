@@ -125,11 +125,11 @@ const App = () => {
     }
   }, [editorContent]);
 
-  const toggleLayout = () => {
-    if (!isEditFull && !isPreviewFull) {
-      setIsHorizontal(!isHorizontal);
-    }
-  };
+  // const toggleLayout = () => {
+  //   if (!isEditFull && !isPreviewFull) {
+  //     setIsHorizontal(!isHorizontal);
+  //   }
+  // };
   
   // toggleEdit function
   const toggleEdit = () => {
@@ -282,7 +282,6 @@ const App = () => {
                   </div>
                 );
               }
-          
               // Check if it's an inline code (no language class means inline)
               const isInline = !className;
               

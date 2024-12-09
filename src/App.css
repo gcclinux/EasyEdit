@@ -85,6 +85,28 @@ html,
   }
 }
 
+/* Add to App.css */
+.preview-horizontal,
+.preview-parallel,
+.preview-horizontal-full {
+  /* Keep existing styles */
+  line-height: 1; /* Reduce from default ~1.6 */
+
+  /* Adjust spacing between elements */
+  & p {
+    margin: 0.1em 0; /* Reduce from default 1em */
+  }
+
+  & h1, & h2, & h3, & h4, & h5, & h6 {
+    margin: 0.1em 0; /* Consistent spacing for headers */
+  }
+
+  & ul, & ol {
+    margin: 0.1em 0;
+    padding-left: 1.5em;
+  }
+}
+
 /* Full preview */
 .preview-horizontal-full {
   /* Base preview styles */
