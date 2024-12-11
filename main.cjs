@@ -232,11 +232,6 @@ function createMenuTemplate() {
     {
       label: "View",
       submenu: [
-        { type: "separator" },
-        { role: "resetzoom" },
-        { role: "zoomin" },
-        { role: "zoomout" },
-        { type: "separator" },
         {
           label: "Go Back",
           accelerator: "CommandOrControl+B",
@@ -247,7 +242,37 @@ function createMenuTemplate() {
             }
           },
         },
-        //{ role: "toggledevtools" },
+        { type: "separator" },
+        { role: "resetzoom" },
+        { role: "zoomin" },
+        { role: "zoomout" },
+        { type: "separator" },
+        {
+          label: "PreviewPanel",
+          submenu: [
+            {
+              label: "Increase LineHeight",
+              accelerator: "CommandOrControl+M",
+              click: () => {
+                mainWindow.webContents.send('update-preview-spacing', {
+                  action: 'increase',
+                  selector: '.preview-horizontal, .preview-parallel, .preview-horizontal-full'
+                });
+              },
+            },
+            {
+              label: "Decrease LineHeight",
+              accelerator: "CommandOrControl+L",
+              click: () => {
+                mainWindow.webContents.send('update-preview-spacing', {
+                  action: 'decrease',
+                  selector: '.preview-horizontal, .preview-parallel, .preview-horizontal-full'
+                });
+              },
+            },
+          ],
+        },
+        // { role: "toggledevtools" },
       ],
     },
     {

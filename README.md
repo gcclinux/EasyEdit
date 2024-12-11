@@ -37,11 +37,13 @@ $ npm run prd
 ```
 $ npm run electron:build
 ```
+## Build as an flatpak App (Linux)
+#### [createFlatpak](linux/createFlatpak.md)
 
-## Mermeid example
+## Example Mermeid
 
 ```mermaid
-flowchart TD
+flowchart LR
     A[Christmas] -->|Get money| B(Go shopping)
     B --> C{Let me think}
     C -->|One| D[Laptop]
@@ -49,7 +51,7 @@ flowchart TD
     C -->|Three| F[fa:fa-car Car]
 ```
 
-## Gantt graph as code
+## Example Gantt graph as code
 ```mermaid
 gantt
     title Create EasyEdit
@@ -61,7 +63,7 @@ gantt
     Deliver Product :task4, 2024-11-31 , 3d
 ```
 
-## Table displayed
+## Example Table displayed
 
 | header1 | header2 | header3 |
 | :--- | :--- | :--- |

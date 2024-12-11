@@ -86,25 +86,36 @@ html,
 }
 
 /* Add to App.css */
+/* Preview panels base styles */
 .preview-horizontal,
 .preview-parallel,
 .preview-horizontal-full {
-  /* Keep existing styles */
-  line-height: 1; /* Reduce from default ~1.6 */
+  line-height: 1; /* Start with normal line height */
+}
 
-  /* Adjust spacing between elements */
-  & p {
-    margin: 0.5em 0; /* Reduce from default 1em */
-  }
+/* Paragraph spacing */
+.preview-horizontal p,
+.preview-parallel p,
+.preview-horizontal-full p {
+  margin: 0.5em 0;
+}
 
-  & h1, & h2, & h3, & h4, & h5, & h6 {
-    margin: 0.5em 0; /* Consistent spacing for headers */
-  }
+/* Header spacing */
+.preview-horizontal h1, .preview-horizontal h2, .preview-horizontal h3, 
+.preview-horizontal h4, .preview-horizontal h5, .preview-horizontal h6,
+.preview-parallel h1, .preview-parallel h2, .preview-parallel h3, 
+.preview-parallel h4, .preview-parallel h5, .preview-parallel h6,
+.preview-horizontal-full h1, .preview-horizontal-full h2, .preview-horizontal-full h3,
+.preview-horizontal-full h4, .preview-horizontal-full h5, .preview-horizontal-full h6 {
+  margin: 0.5em 0;
+}
 
-  & ul, & ol {
-    margin: 0.5em 0;
-    padding-left: 1.5em;
-  }
+/* List spacing */
+.preview-horizontal ul, .preview-horizontal ol,
+.preview-parallel ul, .preview-parallel ol,
+.preview-horizontal-full ul, .preview-horizontal-full ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
 }
 
 /* Full preview */
