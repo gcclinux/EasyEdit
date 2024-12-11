@@ -72,6 +72,7 @@ const App = () => {
   const [showHeaderDropdown, setShowHeaderDropdown] = useState(false);
   const [isEditFull, setIsEditFull] = useState<boolean>(false);
   const [isPreviewFull, setIsPreviewFull] = useState<boolean>(false);
+  const lineHeightValue = useRef<number>(1);
 
   // Selection state fixing the issue with the Headers selection
   const [selectionStart, setSelectionStart] = useState<number | null>(null);
@@ -112,16 +113,18 @@ const App = () => {
       setEditorContent(content);
     });
 
-    let previewLineHeight = 1;
+    let previewLineHeight = 1.1;
     let newLineHeight = previewLineHeight;
     ipcRenderer.on('update-preview-spacing', (_event: IpcRendererEvent, {action}: {action: string}) => {
 
       if (action === 'increase' && previewLineHeight < 1.9) {
         newLineHeight = Math.min(1.9, previewLineHeight + 0.1);
+        lineHeightValue.current = newLineHeight;
       } else if (action === 'decrease' && previewLineHeight > 0.9) {
         newLineHeight = Math.max(1.0, previewLineHeight - 0.1);
+        lineHeightValue.current = newLineHeight;
       }
-  
+
       // Round to 1 decimal place
       newLineHeight = Math.round(newLineHeight * 10) / 10;  
       if (newLineHeight !== previewLineHeight) {
@@ -137,12 +140,20 @@ const App = () => {
         });
       }
     });
+
+    
+
+    ipcRenderer.on('get-line-height', () => {
+      ipcRenderer.send('line-height-value', lineHeightValue);
+    });
   
     return () => {
       ipcRenderer.removeAllListeners('file-opened');
       ipcRenderer.removeAllListeners('update-preview-spacing');
+      ipcRenderer.removeAllListeners('init-line-height');
+      ipcRenderer.removeAllListeners('get-line-height');
     };
-  }, []);
+  }, [lineHeightValue]);
 
   useEffect(() => {
     if (textareaRef.current) {

@@ -7,6 +7,8 @@ const detect = require('detect-port');
 const defaultPort = 3000;
 const viteDevPort = defaultPort; // Using same port for consistency
 const { shell } = require('electron');
+const config = 'easyedit.json';
+const configPath = path.join(app.getPath('userData'), config);
 
 // Disable hardware acceleration
 app.disableHardwareAcceleration();
@@ -14,10 +16,23 @@ app.disableHardwareAcceleration();
 let mainWindow = null;
 let server = null;
 
-function saveWindowBounds(window) {
+// saveConfig function to save window bounds and line height to a JSON file
+async function saveConfig(window) {
   const bounds = window.getBounds();
-  const configPath = path.join(app.getPath('userData'), '.config.json');
-  fs.writeFileSync(configPath, JSON.stringify(bounds, null, 2));
+
+  // Get line height value using Promise
+  const lineHeight = await new Promise((resolve) => {
+    window.webContents.send('get-line-height');
+    ipcMain.once('line-height-value', (_event, value) => {
+      resolve(Number(value.current).toFixed(1));
+    });
+  });
+
+  const details = {
+    ...bounds,
+    lineheight: parseFloat(lineHeight)
+  };
+  fs.writeFileSync(configPath, JSON.stringify(details, null, 2));
 }
 
 async function setupServer(isDev) {
@@ -43,7 +58,6 @@ async function setupServer(isDev) {
 
 const openLinkInNewWindow = (url) => {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-  const configPath = path.join(app.getPath('userData'), '.config.json');
   const newWindow = new BrowserWindow({
     width: width / 2 + width / 4,
     height: height / 2 + height / 4,
@@ -63,7 +77,7 @@ async function createMainWindow() {
   const isDev = (await import('electron-is-dev')).default;
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   const iconPath = path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
-  const configPath = path.join(app.getPath('userData'), '.config.json');
+  const configPath = path.join(app.getPath('userData'), config);
 
   let windowOptions = {
     width: width,
@@ -116,8 +130,8 @@ async function createMainWindow() {
     return { action: 'deny' };
   });
 
-  mainWindow.on('close', () => {
-    saveWindowBounds(mainWindow);
+  mainWindow.on('close', async () => {
+    await saveConfig(mainWindow);
   });
 
   return mainWindow;
@@ -208,8 +222,8 @@ function createMenuTemplate() {
         { role: "reload" },
         {
           label: "Exit",
-          click: () => {
-            saveWindowBounds(mainWindow);
+          click: async () => {
+            await saveConfig(mainWindow);
             app.quit();
 
           },
@@ -272,7 +286,7 @@ function createMenuTemplate() {
             },
           ],
         },
-        // { role: "toggledevtools" },
+       { role: "toggledevtools" },
       ],
     },
     {
@@ -370,4 +384,4 @@ app.on('window-all-closed', () => {
   }
 });
 
-module.exports = { mainWindow, saveWindowBounds };
+module.exports = { mainWindow, saveConfig };
