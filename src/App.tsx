@@ -73,7 +73,6 @@ const App = () => {
   const [isEditFull, setIsEditFull] = useState<boolean>(false);
   const [isPreviewFull, setIsPreviewFull] = useState<boolean>(false);
 
-
   // Selection state fixing the issue with the Headers selection
   const [selectionStart, setSelectionStart] = useState<number | null>(null);
   const [selectionEnd, setSelectionEnd] = useState<number | null>(null);
@@ -107,14 +106,41 @@ const App = () => {
     setEditorContent(e.target.value);
   };
 
+  // Add event listeners for file-opened and update-paragraph-spacing for rendering
   useEffect(() => {
     ipcRenderer.on('file-opened', (_event: IpcRendererEvent, content: string) => {
       setEditorContent(content);
     });
 
-    // Cleanup listener
+    let previewLineHeight = 1;
+    let newLineHeight = previewLineHeight;
+    ipcRenderer.on('update-preview-spacing', (_event: IpcRendererEvent, {action}: {action: string}) => {
+
+      if (action === 'increase' && previewLineHeight < 1.9) {
+        newLineHeight = Math.min(1.9, previewLineHeight + 0.1);
+      } else if (action === 'decrease' && previewLineHeight > 0.9) {
+        newLineHeight = Math.max(1.0, previewLineHeight - 0.1);
+      }
+  
+      // Round to 1 decimal place
+      newLineHeight = Math.round(newLineHeight * 10) / 10;  
+      if (newLineHeight !== previewLineHeight) {
+        previewLineHeight = newLineHeight;
+        
+        const previewElements = document.querySelectorAll(
+          '.preview-horizontal, .preview-parallel, .preview-horizontal-full'
+        );
+  
+        previewElements.forEach((element) => {
+          const htmlElement = element as HTMLElement;
+          htmlElement.style.lineHeight = newLineHeight.toString();
+        });
+      }
+    });
+  
     return () => {
       ipcRenderer.removeAllListeners('file-opened');
+      ipcRenderer.removeAllListeners('update-preview-spacing');
     };
   }, []);
 
