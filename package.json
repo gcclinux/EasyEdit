@@ -75,6 +75,10 @@
         {
           "from": "build/linux/metainfo/easyedit.appdata.xml",
           "to": "usr/share/metainfo/easyedit.appdata.xml"
+        },
+        {
+          "from": "public/easyedit.png",
+          "to": "easyedit.png"
         }
       ],
       "target": [
