@@ -39,6 +39,12 @@ modules:
             <description>
                 <p>A simple text editor for everyday use</p>
             </description>
+            <screenshots>
+              <screenshot type="default">
+                <image>https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/screenshots/sample011.png</image>
+                <caption>PreviewPanel</caption>
+              </screenshot>
+            </screenshot>
             <developer_name>Ricardo Wagemaker</developer_name>
             <url type="homepage">https://github.com/gcclinux/EasyEdit</url>
             <releases>
