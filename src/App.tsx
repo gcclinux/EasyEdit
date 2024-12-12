@@ -98,10 +98,12 @@ const App = () => {
     [editorContent]
   );
 
+  // Add event listener for Mermaid diagram rendering
   useEffect(() => {
     initializeMermaid();
   }, [editorContent, initializeMermaid]);
 
+  // Handle change function for the textarea
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     cursorPositionRef.current = e.target.selectionStart;
     setEditorContent(e.target.value);
@@ -117,6 +119,7 @@ const App = () => {
     let newLineHeight = previewLineHeight;
     ipcRenderer.on('update-preview-spacing', (_event: IpcRendererEvent, {action}: {action: string}) => {
 
+      // Increase or decrease line height based on action
       if (action === 'increase' && previewLineHeight < 1.9) {
         newLineHeight = Math.min(1.9, previewLineHeight + 0.1);
         lineHeightValue.current = newLineHeight;
@@ -133,7 +136,7 @@ const App = () => {
         const previewElements = document.querySelectorAll(
           '.preview-horizontal, .preview-parallel, .preview-horizontal-full'
         );
-  
+        // Set line height for all preview elements
         previewElements.forEach((element) => {
           const htmlElement = element as HTMLElement;
           htmlElement.style.lineHeight = newLineHeight.toString();
@@ -141,12 +144,12 @@ const App = () => {
       }
     });
 
-    
-
+    // Initialize line height value
     ipcRenderer.on('get-line-height', () => {
       ipcRenderer.send('line-height-value', lineHeightValue);
     });
   
+    // Cleanup ipcRenderer listeners
     return () => {
       ipcRenderer.removeAllListeners('file-opened');
       ipcRenderer.removeAllListeners('update-preview-spacing');
@@ -155,6 +158,7 @@ const App = () => {
     };
   }, [lineHeightValue]);
 
+  // Restore cursor position effect
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
@@ -192,6 +196,7 @@ const App = () => {
     }
   };
 
+  // insertSymbol function inserts a symbol into the textarea
   const insertSymbol = (symbol: string) => {
     if (textareaRef.current) {
       const textarea = textareaRef.current;
@@ -212,6 +217,7 @@ const App = () => {
     }
   };
 
+  // TextareaComponent is a memoized component that renders the textarea for Markdown editing
   const TextareaComponent = React.memo(() => {
     useEffect(() => {
       if (textareaRef.current) {
@@ -346,6 +352,7 @@ const App = () => {
     );
   });
 
+  // insertSymbol function inserts a symbol into the textarea
   const insertSymbol3 = () => insertSymbol("&#8710;");
   const insertSymbol4 = () => insertSymbol("&#8711;");
   const insertSymbol5 = () => insertSymbol("&#8721;");
