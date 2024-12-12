@@ -28,7 +28,11 @@ $ rm EasyEdit-1.3.5-x64.zip
 $ curl -O https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/linux/org.flatpak.EasyEdit.yml
 ```  
 
-- ### First build as normal
+- ### First test the build yml file
+```
+$ flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest org.flatpak.EasyEdit.yml
+```
+- ### Next build as normal package
 ```
 $ flatpak-builder --force-clean --user --install-deps-from=flathub --repo=repo builddir org.flatpak.EasyEdit.yml
 ```
@@ -40,5 +44,5 @@ $ flatpak build-bundle repo EasyEdit-$(arch)-1.3.5.flatpak org.flatpak.EasyEdit
 
 - ### Install new created file
 ```
-$ flatpak install EasyEdit-$(arch)-1.3.5.flatpak
+$ flatpak install --user EasyEdit-$(arch)-1.3.5.flatpak
 ```
