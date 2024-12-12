@@ -44,7 +44,7 @@ modules:
                 <image>https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/screenshots/sample011.png</image>
                 <caption>PreviewPanel</caption>
               </screenshot>
-            </screenshot>
+            </screenshots>
             <developer_name>Ricardo Wagemaker</developer_name>
             <url type="homepage">https://github.com/gcclinux/EasyEdit</url>
             <releases>
