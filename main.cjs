@@ -79,6 +79,8 @@ async function createMainWindow() {
   const iconPath = path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
   const configPath = path.join(app.getPath('userData'), config);
 
+  let initialLineHeight = 1.0; // Default line height
+
   let windowOptions = {
     width: width,
     height: height,
@@ -89,17 +91,20 @@ async function createMainWindow() {
     }
   };
 
-    // Check if config file exists and read bounds
-    if (fs.existsSync(configPath)) {
-      try {
-        const bounds = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-        if (bounds && bounds.width && bounds.height && bounds.x !== undefined && bounds.y !== undefined) {
-          windowOptions = { ...windowOptions, ...bounds };
-        }
-      } catch (error) {
-        console.error('Error reading config file:', error);
+  // Check if config file exists and read bounds and line height
+  if (fs.existsSync(configPath)) {
+    try {
+      const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+      if (config && config.width && config.height && config.x !== undefined && config.y !== undefined) {
+        windowOptions = { ...windowOptions, ...config };
       }
+      if (config.lineheight !== undefined) {
+        initialLineHeight = config.lineheight;
+      }
+    } catch (error) {
+      console.error('Error reading config file:', error);
     }
+  }
 
   try {
     const serverUrl = await setupServer(isDev);
@@ -111,6 +116,8 @@ async function createMainWindow() {
         body::-webkit-scrollbar { display: none; }
         body { overflow: hidden; }
       `);
+    // Send initial line height value to renderer
+    mainWindow.webContents.send('init-line-height', initialLineHeight);
     });
     await mainWindow.loadURL(serverUrl);
 
