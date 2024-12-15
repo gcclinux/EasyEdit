@@ -1,9 +1,9 @@
-id: org.flatpak.EasyEdit
+id: io.github.gcclinux.EasyEdit
 runtime: org.freedesktop.Platform
-runtime-version: '23.08'
+runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
 command: easyedit
-rename-icon: org.flatpak.EasyEdit
+rename-icon: io.github.gcclinux.EasyEdit
 finish-args:
   - --share=ipc
   - --socket=x11
@@ -17,21 +17,26 @@ modules:
   - name: EasyEdit
     buildsystem: simple
     build-commands:
-      - mkdir -p /app/bin
-      - cp -r * /app/bin/
+      - mkdir -p /app/bin/locales/
+      - mkdir -p /app/bin/resources/
+      - cp -r * /app/bin/ 
+      - mv -f /app/bin/*.pak /app/bin/locales/
       - chmod 755 /app/bin/easyedit
       - mkdir -p /app/share/applications
       - mkdir -p /app/share/icons/hicolor/256x256/apps
       - mkdir -p /app/share/metainfo
-      - rm -f /app/share/applications/org.flatpak.EasyEdit.desktop
-      - cp /app/bin/easyedit.png /app/share/icons/hicolor/256x256/apps/org.flatpak.EasyEdit.png
+      - install -Dm644 /app/bin/locales/resources.pak /app/bin/
+      - install -Dm644 /app/bin/app.asar /app/bin/resources/
+      - install -Dm644 /app/bin/app-update.yml /app/bin/resources/
+      - install -Dm644 /app/bin/easyedit.png /app/bin/resources/
+      - install -Dm644 /app/bin/easyedit.png /app/share/icons/hicolor/256x256/apps/io.github.gcclinux.EasyEdit.png
       # Remove sandbox dependency
       - rm -f /app/bin/chrome-sandbox
       - |
-        cat > /app/share/metainfo/org.flatpak.EasyEdit.appdata.xml <<'EOF'
+        cat > /app/share/metainfo/io.github.gcclinux.EasyEdit.appdata.xml <<'EOF'
         <?xml version="1.0" encoding="UTF-8"?>
         <component type="desktop-application">
-            <id>org.flatpak.EasyEdit</id>
+            <id>io.github.gcclinux.EasyEdit</id>
             <name>EasyEdit</name>
             <summary>Simple text editor</summary>
             <metadata_license>MIT</metadata_license>
@@ -44,6 +49,10 @@ modules:
                 <image>https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/screenshots/sample011.png</image>
                 <caption>PreviewPanel</caption>
               </screenshot>
+              <screenshot type="default">
+                <image>https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/screenshots/sample010.png</image>
+                <caption>SidebySide</caption>
+                </screenshot>
             </screenshots>
             <developer_name>Ricardo Wagemaker</developer_name>
             <url type="homepage">https://github.com/gcclinux/EasyEdit</url>
@@ -53,17 +62,26 @@ modules:
         </component>
         EOF
       - |
-        cat > /app/share/applications/org.flatpak.EasyEdit.desktop <<'EOF'
+        cat > /app/share/applications/io.github.gcclinux.EasyEdit.desktop <<'EOF'
         [Desktop Entry]
         Name=EasyEdit
         Comment=Simple text editor
         Exec=easyedit
-        Icon=org.flatpak.EasyEdit
+        Icon=io.github.gcclinux.EasyEdit
         Terminal=false
         Type=Application
         Categories=Utility;TextEditor;
         EOF
     sources:
-      - type: dir
-        path: EasyEdit
+      - type: archive
+        url: https://github.com/gcclinux/EasyEdit/releases/download/binary/easyEdit-linux-x86_64.zip
+        sha256: 046c4a300e15239985621b6b6fd92b0b38bb7168a4f54dde698f75f9fbb88d21
+        only-arches: 
+          - x86_64
+        dest: .
+      - type: archive
+        url: https://github.com/gcclinux/EasyEdit/releases/download/binary/easyEdit-linux-arm64.zip
+        sha256: b2d4fa12c19879fea274df80f26913d7cae30e72946103004223a3d52cd01b74
+        only-arches: 
+          - aarch64
         dest: .
