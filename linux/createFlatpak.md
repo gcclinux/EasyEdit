@@ -1,20 +1,26 @@
-- ### Install pre-requisite flatpakrepo
+- ### Install pre-requisite flatpakrepo & flatpak-builder
 ```
 $ flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+```
+```
+$ flatpak install org.flatpak.Builder
+```
+```
+$ sudo apt install flatpak-builder
 ```
 
 - ### Download the latest release
 [![GitHub Project](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png "EasyEdit")](https://github.com/gcclinux/EasyEdit/releases)
 
 - #### Example today
-[https://github.com/gcclinux/EasyEdit/releases/download/1.3.5/EasyEdit-1.3.5-x64-linux.zip](https://github.com/gcclinux/EasyEdit/releases/download/1.3.5/EasyEdit-1.3.5-x64-linux.zip)
+[https://github.com/gcclinux/EasyEdit/releases/download/1.3.6/EasyEdit-1.3.6-x64-linux.zip](https://github.com/gcclinux/EasyEdit/releases/download/1.3.6/EasyEdit-1.3.6-x64-linux.zip)
 
    
-- #### Download the org.flatpak.EasyEdit.yml
-[https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/linux/org.flatpak.EasyEdit.yml](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/linux/org.flatpak.EasyEdit.yml)      
+- #### Download the io.github.gcclinux.EasyEdit.yml
+[https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/linux/io.github.gcclinux.EasyEdit.yml](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/linux/io.github.gcclinux.EasyEdit.yml)      
    
 ```
-$ curl -O https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/linux/org.flatpak.EasyEdit.yml
+$ curl -O https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/linux/io.github.gcclinux.EasyEdit.yml
 ```  
 
 - ### First test the build yml file
@@ -23,7 +29,7 @@ $ flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest io.git
 ```
 - ### Next build as normal package
 ```
-$ flatpak-builder --force-clean --user --install --install-deps-from=flathub --repo=repo builddir io.github.gcclinux.EasyEdit.yml
+$ flatpak-builder --force-clean --user --install --install-deps-from=flathub --repo=repo buil-ddir io.github.gcclinux.EasyEdit.yml
 ```
 - ### Initialise the repository if not already done
 ```
