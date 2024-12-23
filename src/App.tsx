@@ -257,6 +257,19 @@ const App = () => {
                 textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current); // Move cursor after the new line
               }
             }, 0);
+          } else if (e.key === 'Tab') {
+            e.preventDefault();
+            const target = e.target as HTMLTextAreaElement;
+            const { selectionStart, selectionEnd } = target;
+            const newValue = editorContent.substring(0, selectionStart) + '           ' + editorContent.substring(selectionEnd); // 11 spaces
+            setEditorContent(newValue);
+            setTimeout(() => {
+              if (textareaRef.current) {
+                textareaRef.current.value = newValue; // Explicitly set the value of the textarea
+                cursorPositionRef.current = selectionStart + 11; // Update cursor position
+                textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current); // Move cursor after the 11 spaces
+              }
+            }, 0);
           }
         }}
       />
