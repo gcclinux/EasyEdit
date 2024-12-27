@@ -248,15 +248,84 @@ const App = () => {
             e.preventDefault();
             const target = e.target as HTMLTextAreaElement;
             const { selectionStart, selectionEnd } = target;
-            const newValue = editorContent.substring(0, selectionStart) + '   \n' + editorContent.substring(selectionEnd);
-            setEditorContent(newValue);
-            setTimeout(() => {
-              if (textareaRef.current) {
-                textareaRef.current.value = newValue; // Explicitly set the value of the textarea
-                cursorPositionRef.current = selectionStart + 4; // Update cursor position
-                textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current); // Move cursor after the new line
-              }
-            }, 0);
+            
+            // Get current line content
+            const currentLine = editorContent.substring(
+              editorContent.lastIndexOf('\n', selectionStart - 1) + 1,
+              selectionStart
+            );
+
+            if (currentLine.startsWith('>>> ') || currentLine.startsWith('> > > '))  {
+              const newValue = editorContent.substring(0, selectionStart) + '   \n>>> ' + editorContent.substring(selectionEnd);
+              setEditorContent(newValue);
+              setTimeout(() => {
+                if (textareaRef.current) {
+                  textareaRef.current.value = newValue;
+                  cursorPositionRef.current = selectionStart + 8;
+                  textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
+                }
+              }, 0);
+            } else if (currentLine.startsWith('>>') || currentLine.startsWith('> >'))  {
+              const newValue = editorContent.substring(0, selectionStart) + '   \n>> ' + editorContent.substring(selectionEnd);
+              setEditorContent(newValue);
+              setTimeout(() => {
+                if (textareaRef.current) {
+                  textareaRef.current.value = newValue;
+                  cursorPositionRef.current = selectionStart + 7;
+                  textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
+                }
+              }, 0);
+            } else if (currentLine.startsWith('> ')) {
+              const newValue = editorContent.substring(0, selectionStart) + '   \n> ' + editorContent.substring(selectionEnd);
+              setEditorContent(newValue);
+              setTimeout(() => {
+                if (textareaRef.current) {
+                  textareaRef.current.value = newValue;
+                  cursorPositionRef.current = selectionStart + 6;
+                  textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
+                }
+              }, 0);
+            } else if (currentLine.startsWith('- - - ')) {
+              const newValue = editorContent.substring(0, selectionStart) + '\n- - - ' + editorContent.substring(selectionEnd);
+              setEditorContent(newValue);
+              setTimeout(() => {
+                if (textareaRef.current) {
+                  textareaRef.current.value = newValue;
+                  cursorPositionRef.current = selectionStart + 7;
+                  textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
+                }
+              }, 0);
+            } else if (currentLine.startsWith('- - ')) {
+              const newValue = editorContent.substring(0, selectionStart) + '\n- - ' + editorContent.substring(selectionEnd);
+              setEditorContent(newValue);
+              setTimeout(() => {
+                if (textareaRef.current) {
+                  textareaRef.current.value = newValue;
+                  cursorPositionRef.current = selectionStart + 5;
+                  textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
+                }
+              }, 0);
+            } else if (currentLine.startsWith('- ')) {
+              const newValue = editorContent.substring(0, selectionStart) + '\n- ' + editorContent.substring(selectionEnd);
+              setEditorContent(newValue);
+              setTimeout(() => {
+                if (textareaRef.current) {
+                  textareaRef.current.value = newValue;
+                  cursorPositionRef.current = selectionStart + 3;
+                  textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
+                }
+              }, 0);
+            } else {
+              const newValue = editorContent.substring(0, selectionStart) + '   \n' + editorContent.substring(selectionEnd);
+              setEditorContent(newValue);
+              setTimeout(() => {
+                if (textareaRef.current) {
+                  textareaRef.current.value = newValue;
+                  cursorPositionRef.current = selectionStart + 4;
+                  textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
+                }
+              }, 0);
+            }
           } else if (e.key === 'Tab') {
             e.preventDefault();
             const target = e.target as HTMLTextAreaElement;
