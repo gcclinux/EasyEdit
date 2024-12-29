@@ -11,7 +11,7 @@
   "main": "main.cjs",
   "build": {
     "appId": "easyedit.gcclinux.github.com",
-    "productName": "EasyEdit",
+    "productName": "EasyEditMD",
     "files": [
       "dist/**/*",
       "src/*",
@@ -74,7 +74,7 @@
         }
       ],
       "publisherName": "Ricardo Wagemaker",
-      "legalTrademarks": "EasyEdit"
+      "legalTrademarks": "EasyEditMD"
     },
     "linux": {
       "extraResources": [
@@ -135,7 +135,7 @@
       "description": "A lightweight Markdown editor built with Electron",
       "synopsis": "Simple Markdown editor",
       "desktop": {
-        "Name": "EasyEdit",
+        "Name": "EasyEditMD",
         "Terminal": false,
         "Type": "Application",
         "Categories": "Development;TextEditor;Utility"
@@ -161,8 +161,8 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "gcclinux",
-      "repo": "EasyEdit",
+      "owner": "Ricardo Wagemaker",
+      "repo": "EasyEditMD",
       "channel": "latest",
       "private": true,
       "publishAutoUpdate": true,
