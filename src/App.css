@@ -27,6 +27,7 @@ html,
   word-break: break-word;
   width: 100%;
   box-sizing: border-box;
+  color: #000;
 }
 
 .inline-code {
@@ -38,6 +39,7 @@ html,
   width: 100%;
   box-sizing: border-box;
   margin: 4px 0;
+  color: #000;
 }
 
 .code-block {
