@@ -440,7 +440,7 @@ const App = () => {
   const insertSymbol5 = () => insertSymbol("&#8721;");
   const insertSymbol6 = () => insertSymbol("&#8730;");
   const insertSymbol7 = () => insertSymbol("&#8734;");
-  const insertSymbol8 = () => insertSymbol("&#8735;");
+  const insertSymbol8 = () => insertSymbol("&#8470;");
   const insertSymbol9 = () => insertSymbol("&#8736;");
   const insertSymbol11 = () => insertSymbol("&#8743;");
   const insertSymbol12 = () => insertSymbol("&#8744;");
@@ -886,7 +886,7 @@ const App = () => {
             &#8734;
           </button>
           <button className="button-html" onClick={insertSymbol8}>
-            &#8735;
+            &#8470;
           </button>
           <button className="button-html" onClick={insertSymbol9}>
             &#8736;
