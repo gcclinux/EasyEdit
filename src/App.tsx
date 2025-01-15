@@ -1,8 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+
 import mermaid from 'mermaid';
-import rehypeRaw from 'rehype-raw';
 import debounce from 'lodash.debounce';
 import './App.css';
 import markdownMarkWhite from './assets/md.svg';
@@ -59,6 +57,8 @@ import {
   inserterPlainFlowSyntax,
   insertStrikethroughSyntax
 } from './insertMarkdown.ts';
+import TextareaComponent from './components/TextareaComponent.tsx';
+import PreviewComponent from './components/PreviewComponent.tsx';
 
 const App = () => {
   const [documentHistory, setDocumentHistory] = useState<HistoryState[]>([]);
@@ -127,13 +127,17 @@ const App = () => {
   const initializeMermaid = useCallback(
     debounce(() => {
       if (previewRef.current) {
+        mermaid.initialize({
+          startOnLoad: true,
+          theme: 'default',
+        });
         const mermaidElements = previewRef.current.querySelectorAll('.mermaid');
         mermaidElements.forEach((element) => {
           mermaid.init(undefined, element as HTMLElement);
         });
       }
     }, 300),
-    [editorContent]
+    []
   );
 
   // Add event listener for Mermaid diagram rendering
@@ -249,223 +253,95 @@ const App = () => {
     }
   };
 
-  // TextareaComponent is a memoized component that renders the textarea for Markdown editing
-  const TextareaComponent = React.memo(() => {
-    useEffect(() => {
-      if (textareaRef.current) {
-        const { scrollTop, scrollHeight, clientHeight } = textareaRef.current;
-        const isAtBottom = scrollHeight - scrollTop === clientHeight;
-        if (isAtBottom) {
-          textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
-        }
-      }
-    }, [editorContent]);
 
-    return (
-      <textarea
-        ref={textareaRef}
-        value={editorContent}
-        onChange={handleChange}
-        onContextMenu={handleContextMenu}
-        //onChange={(e) => setEditorContent(e.target.value)}
-        className={
-          isEditFull 
-            ? 'textarea-horizontal-full'
-            : isHorizontal 
-              ? 'textarea-horizontal' 
-              : 'textarea-parallel'
-        }
-        // Inside the onKeyDown event handler
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            const target = e.target as HTMLTextAreaElement;
-            const { selectionStart, selectionEnd } = target;
-            
-            // Get current line content
-            const currentLine = editorContent.substring(
-              editorContent.lastIndexOf('\n', selectionStart - 1) + 1,
-              selectionStart
-            );
 
-            if (currentLine.startsWith('>>> ') || currentLine.startsWith('> > > '))  {
-              const newValue = editorContent.substring(0, selectionStart) + '   \n>>> ' + editorContent.substring(selectionEnd);
-              setEditorContent(newValue);
-              setTimeout(() => {
-                if (textareaRef.current) {
-                  textareaRef.current.value = newValue;
-                  cursorPositionRef.current = selectionStart + 8;
-                  textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
-                }
-              }, 0);
-            } else if (currentLine.startsWith('>>') || currentLine.startsWith('> >'))  {
-              const newValue = editorContent.substring(0, selectionStart) + '   \n>> ' + editorContent.substring(selectionEnd);
-              setEditorContent(newValue);
-              setTimeout(() => {
-                if (textareaRef.current) {
-                  textareaRef.current.value = newValue;
-                  cursorPositionRef.current = selectionStart + 7;
-                  textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
-                }
-              }, 0);
-            } else if (currentLine.startsWith('> ')) {
-              const newValue = editorContent.substring(0, selectionStart) + '   \n> ' + editorContent.substring(selectionEnd);
-              setEditorContent(newValue);
-              setTimeout(() => {
-                if (textareaRef.current) {
-                  textareaRef.current.value = newValue;
-                  cursorPositionRef.current = selectionStart + 6;
-                  textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
-                }
-              }, 0);
-            } else if (currentLine.startsWith('- - - ')) {
-              const newValue = editorContent.substring(0, selectionStart) + '\n- - - ' + editorContent.substring(selectionEnd);
-              setEditorContent(newValue);
-              setTimeout(() => {
-                if (textareaRef.current) {
-                  textareaRef.current.value = newValue;
-                  cursorPositionRef.current = selectionStart + 7;
-                  textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
-                }
-              }, 0);
-            } else if (currentLine.startsWith('- - ')) {
-              const newValue = editorContent.substring(0, selectionStart) + '\n- - ' + editorContent.substring(selectionEnd);
-              setEditorContent(newValue);
-              setTimeout(() => {
-                if (textareaRef.current) {
-                  textareaRef.current.value = newValue;
-                  cursorPositionRef.current = selectionStart + 5;
-                  textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
-                }
-              }, 0);
-            } else if (currentLine.startsWith('- ')) {
-              const newValue = editorContent.substring(0, selectionStart) + '\n- ' + editorContent.substring(selectionEnd);
-              setEditorContent(newValue);
-              setTimeout(() => {
-                if (textareaRef.current) {
-                  textareaRef.current.value = newValue;
-                  cursorPositionRef.current = selectionStart + 3;
-                  textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
-                }
-              }, 0);
-            } else {
-              const newValue = editorContent.substring(0, selectionStart) + '   \n' + editorContent.substring(selectionEnd);
-              setEditorContent(newValue);
-              setTimeout(() => {
-                if (textareaRef.current) {
-                  textareaRef.current.value = newValue;
-                  cursorPositionRef.current = selectionStart + 4;
-                  textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
-                }
-              }, 0);
-            }
-          } else if (e.key === 'Tab') {
-            e.preventDefault();
-            const target = e.target as HTMLTextAreaElement;
-            const { selectionStart, selectionEnd } = target;
-            const newValue = editorContent.substring(0, selectionStart) + '    ' + editorContent.substring(selectionEnd); // 4 spaces
-            setEditorContent(newValue);
-            setTimeout(() => {
-              if (textareaRef.current) {
-                textareaRef.current.value = newValue; // Explicitly set the value of the textarea
-                cursorPositionRef.current = selectionStart + 4; // Update cursor position
-                textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current); // Move cursor after the 4 spaces
-              }
-            }, 0);
-          }
-        }}
-      />
-    );
-  });
+  // const PreviewComponent = React.memo(() => {
+  //   useEffect(() => {
+  //     initializeMermaid();
+  //   }, [editorContent, initializeMermaid]);
 
-  // PreviewComponent is a memoized component that renders the preview of the Markdown content
-  const PreviewComponent = React.memo(() => {
-    useEffect(() => {
-      initializeMermaid();
-    }, [editorContent, initializeMermaid]);
+  //   // Add new useEffect for auto-scrolling
+  //   useEffect(() => {
+  //     if (!previewRef.current) return;
 
-    // Add new useEffect for auto-scrolling
-    useEffect(() => {
-      if (!previewRef.current) return;
+  //     // Create observer to watch for Mermaid diagram changes
+  //     const observer = new MutationObserver(() => {
+  //       if (previewRef.current) {
+  //         // Add small delay to ensure diagrams are fully rendered
+  //         setTimeout(() => {
+  //           previewRef.current!.scrollTop = previewRef.current!.scrollHeight;
+  //         }, 100);
+  //       }
+  //     });
 
-      // Create observer to watch for Mermaid diagram changes
-      const observer = new MutationObserver(() => {
-        if (previewRef.current) {
-          // Add small delay to ensure diagrams are fully rendered
-          setTimeout(() => {
-            previewRef.current!.scrollTop = previewRef.current!.scrollHeight;
-          }, 100);
-        }
-      });
+  //     // Observe changes in the preview div
+  //     observer.observe(previewRef.current, {
+  //       childList: true,
+  //       subtree: true,
+  //       attributes: true
+  //     });
 
-      // Observe changes in the preview div
-      observer.observe(previewRef.current, {
-        childList: true,
-        subtree: true,
-        attributes: true
-      });
+  //     // Initial scroll
+  //     setTimeout(() => {
+  //       if (previewRef.current) {
+  //         previewRef.current.scrollTop = previewRef.current.scrollHeight;
+  //       }
+  //     }, 100);
 
-      // Initial scroll
-      setTimeout(() => {
-        if (previewRef.current) {
-          previewRef.current.scrollTop = previewRef.current.scrollHeight;
-        }
-      }, 100);
+  //     // Cleanup
+  //     return () => observer.disconnect();
+  //   }, [editorContent]);
 
-      // Cleanup
-      return () => observer.disconnect();
-    }, [editorContent]);
-
-    return (
-      <div
-      className={
-        isPreviewFull
-          ? 'preview-horizontal-full'
-          : isHorizontal
-            ? 'preview-horizontal'
-            : 'preview-parallel'
-      }
-        ref={previewRef}
-      >
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeRaw]}
-          components={{
-            code({ className, children, ...props }) {
-              const match = /language-mermaid/.test(className || "");
-              if (match) {
-                return (
-                  <div className="mermaid">
-                    {String(children).replace(/\n$/, "")}
-                  </div>
-                );
-              }
-              // Check if it's an inline code (no language class means inline)
-              const isInline = !className;
+  //   return (
+  //     <div
+  //     className={
+  //       isPreviewFull
+  //         ? 'preview-horizontal-full'
+  //         : isHorizontal
+  //           ? 'preview-horizontal'
+  //           : 'preview-parallel'
+  //     }
+  //       ref={previewRef}
+  //     >
+  //       <ReactMarkdown
+  //         remarkPlugins={[remarkGfm]}
+  //         rehypePlugins={[rehypeRaw]}
+  //         components={{
+  //           code({ className, children, ...props }) {
+  //             const match = /language-mermaid/.test(className || "");
+  //             if (match) {
+  //               return (
+  //                 <div className="mermaid">
+  //                   {String(children).replace(/\n$/, "")}
+  //                 </div>
+  //               );
+  //             }
+  //             // Check if it's an inline code (no language class means inline)
+  //             const isInline = !className;
               
-              return (
-                <code 
-                  className={`${isInline ? 'inline-code' : 'code-block'} ${className || ''}`} 
-                  {...props}
-                >
-                  {children}
-                </code>
-              );
-            },
-            pre({ children }) {
-              return (
-                <pre className="code-block-container">
-                  {children}
-                </pre>
-              );
-            }
-          }}
-        >
-          {editorContent}
-        </ReactMarkdown>
-      </div>
-    );
-  });
+  //             return (
+  //               <code 
+  //                 className={`${isInline ? 'inline-code' : 'code-block'} ${className || ''}`} 
+  //                 {...props}
+  //               >
+  //                 {children}
+  //               </code>
+  //             );
+  //           },
+  //           pre({ children }) {
+  //             return (
+  //               <pre className="code-block-container">
+  //                 {children}
+  //               </pre>
+  //             );
+  //           }
+  //         }}
+  //       >
+  //         {editorContent}
+  //       </ReactMarkdown>
+  //     </div>
+  //   );
+  // });
 
   // insertSymbol function inserts a symbol into the textarea
   const insertSymbol3 = () => insertSymbol("&#8710;");
@@ -991,8 +867,30 @@ const App = () => {
         <div
           className={getEditorPreviewContainerClass()}
         >
-        {!isPreviewFull && <TextareaComponent />}
-        {!isEditFull && <PreviewComponent />}
+        {/* TextareaComponent is a memoized component that renders the textarea for Markdown editing */}
+        {!isPreviewFull && (
+          <TextareaComponent
+            textareaRef={textareaRef}
+            editorContent={editorContent}
+            handleChange={handleChange}
+            handleContextMenu={handleContextMenu}
+            isEditFull={isEditFull}
+            isHorizontal={isHorizontal}
+            setEditorContent={setEditorContent}
+            cursorPositionRef={cursorPositionRef}
+          />
+        )}
+        
+        {/* PreviewComponent is a memoized component that renders the preview for Markdown editing */}
+        {!isEditFull && (
+          <PreviewComponent
+            previewRef={previewRef}
+            editorContent={editorContent}
+            isPreviewFull={isPreviewFull}
+            isHorizontal={isHorizontal}
+            initializeMermaid={initializeMermaid}
+          />
+          )}
         </div>
 
         {contextMenu.visible && (
