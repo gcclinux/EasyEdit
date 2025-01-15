@@ -89,15 +89,16 @@ export const insertGraphTDSyntax = (
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const checkText = `\`\`\`mermaid
-graph TD
+graph LR
     A[Start] --> B[Develop SmallTextMD]
     B --> C{Testing Phase}
     
-    C -->|Passed| D[Quality Assurance]
+    C -->|Passed| D[Quality Assurance]   
+    D --> G
     C -->|Failed| E[Identify and Fix Issues]
     E --> C
     
-    D --> F[Approval for Release]
+    C --> F[Approval for Release]
     F --> G[Marketing Strategy]
     
     G --> H[Manufacturing Start]
@@ -109,15 +110,6 @@ graph TD
     J --> L[Market Release]
     L -->|Approved| M[Launch Campaign]
     L -->|Not Approved| N[Postponement Decision]
-    
-    M --> O[Product Launched]
-    O -->|Success| P[Monitor Performance]
-    O -->|Issues| Q[Review and Feedback]
-    
-    P --> R[Improve Product]
-    Q --> N
-    R --> G
-    N --> M
 \`\`\``;
     const newText =
       editorContent.substring(0, start) +
