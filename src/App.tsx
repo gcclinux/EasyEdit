@@ -22,6 +22,7 @@ import {
 } from './insertMermaid.ts';
 import { TableGenerator } from './autoGenerator/TableGenerator.tsx';
 import { GanttGenerator } from './autoGenerator/GanttGenerator.tsx';
+import ContextMenu from './autoGenerator/ContextMenu.tsx';
 import { 
   HistoryState, 
   addToHistory, 
@@ -84,6 +85,43 @@ const App = () => {
     }
   };
 
+  // Add these state declarations near your other states
+  const [contextMenu, setContextMenu] = useState<{ visible: boolean; x: number; y: number }>({
+    visible: false,
+    x: 0,
+    y: 0
+  });
+
+  // Add state for cached selection
+  const [cachedSelection, setCachedSelection] = useState<{start: number, end: number} | null>(null);
+
+  // Add this handler function
+  const handleContextMenu = (event: React.MouseEvent) => {
+    event.preventDefault();
+    if (textareaRef.current) {
+      setCachedSelection({
+        start: textareaRef.current.selectionStart,
+        end: textareaRef.current.selectionEnd
+      });
+    }
+    setContextMenu({
+      visible: true,
+      x: event.clientX,
+      y: event.clientY
+    });
+    textareaRef.current?.focus(); // Ensure textarea remains focused
+  };
+
+  // Add this effect to handle clicking outside
+  useEffect(() => {
+    const handleClick = (event: MouseEvent) => {
+      if (textareaRef.current && !textareaRef.current.contains(event.target as Node)) {
+        setContextMenu({ visible: false, x: 0, y: 0 });
+      }
+    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, []);
 
   // Initialize Mermaid diagrams
   const initializeMermaid = useCallback(
@@ -228,6 +266,7 @@ const App = () => {
         ref={textareaRef}
         value={editorContent}
         onChange={handleChange}
+        onContextMenu={handleContextMenu}
         //onChange={(e) => setEditorContent(e.target.value)}
         className={
           isEditFull 
@@ -955,6 +994,22 @@ const App = () => {
         {!isPreviewFull && <TextareaComponent />}
         {!isEditFull && <PreviewComponent />}
         </div>
+
+        {contextMenu.visible && (
+          <ContextMenu
+            contextMenu={contextMenu}
+            textareaRef={textareaRef}
+            editorContent={editorContent}
+            setEditorContent={setEditorContent}
+            cursorPositionRef={cursorPositionRef}
+            setContextMenu={setContextMenu}
+            setCachedSelection={setCachedSelection}
+            setSelectionStart={setSelectionStart}
+            setSelectionEnd={setSelectionEnd}
+            cachedSelection={cachedSelection}
+          />
+        )}
+
       </div>
     </div>
   );
