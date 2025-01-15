@@ -453,11 +453,13 @@ html,
 
 .context-menu-item {
   padding: 8px 12px;
+  text-align: left;
   cursor: pointer;
 }
 
 .context-menu-container {
   position: fixed;
+  width: 150px;
   background: white;
   border: 1px solid #ccc;
   border-radius: 4px;
