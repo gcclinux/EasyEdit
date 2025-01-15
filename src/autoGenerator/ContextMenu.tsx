@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface ContextMenuProps {
   contextMenu: { visible: boolean; x: number; y: number };
@@ -25,29 +25,75 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   setSelectionEnd,
   cachedSelection
 }) => {
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setContextMenu({ visible: false, x: 0, y: 0 });
+      }
+    };
+
+    if (contextMenu.visible) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [contextMenu.visible, setContextMenu]);
+
   return (
     <div 
+      ref={menuRef}
       className="context-menu-container"
       style={{
+        position: 'fixed',
         top: contextMenu.y,
         left: contextMenu.x,
       }}
     >
-      {/* <div
+
+      {/* Menu entry for Cut */}
+        <div
         className="context-menu-item"
         onMouseDown={(e) => {
           e.preventDefault();
-          if (textareaRef.current) {
-            const newText = editorContent + "Menu Testing";
-            setEditorContent(newText);
-            cursorPositionRef.current = newText.length + 1;
+          if (textareaRef.current && cachedSelection) {
+            const selectedText = editorContent.slice(
+              cachedSelection.start,
+              cachedSelection.end
+            );
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(selectedText);
+            
+            // Update content by removing selected text
+            const newContent = 
+              editorContent.slice(0, cachedSelection.start) +
+              editorContent.slice(cachedSelection.end);
+            
+            setEditorContent(newContent);
+            
+            // Update cursor position
+            setTimeout(() => {
+              if (textareaRef.current) {
+                textareaRef.current.focus();
+                textareaRef.current.setSelectionRange(
+                  cachedSelection.start,
+                  cachedSelection.start
+                );
+              }
+            }, 0);
           }
           setContextMenu({ visible: false, x: 0, y: 0 });
-          textareaRef.current?.focus();
         }}
       >
-        Testing
-      </div> */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <span>Cut</span>
+          <span style={{ opacity: 0.7 }}>Ctrl+X</span>
+        </div>
+      </div>
 
         {/* Menu entry for Copy */}
       <div className="context-menu-item"
@@ -66,7 +112,15 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           textareaRef.current?.focus();
         }}
       >
-        Copy
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%'
+        }}>
+          <span>Copy</span>
+          <span style={{ marginLeft: 'auto', opacity: 0.7 }}>Ctrl+C</span>
+        </div>
       </div>
       
       {/* Menu entry for Paste */}
@@ -92,9 +146,17 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           textareaRef.current?.focus();
         }}
       >
-        Paste
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%'
+        }}>
+          <span>Paste</span>
+          <span style={{ marginLeft: 'auto', opacity: 0.7 }}>Ctrl+V</span>
+        </div>
       </div>
-      
+
       {/* Menu entry for Select All */}
       <div
         className="context-menu-item"
@@ -118,7 +180,15 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           setContextMenu({ visible: false, x: 0, y: 0 });
         }}
       >
-        Select All
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%'
+        }}>
+          <span>SelectAll</span>
+          <span style={{ marginLeft: 'auto', opacity: 0.7 }}>Ctrl+A</span>
+        </div>
       </div>
     </div>
   );
