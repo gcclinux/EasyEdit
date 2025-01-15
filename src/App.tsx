@@ -165,12 +165,6 @@ const App = () => {
       textareaRef.current.focus();
     }
   }, [editorContent]);
-
-  // const toggleLayout = () => {
-  //   if (!isEditFull && !isPreviewFull) {
-  //     setIsHorizontal(!isHorizontal);
-  //   }
-  // };
   
   // toggleEdit function
   const toggleEdit = () => {
@@ -330,13 +324,13 @@ const App = () => {
             e.preventDefault();
             const target = e.target as HTMLTextAreaElement;
             const { selectionStart, selectionEnd } = target;
-            const newValue = editorContent.substring(0, selectionStart) + '           ' + editorContent.substring(selectionEnd); // 11 spaces
+            const newValue = editorContent.substring(0, selectionStart) + '    ' + editorContent.substring(selectionEnd); // 4 spaces
             setEditorContent(newValue);
             setTimeout(() => {
               if (textareaRef.current) {
                 textareaRef.current.value = newValue; // Explicitly set the value of the textarea
-                cursorPositionRef.current = selectionStart + 11; // Update cursor position
-                textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current); // Move cursor after the 11 spaces
+                cursorPositionRef.current = selectionStart + 4; // Update cursor position
+                textareaRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current); // Move cursor after the 4 spaces
               }
             }, 0);
           }
