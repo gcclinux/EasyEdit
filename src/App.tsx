@@ -20,6 +20,7 @@ import {
 } from './insertMermaid.ts';
 import { TableGenerator } from './autoGenerator/TableGenerator.tsx';
 import { GanttGenerator } from './autoGenerator/GanttGenerator.tsx';
+import { TimelineGenerator } from './autoGenerator/TimelineGenerator.tsx';
 import ContextMenu from './autoGenerator/ContextMenu.tsx';
 import { 
   HistoryState, 
@@ -70,6 +71,7 @@ const App = () => {
   const cursorPositionRef = useRef<number>(0);
   const [tableModalOpen, setTableModalOpen] = useState(false);
   const [ganttModalOpen, setGanttModalOpen] = useState(false);
+  const [timelineModalOpen, setTimelineModalOpen] = useState(false);
   const [showHeaderDropdown, setShowHeaderDropdown] = useState(false);
   const [isEditFull, setIsEditFull] = useState<boolean>(false);
   const [isPreviewFull, setIsPreviewFull] = useState<boolean>(false);
@@ -764,6 +766,7 @@ const App = () => {
               setTableModalOpen(false);
             }}
           />
+          &#8741;&nbsp;
           <button className='button-auto' onClick={() => setGanttModalOpen(true)} title="Support Creating a Mermaid Gantt Chart">
             Auto Gantt &#8711;
           </button>
@@ -774,7 +777,20 @@ const App = () => {
               setEditorContent(editorContent + ganttText);
               setGanttModalOpen(false);
             }}/>
+
+          &#8741;&nbsp;
+            <button className='button-auto' onClick={() => setTimelineModalOpen(true)} title="Support Creating a Mermaid Timeline Chart">
+              Auto Timeline &#8711;
+            </button>
+            <TimelineGenerator
+              isOpen={timelineModalOpen}
+              onClose={() => setTimelineModalOpen(false)}
+              onInsert={(timelineText) => {
+                setEditorContent(editorContent + timelineText);
+                setTimelineModalOpen(false);
+            }}/>
         </div>
+
         <div className="toolbar">
           <button className="button" onClick={handlerCheckSyntax} title="Markdown check / uncheck example">
           &#9744;&nbsp;&#8741;&nbsp;&#9745;
