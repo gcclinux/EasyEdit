@@ -24,25 +24,63 @@ interface Section {
     timelines: TimelinePeriod[];
 }
 
+const months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+];
+
+const getCurrentMonthYear = () => {
+    const date = new Date();
+    return {
+        month: date.getMonth(),
+        year: date.getFullYear() % 100 // Get last 2 digits
+    };
+};
+
+const getNextMonthYear = (currentMonth: number, currentYear: number) => {
+    if (currentMonth === 11) {
+        return { month: 0, year: currentYear + 1 };
+    }
+    return { month: currentMonth + 1, year: currentYear };
+};
+
 export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, onClose, onInsert }) => {
-  const [sections, setSections] = useState<Section[]>([
-    { id: 1, name: 'Section ( Q1 2025 )', timelines: [{ id: 1, name: 'Timeline (January)', events: [{ id: 1, name: 'Event Description' }] }] },
-  ]);
+    const [currentDate, setCurrentDate] = useState(getCurrentMonthYear());
+    
+    const [sections, setSections] = useState<Section[]>([{
+        id: 1,
+        name: `Q${Math.floor(currentDate.month / 3) + 1} '${currentDate.year}`,
+        timelines: [{
+            id: 1,
+            name: `${months[currentDate.month]} ${currentDate.year}`,
+            events: [{ id: 1, name: 'Event Description' }]
+        }]
+    }]);
 
     const addSection = () => {
+        const nextDate = getNextMonthYear(currentDate.month, currentDate.year);
+        setCurrentDate(nextDate);
+        
         const newSection = {
-        id: sections.length + 1,
-        name: `Section ${sections.length + 1}`,
-        timelines: [{ id: 1, name: 'Timeline (January)', events: [{ id: 1, name: 'Event Description' }] }]
+            id: sections.length + 1,
+            name: `Q${Math.floor(nextDate.month / 3) + 1} '${nextDate.year}`,
+            timelines: [{
+                id: 1,
+                name: `${months[nextDate.month]} ${nextDate.year}`,
+                events: [{ id: 1, name: 'Event Description' }]
+            }]
         };
         setSections([...sections, newSection]);
     };
 
     const addTimeline = (sectionIndex: number) => {
+        const nextDate = getNextMonthYear(currentDate.month, currentDate.year);
+        setCurrentDate(nextDate);
+        
         const newTimeline = {
-        id: sections[sectionIndex].timelines.length + 1,
-        name: `Timeline ${sections[sectionIndex].timelines.length + 1}`,
-        events: [{ id: 1, name: 'Event Description' }]
+            id: sections[sectionIndex].timelines.length + 1,
+            name: `${months[nextDate.month]} ${nextDate.year}`,
+            events: [{ id: 1, name: 'Event Description' }]
         };
         const updatedSections = sections.map((section, i) => {
         if (i === sectionIndex) {
@@ -164,7 +202,7 @@ export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, on
         let timeline = '```mermaid\ntimeline\n';
   
         sections.forEach((section) => {
-        timeline += `    section ${section.name}\n`;
+        timeline += `section ${section.name}\n`;
 
             section.timelines.forEach((TimelinePeriod) => {
                 const eventTexts = TimelinePeriod.events.map(event => event.name).join(' : ');
@@ -193,8 +231,8 @@ export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, on
                                                 type='text'
                                                 value={section.name}
                                                 onChange={(e) => updateSection(i, 'name', e.target.value)}
-                                                placeholder='Section ( Q1 2025 )'
-                                                className='time-input'
+                                                placeholder='Section Name'
+                                                className='time-input-section'
                                             />
                                             <button onClick={() => removeSection(i)}>Remove Section</button>
                                         </div>
@@ -204,8 +242,8 @@ export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, on
                                                     type='text'
                                                     value={TimelinePeriod.name}
                                                     onChange={(e) => updateTimeline(i, j, 'name', e.target.value)}
-                                                    placeholder='Timeline (January)'
-                                                    className='time-input'
+                                                    placeholder='Timeline Name'
+                                                    className='time-input-timeline'
                                                 />
                                                 <button onClick={() => removeTimeline(i, j)}>Remove Timeline</button>
                                             </div>
