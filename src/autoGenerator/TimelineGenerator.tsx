@@ -26,14 +26,14 @@ interface Section {
 
 export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, onClose, onInsert }) => {
   const [sections, setSections] = useState<Section[]>([
-    { id: 1, name: 'Section name', timelines: [{ id: 1, name: 'Timeline Period', events: [{ id: 1, name: 'Event Name' }] }] },
+    { id: 1, name: 'Section ( Q1 2025 )', timelines: [{ id: 1, name: 'Timeline (January)', events: [{ id: 1, name: 'Event Description' }] }] },
   ]);
 
     const addSection = () => {
         const newSection = {
         id: sections.length + 1,
         name: `Section ${sections.length + 1}`,
-        timelines: [{ id: 1, name: 'Timeline name', events: [{ id: 1, name: 'Event Name' }] }]
+        timelines: [{ id: 1, name: 'Timeline (January)', events: [{ id: 1, name: 'Event Description' }] }]
         };
         setSections([...sections, newSection]);
     };
@@ -42,7 +42,7 @@ export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, on
         const newTimeline = {
         id: sections[sectionIndex].timelines.length + 1,
         name: `Timeline ${sections[sectionIndex].timelines.length + 1}`,
-        events: [{ id: 1, name: 'Event Name' }]
+        events: [{ id: 1, name: 'Event Description' }]
         };
         const updatedSections = sections.map((section, i) => {
         if (i === sectionIndex) {
@@ -193,7 +193,7 @@ export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, on
                                                 type='text'
                                                 value={section.name}
                                                 onChange={(e) => updateSection(i, 'name', e.target.value)}
-                                                placeholder='Section name'
+                                                placeholder='Section ( Q1 2025 )'
                                                 className='time-input'
                                             />
                                             <button onClick={() => removeSection(i)}>Remove Section</button>
@@ -204,7 +204,7 @@ export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, on
                                                     type='text'
                                                     value={TimelinePeriod.name}
                                                     onChange={(e) => updateTimeline(i, j, 'name', e.target.value)}
-                                                    placeholder='Timeline name'
+                                                    placeholder='Timeline (January)'
                                                     className='time-input'
                                                 />
                                                 <button onClick={() => removeTimeline(i, j)}>Remove Timeline</button>
@@ -231,9 +231,9 @@ export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, on
                         ))}
                     </div>
                     <div className='time-generator-buttons'>
-                        <button onClick={addSection}>Add Section</button>
-                        <button onClick={() => addTimeline(sections.length - 1)}>Add Timeline</button>
-                        <button onClick={() => addEvent(sections.length - 1, sections[sections.length - 1]?.timelines.length - 1)}>Add Event</button>
+                        <button onClick={addSection}>New Section</button>
+                        <button onClick={() => addTimeline(sections.length - 1)}>New Timeline</button>
+                        <button onClick={() => addEvent(sections.length - 1, sections[sections.length - 1]?.timelines.length - 1)}>New Event</button>
                         
                     </div>
                 </div>
