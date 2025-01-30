@@ -162,16 +162,13 @@ export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, on
 
     const createTimeline = () => {
         let timeline = '```mermaid\ntimeline\n';
-        timeline += '    title Timeline\n';
-
+  
         sections.forEach((section) => {
         timeline += `    section ${section.name}\n`;
 
             section.timelines.forEach((TimelinePeriod) => {
-                timeline += `        section ${TimelinePeriod.name}\n`;
-                TimelinePeriod.events.forEach((event) => {
-                    timeline += `            ${event.name} :${event.id}\n`;
-                });
+                const eventTexts = TimelinePeriod.events.map(event => event.name).join(' : ');
+                timeline += `    ${TimelinePeriod.name} : ${eventTexts}\n`;
             });
         });
 
@@ -184,7 +181,6 @@ export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, on
             <div className='time-modal-content'>
                 <div className='time-headers-section'>
                     <h2>Mermaid Timeline Generator</h2>
-                    <button onClick={onClose}>Close</button>
                 </div>
                 <div className='time-generator-body'>
                     <div className='time-generator-sections'>
@@ -238,9 +234,13 @@ export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, on
                         <button onClick={addSection}>Add Section</button>
                         <button onClick={() => addTimeline(sections.length - 1)}>Add Timeline</button>
                         <button onClick={() => addEvent(sections.length - 1, sections[sections.length - 1]?.timelines.length - 1)}>Add Event</button>
-                        <button onClick={() => onInsert(createTimeline())}>Insert Timeline</button>
+                        
                     </div>
                 </div>
+                <div className='time-generator-buttons botton-hover'>
+                    <button onClick={onClose}>Cancel</button>
+                    <button onClick={() => onInsert(createTimeline())}>Insert Timeline</button>
+                    </div>
             </div>
         </div>
     ) : null;
