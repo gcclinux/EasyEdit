@@ -122,3 +122,12 @@ gantt
 &#x2713; [Windows x86] [EasyEdit-Setup-1.3.7.msi](https://github.com/gcclinux/EasyEdit/releases/download/1.3.7/EasyEdit-Setup-1.3.7.msi)  [ **[SHA256](## "f66ff2096c813c340e54775e30325d7075d945673e901cc8da6aa732b390b0ed")** ] [ 
 **[MD5](## "9fa05c2bef5a1427026373a5161a51e0")** ]
 
+## NOTE:
+### If AppImage fails with setuid_sandbox_host as it happens in some systems:
+```
+FATAL:setuid_sandbox_host.cc(163)] The SUID sandbox helper binary was found, but is not configured correctly. Rather than run without sandboxing I'm aborting now. You need to make sure that /tmp/.mount_EasyEduPn1dQ/chrome-sandbox is owned by root and has mode 4755.
+```
+### Solution Exec:
+```
+./EasyEdit-1.3.7-x86_64.AppImage --no-sandbox
+```
