@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "server": "vite --host --port 3024",
-    "start": "concurrently \"vite --host --port 3024\" \"wait-on http://localhost:3024 && electron .\"",
+    "start": "concurrently \"vite\" \"wait-on http://localhost:3024 && electron .\"",
     "build": "tsc && vite build",
     "electron:build": "npm run build && electron-builder && node renameArtifacts.cjs"
   },

@@ -39,7 +39,6 @@ async function setupServer(isDev) {
   const port = await detect(defaultPort);
   
   if (isDev) {
-    console.log('Running in development mode');
     return port;
   } else {
     const app = express();
