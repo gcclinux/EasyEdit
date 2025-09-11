@@ -4,8 +4,8 @@ import mermaid from 'mermaid';
 import debounce from 'lodash.debounce';
 import './App.css';
 import markdownMarkWhite from './assets/md.svg';
-import { IpcRendererEvent } from 'electron';
-const { ipcRenderer } = window.require('electron');
+// import { IpcRendererEvent } from 'electron';
+// const electronAPI = (window as any).electronAPI;
 import { saveAsPDF } from './saveAsPDF.tsx';
 import {
   insertClassSyntax,
@@ -153,17 +153,33 @@ const App = () => {
     setEditorContent(e.target.value);
   };
 
+  // First, define the interface for electronAPI
+  interface ElectronAPI {
+    handleFileOpened?: (callback: any) => void;
+    handlePreviewSpacing?: (callback: any) => void;
+    getLineHeight?: () => void;
+    setLineHeight?: (callback: any) => void;
+  }
+
+  // Update the electronAPI declaration
+  const electronAPI = (window as any).electronAPI as ElectronAPI | undefined;
+
   // Add event listeners for file-opened and update-paragraph-spacing for rendering
   useEffect(() => {
-    ipcRenderer.on('file-opened', (_event: IpcRendererEvent, content: string) => {
+    // Only proceed if electronAPI exists
+    if (!electronAPI) {
+      console.log('Running in browser mode - some features disabled');
+      return;
+    }
+
+    const fileOpenedHandler = (_event: any, content: string) => {
       setEditorContent(content);
-    });
+    };
 
-    let previewLineHeight = 1.1;
-    let newLineHeight = previewLineHeight;
-    ipcRenderer.on('update-preview-spacing', (_event: IpcRendererEvent, {action}: {action: string}) => {
+    const previewSpacingHandler = (_event: any, {action}: {action: string}) => {
+      let previewLineHeight = 1.1;
+      let newLineHeight = previewLineHeight;
 
-      // Increase or decrease line height based on action
       if (action === 'increase' && previewLineHeight < 1.9) {
         newLineHeight = Math.min(1.9, previewLineHeight + 0.1);
         lineHeightValue.current = newLineHeight;
@@ -172,7 +188,6 @@ const App = () => {
         lineHeightValue.current = newLineHeight;
       }
 
-      // Round to 1 decimal place
       newLineHeight = Math.round(newLineHeight * 10) / 10;  
       if (newLineHeight !== previewLineHeight) {
         previewLineHeight = newLineHeight;
@@ -180,25 +195,42 @@ const App = () => {
         const previewElements = document.querySelectorAll(
           '.preview-horizontal, .preview-parallel, .preview-horizontal-full'
         );
-        // Set line height for all preview elements
         previewElements.forEach((element) => {
           const htmlElement = element as HTMLElement;
           htmlElement.style.lineHeight = newLineHeight.toString();
         });
       }
-    });
+    };
 
-    // Initialize line height value
-    ipcRenderer.on('get-line-height', () => {
-      ipcRenderer.send('line-height-value', lineHeightValue);
-    });
-  
-    // Cleanup ipcRenderer listeners
+    const lineHeightHandler = (value: number) => {
+      lineHeightValue.current = value;
+    };
+
+    // Set up event listeners
+    if (electronAPI.handleFileOpened) {
+      electronAPI.handleFileOpened(fileOpenedHandler);
+    }
+
+    if (electronAPI.handlePreviewSpacing) {
+      electronAPI.handlePreviewSpacing(previewSpacingHandler);
+    }
+
+    if (electronAPI.getLineHeight && electronAPI.setLineHeight) {
+      electronAPI.getLineHeight();
+      electronAPI.setLineHeight(lineHeightHandler);
+    }
+
+    // Cleanup function
     return () => {
-      ipcRenderer.removeAllListeners('file-opened');
-      ipcRenderer.removeAllListeners('update-preview-spacing');
-      ipcRenderer.removeAllListeners('init-line-height');
-      ipcRenderer.removeAllListeners('get-line-height');
+      if (electronAPI.handleFileOpened) {
+        electronAPI.handleFileOpened(fileOpenedHandler);
+      }
+      if (electronAPI.handlePreviewSpacing) {
+        electronAPI.handlePreviewSpacing(previewSpacingHandler);
+      }
+      if (electronAPI.setLineHeight) {
+        electronAPI.setLineHeight(lineHeightHandler);
+      }
     };
   }, [lineHeightValue]);
 
@@ -257,95 +289,95 @@ const App = () => {
 
 
 
-  // const PreviewComponent = React.memo(() => {
-  //   useEffect(() => {
-  //     initializeMermaid();
-  //   }, [editorContent, initializeMermaid]);
+// const PreviewComponent = React.memo(() => {
+//   useEffect(() => {
+//     initializeMermaid();
+//   }, [editorContent, initializeMermaid]);
 
-  //   // Add new useEffect for auto-scrolling
-  //   useEffect(() => {
-  //     if (!previewRef.current) return;
+//   // Add new useEffect for auto-scrolling
+//   useEffect(() => {
+//     if (!previewRef.current) return;
 
-  //     // Create observer to watch for Mermaid diagram changes
-  //     const observer = new MutationObserver(() => {
-  //       if (previewRef.current) {
-  //         // Add small delay to ensure diagrams are fully rendered
-  //         setTimeout(() => {
-  //           previewRef.current!.scrollTop = previewRef.current!.scrollHeight;
-  //         }, 100);
-  //       }
-  //     });
+//     // Create observer to watch for Mermaid diagram changes
+//     const observer = new MutationObserver(() => {
+//       if (previewRef.current) {
+//         // Add small delay to ensure diagrams are fully rendered
+//         setTimeout(() => {
+//           previewRef.current!.scrollTop = previewRef.current!.scrollHeight;
+//         }, 100);
+//       }
+//     });
 
-  //     // Observe changes in the preview div
-  //     observer.observe(previewRef.current, {
-  //       childList: true,
-  //       subtree: true,
-  //       attributes: true
-  //     });
+//     // Observe changes in the preview div
+//     observer.observe(previewRef.current, {
+//       childList: true,
+//       subtree: true,
+//       attributes: true
+//     });
 
-  //     // Initial scroll
-  //     setTimeout(() => {
-  //       if (previewRef.current) {
-  //         previewRef.current.scrollTop = previewRef.current.scrollHeight;
-  //       }
-  //     }, 100);
+//     // Initial scroll
+//     setTimeout(() => {
+//       if (previewRef.current) {
+//         previewRef.current.scrollTop = previewRef.current.scrollHeight;
+//       }
+//     }, 100);
 
-  //     // Cleanup
-  //     return () => observer.disconnect();
-  //   }, [editorContent]);
+//     // Cleanup
+//     return () => observer.disconnect();
+//   }, [editorContent]);
 
-  //   return (
-  //     <div
-  //     className={
-  //       isPreviewFull
-  //         ? 'preview-horizontal-full'
-  //         : isHorizontal
-  //           ? 'preview-horizontal'
-  //           : 'preview-parallel'
-  //     }
-  //       ref={previewRef}
-  //     >
-  //       <ReactMarkdown
-  //         remarkPlugins={[remarkGfm]}
-  //         rehypePlugins={[rehypeRaw]}
-  //         components={{
-  //           code({ className, children, ...props }) {
-  //             const match = /language-mermaid/.test(className || "");
-  //             if (match) {
-  //               return (
-  //                 <div className="mermaid">
-  //                   {String(children).replace(/\n$/, "")}
-  //                 </div>
-  //               );
-  //             }
-  //             // Check if it's an inline code (no language class means inline)
-  //             const isInline = !className;
+//   return (
+//     <div
+//     className={
+//       isPreviewFull
+//         ? 'preview-horizontal-full'
+//         : isHorizontal
+//           ? 'preview-horizontal'
+//           : 'preview-parallel'
+//     }
+//       ref={previewRef}
+//     >
+//       <ReactMarkdown
+//         remarkPlugins={[remarkGfm]}
+//         rehypePlugins={[rehypeRaw]}
+//         components={{
+//           code({ className, children, ...props }) {
+//             const match = /language-mermaid/.test(className || "");
+//             if (match) {
+//               return (
+//                 <div className="mermaid">
+//                   {String(children).replace(/\n$/, "")}
+//                 </div>
+//               );
+//             }
+//             // Check if it's an inline code (no language class means inline)
+//             const isInline = !className;
               
-  //             return (
-  //               <code 
-  //                 className={`${isInline ? 'inline-code' : 'code-block'} ${className || ''}`} 
-  //                 {...props}
-  //               >
-  //                 {children}
-  //               </code>
-  //             );
-  //           },
-  //           pre({ children }) {
-  //             return (
-  //               <pre className="code-block-container">
-  //                 {children}
-  //               </pre>
-  //             );
-  //           }
-  //         }}
-  //       >
-  //         {editorContent}
-  //       </ReactMarkdown>
-  //     </div>
-  //   );
-  // });
+//             return (
+//               <code 
+//                 className={`${isInline ? 'inline-code' : 'code-block'} ${className || ''}`} 
+//                 {...props}
+//               >
+//                 {children}
+//               </code>
+//             );
+//           },
+//           pre({ children }) {
+//             return (
+//               <pre className="code-block-container">
+//                 {children}
+//               </pre>
+//             );
+//           }
+//         }}
+//       >
+//         {editorContent}
+//       </ReactMarkdown>
+//     </div>
+//   );
+// });
 
-  // insertSymbol function inserts a symbol into the textarea
+// insertSymbol function inserts a symbol into the textarea
   const insertSymbol3 = () => insertSymbol("&#8710;");
   const insertSymbol4 = () => insertSymbol("&#8711;");
   const insertSymbol5 = () => insertSymbol("&#8721;");

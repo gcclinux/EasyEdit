@@ -36,23 +36,21 @@ async function saveConfig(window) {
 }
 
 async function setupServer(isDev) {
+  const port = await detect(defaultPort);
+  
   if (isDev) {
-    return `http://localhost:${viteDevPort}`; // Using defaultPort for Vite
+    console.log('Running in development mode');
+    return port;
   } else {
-    const availablePort = await detect(defaultPort);
     const app = express();
-
-    // Serve static files from dist
     app.use(express.static(path.join(__dirname, 'dist')));
-
-    // Handle SPA routing
+    
     app.get('*', (req, res) => {
       res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     });
-
-    // Start server
-    server = app.listen(availablePort);
-    return `http://localhost:${availablePort}`;
+    
+    server = app.listen(port);
+    return port;
   }
 }
 
@@ -77,51 +75,62 @@ async function createMainWindow() {
   const isDev = (await import('electron-is-dev')).default;
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   const iconPath = path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
-  const configPath = path.join(app.getPath('userData'), config);
 
   let windowOptions = {
     width: width,
     height: height,
+    title: 'EasyEdit', // Add this line
     icon: iconPath,
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js')
     }
   };
 
-  // Check if config file exists and read bounds and line height
-  if (fs.existsSync(configPath)) {
-    try {
-      const bounds = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-      if (bounds && bounds.width && bounds.height && bounds.x !== undefined && bounds.y !== undefined) {
-        windowOptions = { ...windowOptions, ...bounds };
+  mainWindow = new BrowserWindow(windowOptions);
+
+  // Add Content Security Policy
+  mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': [
+          "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: http://localhost:* ws://localhost:*"
+        ]
       }
-    } catch (error) {
-      console.error('Error reading config file:', error);
-    }
-  }
+    });
+  });
+
+  const port = await setupServer(isDev);
+  const startUrl = isDev 
+    ? `http://localhost:${viteDevPort}` 
+    : `http://localhost:${port}`;
 
   try {
-    const serverUrl = await setupServer(isDev);
-    mainWindow = new BrowserWindow(windowOptions);
+    await mainWindow.loadURL(startUrl);
+  } catch (err) {
+    console.error('Failed to load URL:', err);
+  }
+
+  // Open DevTools in development
+  // if (isDev) {
+  //   mainWindow.webContents.openDevTools();
+  // }
 
   // Inject custom CSS to hide the scrollbar and disable scrolling
-    mainWindow.webContents.on('did-finish-load', () => {
-      mainWindow.webContents.insertCSS(`
-        body::-webkit-scrollbar { display: none; }
-        body { overflow: hidden; }
-      `);
-    });
-    await mainWindow.loadURL(serverUrl);
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.insertCSS(`
+      body::-webkit-scrollbar { display: none; }
+      body { overflow: hidden; }
+    `);
+  });
 
-    // Handle command line file opening after window loads
-    const args = process.argv.slice(2);
-    if (args.length > 0) {
-      const filePath = args[0];
-      await handleFileOpen(filePath);
-    }
-  } catch (err) {
-    console.error('Failed to start server:', err);
+  // Handle command line file opening after window loads
+  const args = process.argv.slice(2);
+  if (args.length > 0) {
+    const filePath = args[0];
+    await handleFileOpen(filePath);
   }
 
   // Open external links in the default browser
