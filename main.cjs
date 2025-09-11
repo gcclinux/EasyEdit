@@ -16,23 +16,23 @@ app.disableHardwareAcceleration();
 let mainWindow = null;
 let server = null;
 
-// saveConfig function to save window bounds and line height to a JSON file
-async function saveConfig(window) {
-  const bounds = window.getBounds();
-
-  // Get line height value using Promise
-  const lineHeight = await new Promise((resolve) => {
-    window.webContents.send('get-line-height');
-    ipcMain.once('line-height-value', (_event, value) => {
-      resolve(Number(value.current).toFixed(1));
-    });
-  });
-
-  const details = {
-    ...bounds,
-    lineheight: parseFloat(lineHeight)
-  };
-  fs.writeFileSync(configPath, JSON.stringify(details, null, 2));
+// saveConfig function to save window bounds to a JSON file (synchronous to ensure persistence)
+function saveConfig(window) {
+  try {
+    if (!window || window.isDestroyed && window.isDestroyed()) return;
+    const b = window.getBounds();
+    const details = {
+      width: b.width,
+      height: b.height,
+      x: b.x,
+      y: b.y
+    };
+    // write synchronously so we don't lose data when quitting
+    fs.writeFileSync(configPath, JSON.stringify(details, null, 2), 'utf-8');
+  } catch (err) {
+    // log but don't throw — window may already be gone
+    console.error('Failed to save window bounds:', err);
+  }
 }
 
 async function setupServer(isDev) {
@@ -76,19 +76,53 @@ async function createMainWindow() {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   const iconPath = path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
 
+  // default window options
   let windowOptions = {
-    width: width,
-    height: height,
-    title: 'EasyEdit', // Add this line
+    width: Math.min(1200, width),
+    height: Math.min(800, height),
     icon: iconPath,
     webPreferences: {
-      nodeIntegration: true,
+      nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     }
   };
 
+  // Load persisted bounds if config exists
+  try {
+    if (fs.existsSync(configPath)) {
+      const raw = fs.readFileSync(configPath, 'utf-8');
+      const bounds = JSON.parse(raw);
+      if (bounds && bounds.width && bounds.height && bounds.x !== undefined && bounds.y !== undefined) {
+        windowOptions = {
+          ...windowOptions,
+          width: bounds.width,
+          height: bounds.height,
+          x: bounds.x,
+          y: bounds.y
+        };
+      }
+    }
+  } catch (err) {
+    console.error('Failed to read window bounds from config:', err);
+  }
+
   mainWindow = new BrowserWindow(windowOptions);
+
+  // ensure we save bounds when window is closed
+  mainWindow.on('close', () => {
+    try {
+      // only attempt to save if window still valid
+      if (mainWindow && !mainWindow.isDestroyed()) saveConfig(mainWindow);
+    } catch (err) {
+      console.error('Error saving bounds on close:', err);
+    }
+  });
+
+  // (optional) also clear reference on 'closed'
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
 
   // Add Content Security Policy
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
@@ -137,10 +171,6 @@ async function createMainWindow() {
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
     return { action: 'deny' };
-  });
-
-  mainWindow.on('close', async () => {
-    await saveConfig(mainWindow);
   });
 
   return mainWindow;
@@ -229,13 +259,26 @@ function createMenuTemplate() {
           }
         },
         { role: "reload" },
-        {
-          label: "Exit",
-          click: async () => {
-            await saveConfig(mainWindow);
-            app.quit();
-
-          },
+        { 
+          label: 'Exit', 
+          accelerator: 'Ctrl+Q', 
+          click: () => { 
+            try {
+              // Save bounds for all open windows before quitting
+              BrowserWindow.getAllWindows().forEach(w => {
+                try {
+                  if (w && !w.isDestroyed()) saveConfig(w);
+                } catch (e) {
+                  console.error('Error saving window during Exit:', e);
+                }
+              });
+            } catch (e) {
+              console.error('Error during Exit save loop:', e);
+            } finally {
+              // Use app.quit() — let Electron close windows gracefully
+              app.quit();
+            }
+          } 
         },
       ],
     },
@@ -390,6 +433,17 @@ app.on('window-all-closed', () => {
   }
   if (process.platform !== 'darwin') {
     app.quit();
+  }
+});
+
+// Ensure app-wide quit also saves bounds (covers menu role 'quit' / app.quit())
+app.on('before-quit', (e) => {
+  try {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      saveConfig(mainWindow);
+    }
+  } catch (err) {
+    console.error('Error saving config in before-quit:', err);
   }
 });
 
