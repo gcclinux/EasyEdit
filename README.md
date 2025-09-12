@@ -23,7 +23,12 @@ $ npm install
 
 ## *Run the Standalone Project*
 ```
-$ npm start
+$ npm run app
+```
+
+## *Run the server manually*
+```
+$ npm run server
 ```
 
 ## *Build as an standalone App (Windows & Linux)*
