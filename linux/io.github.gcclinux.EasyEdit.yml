@@ -57,7 +57,7 @@ modules:
             <developer_name>Ricardo Wagemaker</developer_name>
             <url type="homepage">https://github.com/gcclinux/EasyEdit</url>
             <releases>
-                <release version="1.3.6" date="2024-12-29"/>
+                <release version="1.3.8" date="2025-09-13"/>
             </releases>
         </component>
         EOF
@@ -74,7 +74,7 @@ modules:
         EOF
     sources:
       - type: archive
-        url: https://github.com/gcclinux/EasyEdit/releases/download/1.3.6b/EasyEdit-1.3.6-x64.zip
+        url: https://github.com/gcclinux/EasyEdit/releases/download/1.3.8/EasyEdit-1.3.8-x64.zip
         sha256: a6ecad23799cb3e91cbef78e8eac2cd5baf35a1379a467590bab24b98269d1b6
         only-arches: 
           - x86_64
