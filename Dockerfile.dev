@@ -1,4 +1,4 @@
-FROM node:20-bullseye-slim
+FROM node:20-alpine
 
 # Create app dir
 WORKDIR /usr/src/app
@@ -29,7 +29,7 @@ ENV NODE_ENV=development
 CMD ["npm", "run", "server"]
 
 
-# BUILD (for reference, not used in dev)
+# BUILD DEV (for reference, not used in dev)
 # docker build -t easyedit-web:dev -f Dockerfile.dev .
 # RUN (for reference, not used in dev)
 # docker run --rm -p 3024:3024 easyedit-web:dev
