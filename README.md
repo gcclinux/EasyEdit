@@ -32,7 +32,7 @@ $ npm run server
 $ npm run electron:build
 ```
 
-## *Run Docker Example*
+## *Run Pre-built Docker Example*
 ```
 # Github x86_64
 # Pull
