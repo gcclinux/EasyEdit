@@ -5,7 +5,7 @@ import rehypeRaw from 'rehype-raw';
 import mermaid from 'mermaid';
 
 interface PreviewComponentProps {
-  previewRef: React.RefObject<HTMLDivElement>;
+  previewRef: React.RefObject<HTMLDivElement | null>;
   editorContent: string;
   isPreviewFull: boolean;
   isHorizontal: boolean;
