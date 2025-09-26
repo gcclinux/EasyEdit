@@ -15,28 +15,65 @@ const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 // Retrieve the version from package.json
 var version = packageJson.version;
 document.getElementById('version').textContent = version;
+// Determine remote/latest version. Prefer a local file (packaged apps may ship it),
+// otherwise fall back to fetching the canonical release metadata on GitHub.
+function setRemoteVersionText(v) {
+    document.getElementById('remoteVersion').textContent = v || 'unknown';
+}
 
-// Fetch the remote version from version.json
-fetch('https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/release/latest.json')
-.then(response => {
-    if (!response.ok) {
-        throw new Error('Network response was not ok ' + response.statusText);
+const localLatestPath = path.join(__dirname, 'latest.json');
+let remoteVersion = '';
+
+if (fs.existsSync(localLatestPath)) {
+    try {
+        const raw = fs.readFileSync(localLatestPath, 'utf8');
+        const data = JSON.parse(raw);
+        remoteVersion = data.version || '';
+        setRemoteVersionText(remoteVersion);
+        // run check immediately
+        checkVersion();
+    } catch (err) {
+        console.error('Error reading local latest.json:', err);
+        setRemoteVersionText('unknown');
+        // fall through to network fetch below
     }
-    return response.json();
-})
-.then(data => {
-    var remoteVersion = data.version;
-    document.getElementById('remoteVersion').textContent = remoteVersion;
-})
-.catch(error => console.error('Error fetching version:', error));
+}
+
+if (!remoteVersion) {
+    // remote fallback (raw GitHub URL)
+    fetch('https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/release/latest.json')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        remoteVersion = data.version || '';
+        setRemoteVersionText(remoteVersion);
+        checkVersion();
+    })
+    .catch(error => {
+        console.error('Error fetching remote latest.json:', error);
+        setRemoteVersionText('unknown');
+        const versionCheck = document.getElementById('version-check');
+        if (versionCheck) {
+            versionCheck.classList.remove('placeholder');
+            versionCheck.textContent = 'Unable to determine remote version (offline or network error).';
+        }
+    });
+}
 
 // Check if a new version is available
 function checkVersion() {
-    var version = document.getElementById('version').textContent;
-    var remoteVersion = document.getElementById('remoteVersion').textContent;
+    var version = document.getElementById('version')?.textContent || '';
+    var remoteVersionDom = document.getElementById('remoteVersion')?.textContent || '';
     var versionCheck = document.getElementById('version-check');
 
-    console.log("Comparing versions:", version, remoteVersion);
+    // prefer the variable we may have already set, fall back to DOM text
+    var remoteVersionToCompare = (typeof remoteVersion !== 'undefined' && remoteVersion) ? remoteVersion : remoteVersionDom;
+
+    console.log('Comparing versions:', version, remoteVersionToCompare);
 
     function compareVersions(v1, v2) {
         if (!v1 || !v2) return 0;
@@ -54,7 +91,15 @@ function checkVersion() {
         return 0;
     }
 
-    if (compareVersions(remoteVersion, version) > 0) {
+    if (!remoteVersionToCompare) {
+        if (versionCheck) {
+            versionCheck.classList.remove('placeholder');
+            versionCheck.textContent = 'Remote version unknown.';
+        }
+        return;
+    }
+
+    if (compareVersions(remoteVersionToCompare, version) > 0) {
         versionCheck.classList.remove('placeholder');
         versionCheck.innerHTML = 'New version available <a href="https://github.com/gcclinux/EasyEdit/releases">here</a>';
     } else {

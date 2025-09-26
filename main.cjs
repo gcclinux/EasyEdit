@@ -250,174 +250,174 @@ function setupIPCHandlers() {
   });
 }
 
-function createMenuTemplate() {
-  const menuTemplate = [
-    {
-      label: "File",
-      submenu: [
-        {
-          label: "Open File",
-          accelerator: "CmdOrCtrl+O",
-          click: async () => {
-            const result = await dialog.showOpenDialog({
-              properties: ['openFile']
-            });
-            if (!result.canceled) {
-              try {
-                const filePath = result.filePaths[0];
-                const content = await fsPromises.readFile(filePath, 'utf-8');
-                mainWindow.webContents.send('file-opened', content);
-              } catch (err) {
-                console.error('Error reading file:', err);
-              }
-            }
-          }
-        },
-        { role: "reload" },
-        { 
-          label: 'Exit', 
-          accelerator: 'Ctrl+Q', 
-          click: () => { 
-            try {
-              // Save bounds for all open windows before quitting
-              BrowserWindow.getAllWindows().forEach(w => {
-                try {
-                  if (w && !w.isDestroyed()) saveConfig(w);
-                } catch (e) {
-                  console.error('Error saving window during Exit:', e);
-                }
-              });
-            } catch (e) {
-              console.error('Error during Exit save loop:', e);
-            } finally {
-              // Use app.quit() — let Electron close windows gracefully
-              app.quit();
-            }
-          } 
-        },
-      ],
-    },
-    {
-      label: "Edit",
-      submenu: [
-        { role: "undo" },
-        { role: "redo" },
-        { type: "separator" },
-        { role: "cut" },
-        { role: "copy" },
-        { role: "paste" },
-        { role: "delete" },
-        { role: "selectall" },
-      ],
-    },
-    {
-      label: "View",
-      submenu: [
-        {
-          label: "Go Back",
-          accelerator: "CommandOrControl+B",
-          click: () => {
-            const focusedWindow = BrowserWindow.getFocusedWindow();
-            if (focusedWindow && focusedWindow.webContents.navigationHistory.canGoBack()) {
-              focusedWindow.webContents.navigationHistory.goBack();
-            }
-          },
-        },
-        { type: "separator" },
-        { role: "resetzoom" },
-        { role: "zoomin" },
-        { role: "zoomout" },
-        { type: "separator" },
-        {
-          label: "PreviewPanel",
-          submenu: [
-            {
-              label: "Increase LineHeight",
-              accelerator: "CommandOrControl+M",
-              click: () => {
-                mainWindow.webContents.send('update-preview-spacing', {
-                  action: 'increase',
-                  selector: '.preview-horizontal, .preview-parallel, .preview-horizontal-full'
-                });
-              },
-            },
-            {
-              label: "Decrease LineHeight",
-              accelerator: "CommandOrControl+L",
-              click: () => {
-                mainWindow.webContents.send('update-preview-spacing', {
-                  action: 'decrease',
-                  selector: '.preview-horizontal, .preview-parallel, .preview-horizontal-full'
-                });
-              },
-            },
-          ],
-        },
-       { role: "toggledevtools" },
-      ],
-    },
-    {
-      label: "Help",
-      submenu: [
-        {
-          label: 'Check for Updates',
-          click: () => {
-            const iconPath = path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
-            releaseWindow = new BrowserWindow({
-              width: 1270,
-              height: 600,
-              modal: true,
-              icon: iconPath,
-              parent: mainWindow,
-              webPreferences: {
-                nodeIntegration: true,
-                contextIsolation: false,
-              },
-            });
-            releaseWindow.setMenuBarVisibility(false);
-            releaseWindow.loadFile(path.join(__dirname, 'release','release.html'));
-            releaseWindow.webContents.on('will-navigate', (event, url) => {
-              event.preventDefault();
-              openLinkInNewWindow(url);
-            });
+// function createMenuTemplate() {
+//   const menuTemplate = [
+//     {
+//       label: "File",
+//       submenu: [
+//         {
+//           label: "Open File",
+//           accelerator: "CmdOrCtrl+O",
+//           click: async () => {
+//             const result = await dialog.showOpenDialog({
+//               properties: ['openFile']
+//             });
+//             if (!result.canceled) {
+//               try {
+//                 const filePath = result.filePaths[0];
+//                 const content = await fsPromises.readFile(filePath, 'utf-8');
+//                 mainWindow.webContents.send('file-opened', content);
+//               } catch (err) {
+//                 console.error('Error reading file:', err);
+//               }
+//             }
+//           }
+//         },
+//         { role: "reload" },
+//         { 
+//           label: 'Exit', 
+//           accelerator: 'Ctrl+Q', 
+//           click: () => { 
+//             try {
+//               // Save bounds for all open windows before quitting
+//               BrowserWindow.getAllWindows().forEach(w => {
+//                 try {
+//                   if (w && !w.isDestroyed()) saveConfig(w);
+//                 } catch (e) {
+//                   console.error('Error saving window during Exit:', e);
+//                 }
+//               });
+//             } catch (e) {
+//               console.error('Error during Exit save loop:', e);
+//             } finally {
+//               // Use app.quit() — let Electron close windows gracefully
+//               app.quit();
+//             }
+//           } 
+//         },
+//       ],
+//     },
+//     {
+//       label: "Edit",
+//       submenu: [
+//         { role: "undo" },
+//         { role: "redo" },
+//         { type: "separator" },
+//         { role: "cut" },
+//         { role: "copy" },
+//         { role: "paste" },
+//         { role: "delete" },
+//         { role: "selectall" },
+//       ],
+//     },
+//     {
+//       label: "View",
+//       submenu: [
+//         {
+//           label: "Go Back",
+//           accelerator: "CommandOrControl+B",
+//           click: () => {
+//             const focusedWindow = BrowserWindow.getFocusedWindow();
+//             if (focusedWindow && focusedWindow.webContents.navigationHistory.canGoBack()) {
+//               focusedWindow.webContents.navigationHistory.goBack();
+//             }
+//           },
+//         },
+//         { type: "separator" },
+//         { role: "resetzoom" },
+//         { role: "zoomin" },
+//         { role: "zoomout" },
+//         { type: "separator" },
+//         {
+//           label: "PreviewPanel",
+//           submenu: [
+//             {
+//               label: "Increase LineHeight",
+//               accelerator: "CommandOrControl+M",
+//               click: () => {
+//                 mainWindow.webContents.send('update-preview-spacing', {
+//                   action: 'increase',
+//                   selector: '.preview-horizontal, .preview-parallel, .preview-horizontal-full'
+//                 });
+//               },
+//             },
+//             {
+//               label: "Decrease LineHeight",
+//               accelerator: "CommandOrControl+L",
+//               click: () => {
+//                 mainWindow.webContents.send('update-preview-spacing', {
+//                   action: 'decrease',
+//                   selector: '.preview-horizontal, .preview-parallel, .preview-horizontal-full'
+//                 });
+//               },
+//             },
+//           ],
+//         },
+//        { role: "toggledevtools" },
+//       ],
+//     },
+//     {
+//       label: "Help",
+//       submenu: [
+//         {
+//           label: 'Check for Updates',
+//           click: () => {
+//             const iconPath = path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
+//             releaseWindow = new BrowserWindow({
+//               width: 1270,
+//               height: 600,
+//               modal: true,
+//               icon: iconPath,
+//               parent: mainWindow,
+//               webPreferences: {
+//                 nodeIntegration: true,
+//                 contextIsolation: false,
+//               },
+//             });
+//             releaseWindow.setMenuBarVisibility(false);
+//             releaseWindow.loadFile(path.join(__dirname, 'release','release.html'));
+//             releaseWindow.webContents.on('will-navigate', (event, url) => {
+//               event.preventDefault();
+//               openLinkInNewWindow(url);
+//             });
             
-            releaseWindow.webContents.setWindowOpenHandler(({ url }) => {
-              openLinkInNewWindow(url);
-              return { action: 'deny' };
-            });
-          },
-        },
-        { type: "separator" },
-        {
-          label: 'About',
-          click: () => {
-            const iconPath = path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
-            const aboutWindow = new BrowserWindow({
-              width: 1270,
-              height: 860,
-              modal: true,
-              icon: iconPath,
-              parent: mainWindow,
-              webPreferences: {
-                nodeIntegration: true,
-                contextIsolation: false,
-              },
-            });
-            aboutWindow.setMenuBarVisibility(false);
-            aboutWindow.loadFile(path.join(__dirname, 'about','about.html'));
-          },
-        },
-      ],
-    }
-  ];
+//             releaseWindow.webContents.setWindowOpenHandler(({ url }) => {
+//               openLinkInNewWindow(url);
+//               return { action: 'deny' };
+//             });
+//           },
+//         },
+//         { type: "separator" },
+//         {
+//           label: 'About',
+//           click: () => {
+//             const iconPath = path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
+//             const aboutWindow = new BrowserWindow({
+//               width: 1270,
+//               height: 860,
+//               modal: true,
+//               icon: iconPath,
+//               parent: mainWindow,
+//               webPreferences: {
+//                 nodeIntegration: true,
+//                 contextIsolation: false,
+//               },
+//             });
+//             aboutWindow.setMenuBarVisibility(false);
+//             aboutWindow.loadFile(path.join(__dirname, 'about','about.html'));
+//           },
+//         },
+//       ],
+//     }
+//   ];
 
-  return menuTemplate;
-}
+//   return menuTemplate;
+// }
 
-function setupMenu() {
-  const menu = Menu.buildFromTemplate(createMenuTemplate());
-  Menu.setApplicationMenu(menu);
-}
+// function setupMenu() {
+//   const menu = Menu.buildFromTemplate(createMenuTemplate());
+//   Menu.setApplicationMenu(menu);
+// }
 
 // App lifecycle management
 app.whenReady().then(async () => {
