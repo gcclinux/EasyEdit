@@ -111,6 +111,19 @@ async function createMainWindow() {
 
   mainWindow = new BrowserWindow(windowOptions);
 
+  // Ensure the application menu is removed and the window menu bar is hidden.
+  // This is a temporary measure to disable the Electron menubar entirely.
+  try {
+    // Clear any application menu that may have been set previously.
+    Menu.setApplicationMenu(null);
+    // Hide the menu bar on the main window (works on Windows/Linux).
+    if (mainWindow && typeof mainWindow.setMenuBarVisibility === 'function') {
+      mainWindow.setMenuBarVisibility(false);
+    }
+  } catch (err) {
+    console.error('Failed to remove/hide application menu:', err);
+  }
+
   // ensure we save bounds when window is closed
   mainWindow.on('close', () => {
     try {
@@ -351,8 +364,8 @@ function createMenuTemplate() {
           click: () => {
             const iconPath = path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
             releaseWindow = new BrowserWindow({
-              width: 600,
-              height: 480,
+              width: 1270,
+              height: 600,
               modal: true,
               icon: iconPath,
               parent: mainWindow,
@@ -380,8 +393,8 @@ function createMenuTemplate() {
           click: () => {
             const iconPath = path.join(__dirname, 'public', process.platform === 'win32' ? 'icon.ico' : 'icon.png');
             const aboutWindow = new BrowserWindow({
-              width: 600,
-              height: 550,
+              width: 1270,
+              height: 860,
               modal: true,
               icon: iconPath,
               parent: mainWindow,
@@ -409,7 +422,9 @@ function setupMenu() {
 // App lifecycle management
 app.whenReady().then(async () => {
   await createMainWindow();
-  setupMenu();
+  // Temporarily disable the application menu. To re-enable, uncomment the
+  // call to setupMenu() below.
+  // setupMenu();
   setupIPCHandlers();
 
   // Handle command line file opening

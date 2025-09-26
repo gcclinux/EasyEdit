@@ -1,3 +1,4 @@
+import React from 'react';
 import './aboutModal.css';
 import { createPortal } from 'react-dom';
 import logo from '../assets/logo.png';
@@ -11,6 +12,35 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
   if (!open) return null;
 
   const lastUpdated = '26 September 2025';
+  const [version, setVersion] = React.useState<string>('');
+
+  React.useEffect(() => {
+    // Try common sources for app version: injected env, fetch package.json, else unknown
+    try {
+      const envVersion = (window as any)?.process?.env?.npm_package_version;
+      if (envVersion) {
+        setVersion(envVersion);
+        return;
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    // Try fetching package.json (works if app serves it)
+    (async () => {
+      try {
+        const resp = await fetch('/package.json');
+        if (resp.ok) {
+          const pkg = await resp.json();
+          setVersion(pkg.version || 'unknown');
+          return;
+        }
+      } catch (e) {
+        // ignore
+      }
+      setVersion('unknown');
+    })();
+  }, []);
 
   const content = (
     <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="about-title">
@@ -58,11 +88,12 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
           </div>
           <div className="about-card">
             <h3>Credits</h3>
-            <p>
-              Built with care by <strong>Ricardo Wagemaker</strong>.
-              <br />
+            <p>Built with care by <strong>Ricardo Wagemaker</strong>.<br />
               <span className="muted">Last updated: {lastUpdated}</span>
             </p>
+            <p>Contributions: <a href="https://github.com/Lewish1998" target="_blank">Lewis Halstead</a></p>
+            <p>GitHub: <a href="https://github.com/gcclinux/EasyEdit" target="_blank">gcclinux/EasyEdit</a></p>
+            <p>License: MIT<br />Version: <strong>{version || '...'}</strong></p>
           </div>
         </div>
         <div className="modal-actions">
