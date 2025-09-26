@@ -199,6 +199,34 @@ html,
   height: 75vh;
 }
 
+/* Fixed menubar button size for uniform buttons */
+.fixed-menubar-btn {
+  width: 170px;
+  height: 36px;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* Help button: half the fixed size and light green */
+.help-menubar-btn {
+  width: 85px;
+  height: 36px;
+  box-sizing: border-box;
+  padding: 4px 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #d9f7d9; /* light green */
+  color: #063b09;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 /* Container for parallel layout */
 .editor-preview-container-parallel {
   display: flex;
@@ -366,6 +394,85 @@ html,
   background-color: #575757;
 }
 
+.header-dropdown.format-dropdown {
+  min-width: 220px;
+}
+
+/* Compact two-column layout for symbols dropdown */
+.symbols-dropdown {
+  width: 360px; /* wide enough to hold two columns */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  align-items: start;
+}
+
+.symbols-dropdown .dropdown-item {
+  padding: 6px 10px; /* slightly smaller padding for denser layout */
+}
+
+/* Hide separators inside the compact symbols dropdown to reduce visual noise */
+.symbols-dropdown .hdr-sep {
+  display: none;
+}
+
+/* Icons dropdown styling */
+.icons-dropdown {
+  min-width: 420px;
+  max-width: 520px;
+  padding: 10px;
+}
+
+.icons-category {
+  margin-bottom: 8px;
+}
+
+.icons-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 4px;
+}
+
+.icon-glyph {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.icon-label {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #cfcfcf;
+  text-align: center;
+}
+
+/* Make sure icon buttons inside the icons grid stack glyph over label and center them.
+   This overrides generic .dropdown-item rules that set width/text-align for other dropdowns. */
+.icons-grid .dropdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: auto; /* allow grid to size columns */
+  padding: 6px 8px;
+  box-sizing: border-box;
+}
+
+.icons-grid .icon-label {
+  white-space: normal; /* allow label to wrap under glyph */
+  max-width: 100%;
+}
+
 
 .label {
   margin-top: 12px;
@@ -380,7 +487,8 @@ html,
 
 .menubar {
   width: 90%;
-  overflow: hidden;
+  /* allow dropdowns to overflow the menubar so they aren't clipped */
+  overflow: visible;
   display: flex;
   justify-content: space-around;
   padding: 10px 0;
@@ -404,6 +512,7 @@ html,
 .dropdown-container {
   position: relative;
   display: inline-block;
+  z-index: 2000; /* ensure dropdown container sits above other elements */
 }
 
 .header-dropdown {
@@ -413,8 +522,8 @@ html,
   background-color: #2d2d2d;
   border: 1px solid #3d3d3d;
   border-radius: 4px;
-  z-index: 1000;
-  width: 130px;
+  z-index: 9999; /* raise dropdown above other UI rows */
+  width: 210px;
 }
 
 .dropdown-item {
@@ -426,6 +535,27 @@ html,
   color: white;
   text-align: left;
   cursor: pointer;
+}
+
+.hdr-title {
+  font-weight: 600;
+}
+
+.hdr-desc {
+  /* Use a fixed size (matches header4 button size) so descriptions don't scale with parent button font-size */
+  font-size: 0.875rem; /* 14px when root is 16px */
+  font-weight: 400; /* normal weight, not bold */
+  font-style: italic;
+  color: #cfcfcf;
+  margin-top: 2px;
+}
+
+.hdr-sep {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.06));
+  margin: 6px 0;
 }
 
 .dropdown-item:hover {

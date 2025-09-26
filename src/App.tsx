@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 import mermaid from 'mermaid';
 import debounce from 'lodash.debounce';
@@ -41,13 +42,8 @@ import {
   inserth4Syntax,
   inserth5Syntax,
   inserth6Syntax,
-  insertURLSyntax,
-  insertImageSyntax,
   insertCodeSyntax,
   insertRulerSyntax,
-  insertCheckSyntax,
-  insertFootSyntax,
-  insertTableSyntax,
   insertItalicSyntax,
   insertList1Syntax,
   insertList2Syntax,
@@ -55,11 +51,30 @@ import {
   insertIndent2Syntax,
   insertNewLineSyntax,
   insertBlockquoteSyntax,
-  inserterPlainFlowSyntax,
   insertStrikethroughSyntax
 } from './insertMarkdown.ts';
 import TextareaComponent from './components/TextareaComponent.tsx';
 import PreviewComponent from './components/PreviewComponent.tsx';
+import HeaderDropdown from './components/HeaderDropdown';
+import FormatDropdown from './components/FormatDropdown';
+import MermaidDropdown from './components/MermaidDropdown';
+import InsertDropdown from './components/InsertDropdown';
+import ImagesDropdown from './components/ImagesDropdown';
+import LinksDropdown from './components/LinksDropdown';
+import TablesDropdown from './components/TablesDropdown';
+import FooterDropdown from './components/FooterDropdown';
+import SymbolsDropdown from './components/SymbolsDropdown';
+import IconsDropdown from './components/IconsDropdown';
+import { buildDailyJournalTemplate } from './templates/dailyJournal';
+import { buildMeetingNotesTemplate } from './templates/meetingNotes';
+import { buildProjectPlanTemplate } from './templates/projectPlan';
+import { buildStudyNotesTemplate } from './templates/studyNotes';
+import { buildTravelLogsTemplate } from './templates/travelLogs';
+import { buildWorkoutLogTemplate } from './templates/workoutLog';
+import { buildBugReportTemplate } from './templates/bugReport';
+import AboutModal from './components/AboutModal';
+import FeaturesModal from './components/FeaturesModal';
+import taskTemplates from './templates/tasks';
 
 const App = () => {
   const [documentHistory, setDocumentHistory] = useState<HistoryState[]>([]);
@@ -73,7 +88,29 @@ const App = () => {
   const [ganttModalOpen, setGanttModalOpen] = useState(false);
   const [timelineModalOpen, setTimelineModalOpen] = useState(false);
   const [showHeaderDropdown, setShowHeaderDropdown] = useState(false);
+  const [showFormatDropdown, setShowFormatDropdown] = useState(false);
+  const [showMermaidDropdown, setShowMermaidDropdown] = useState(false);
+  const [showSymbolsDropdown, setShowSymbolsDropdown] = useState(false);
+  const [showIconsDropdown, setShowIconsDropdown] = useState(false);
+  const [showLinksDropdown, setShowLinksDropdown] = useState(false);
+  const [showTablesDropdown, setShowTablesDropdown] = useState(false);
+  const [showFooterDropdown, setShowFooterDropdown] = useState(false);
+  const [showInsertDropdown, setShowInsertDropdown] = useState(false);
+  const [showImagesDropdown, setShowImagesDropdown] = useState(false);
+  const [showExportsDropdown, setShowExportsDropdown] = useState(false);
+  const [showTemplatesDropdown, setShowTemplatesDropdown] = useState(false);
+  const templatesButtonRef = useRef<HTMLButtonElement | null>(null);
+  const [templatesPos, setTemplatesPos] = useState<{ top: number; left: number; width: number } | null>(null);
+  const [showHelpDropdown, setShowHelpDropdown] = useState(false);
+  const helpButtonRef = useRef<HTMLButtonElement | null>(null);
+  const [helpPos, setHelpPos] = useState<{ top: number; left: number; width: number } | null>(null);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [featuresOpen, setFeaturesOpen] = useState(false);
+  const [showTasksDropdown, setShowTasksDropdown] = useState(false);
+  const tasksButtonRef = useRef<HTMLButtonElement | null>(null);
+  const [tasksPos, setTasksPos] = useState<{ top: number; left: number; width: number } | null>(null);
   const [isEditFull, setIsEditFull] = useState<boolean>(false);
+  
   const [isPreviewFull, setIsPreviewFull] = useState<boolean>(false);
   const lineHeightValue = useRef<number>(1);
 
@@ -125,6 +162,8 @@ const App = () => {
     return () => document.removeEventListener('click', handleClick);
   }, []);
 
+  
+
   // Initialize Mermaid diagrams
   const initializeMermaid = useCallback(
     debounce(() => {
@@ -166,7 +205,6 @@ const App = () => {
 
   // Add event listeners for file-opened and update-paragraph-spacing for rendering
   useEffect(() => {
-    // Only proceed if electronAPI exists
     if (!electronAPI) {
       console.log('Running in browser mode - some features disabled');
       return;
@@ -176,10 +214,9 @@ const App = () => {
       setEditorContent(content);
     };
 
-    const previewSpacingHandler = (_event: any, {action}: {action: string}) => {
+    const previewSpacingHandler = (_event: any, { action }: { action: string }) => {
       let previewLineHeight = 1.1;
       let newLineHeight = previewLineHeight;
-
       if (action === 'increase' && previewLineHeight < 1.9) {
         newLineHeight = Math.min(1.9, previewLineHeight + 0.1);
         lineHeightValue.current = newLineHeight;
@@ -188,10 +225,8 @@ const App = () => {
         lineHeightValue.current = newLineHeight;
       }
 
-      newLineHeight = Math.round(newLineHeight * 10) / 10;  
+      newLineHeight = Math.round(newLineHeight * 10) / 10;
       if (newLineHeight !== previewLineHeight) {
-        previewLineHeight = newLineHeight;
-        
         const previewElements = document.querySelectorAll(
           '.preview-horizontal, .preview-parallel, .preview-horizontal-full'
         );
@@ -206,31 +241,21 @@ const App = () => {
       lineHeightValue.current = value;
     };
 
-    // Set up event listeners
+    // Set up event listeners if available
     if (electronAPI.handleFileOpened) {
       electronAPI.handleFileOpened(fileOpenedHandler);
     }
-
     if (electronAPI.handlePreviewSpacing) {
       electronAPI.handlePreviewSpacing(previewSpacingHandler);
     }
-
     if (electronAPI.getLineHeight && electronAPI.setLineHeight) {
       electronAPI.getLineHeight();
       electronAPI.setLineHeight(lineHeightHandler);
     }
 
-    // Cleanup function
+    // Cleanup: if the electron API provided deregister functions they'd be called here.
     return () => {
-      if (electronAPI.handleFileOpened) {
-        electronAPI.handleFileOpened(fileOpenedHandler);
-      }
-      if (electronAPI.handlePreviewSpacing) {
-        electronAPI.handlePreviewSpacing(previewSpacingHandler);
-      }
-      if (electronAPI.setLineHeight) {
-        electronAPI.setLineHeight(lineHeightHandler);
-      }
+      // no-op cleanup (electron handlers are assumed to be one-shot registrations)
     };
   }, [lineHeightValue]);
 
@@ -287,95 +312,8 @@ const App = () => {
     }
   };
 
+  // Templates moved to src/templates/*.ts
 
-
-// const PreviewComponent = React.memo(() => {
-//   useEffect(() => {
-//     initializeMermaid();
-//   }, [editorContent, initializeMermaid]);
-
-//   // Add new useEffect for auto-scrolling
-//   useEffect(() => {
-//     if (!previewRef.current) return;
-
-//     // Create observer to watch for Mermaid diagram changes
-//     const observer = new MutationObserver(() => {
-//       if (previewRef.current) {
-//         // Add small delay to ensure diagrams are fully rendered
-//         setTimeout(() => {
-//           previewRef.current!.scrollTop = previewRef.current!.scrollHeight;
-//         }, 100);
-//       }
-//     });
-
-//     // Observe changes in the preview div
-//     observer.observe(previewRef.current, {
-//       childList: true,
-//       subtree: true,
-//       attributes: true
-//     });
-
-//     // Initial scroll
-//     setTimeout(() => {
-//       if (previewRef.current) {
-//         previewRef.current.scrollTop = previewRef.current.scrollHeight;
-//       }
-//     }, 100);
-
-//     // Cleanup
-//     return () => observer.disconnect();
-//   }, [editorContent]);
-
-//   return (
-//     <div
-//     className={
-//       isPreviewFull
-//         ? 'preview-horizontal-full'
-//         : isHorizontal
-//           ? 'preview-horizontal'
-//           : 'preview-parallel'
-//     }
-//       ref={previewRef}
-//     >
-//       <ReactMarkdown
-//         remarkPlugins={[remarkGfm]}
-//         rehypePlugins={[rehypeRaw]}
-//         components={{
-//           code({ className, children, ...props }) {
-//             const match = /language-mermaid/.test(className || "");
-//             if (match) {
-//               return (
-//                 <div className="mermaid">
-//                   {String(children).replace(/\n$/, "")}
-//                 </div>
-//               );
-//             }
-//             // Check if it's an inline code (no language class means inline)
-//             const isInline = !className;
-              
-//             return (
-//               <code 
-//                 className={`${isInline ? 'inline-code' : 'code-block'} ${className || ''}`} 
-//                 {...props}
-//               >
-//                 {children}
-//               </code>
-//             );
-//           },
-//           pre({ children }) {
-//             return (
-//               <pre className="code-block-container">
-//                 {children}
-//               </pre>
-//             );
-//           }
-//         }}
-//       >
-//         {editorContent}
-//       </ReactMarkdown>
-//     </div>
-//   );
-// });
 
 // insertSymbol function inserts a symbol into the textarea
   const insertSymbol3 = () => insertSymbol("&#8710;");
@@ -397,6 +335,9 @@ const App = () => {
   const insertSymbol24 = () => insertSymbol("&#8867;");
   const insertSymbol25 = () => insertSymbol("&#8868;");
   const insertSymbol26 = () => insertSymbol("&#8869;");
+  const insertSymbol27 = () => insertSymbol("&#8482;");
+  // insertIcon inserts an emoji/icon into the editor
+  const insertIcon = (icon: string) => insertSymbol(icon);
 
 //TODO
   // insertBoldSyntax function inserts a bold syntax for Markdown
@@ -498,29 +439,32 @@ const App = () => {
   };
 
   // insertImageSyntax function inserts a default and extended image syntax for Markdown
-  const handlerImageSyntax = () => {
-    insertImageSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
+  
+
+  // Insert an arbitrary image/link markdown template into the editor
+  const handleInsertImageTemplate = (markdownTemplate: string) => {
+    if (!textareaRef.current) return;
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const newText = editorContent.substring(0, start) + markdownTemplate + editorContent.substring(end);
+    setEditorContent(newText);
+    // Place cursor after inserted template
+    cursorPositionRef.current = start + markdownTemplate.length;
+    setTimeout(() => {
+      textarea.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
+      textarea.focus();
+    }, 0);
   };
 
-  // insertURLSyntax function inserts a default and extended URL syntax for Markdown
-  const handlerURLSyntax = () => {
-    insertURLSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
-  };
 
-  // insertTableSyntax function inserts a default and extended table syntax for Markdown
-  const handlerTableSyntax = () => {
-    insertTableSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
-  };
 
-  // insertCheckSyntax function inserts a default and extended check syntax for Markdown
-  const handlerCheckSyntax = () => {
-    insertCheckSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
-  };
+  
+
+  
 
   // insertFootSyntax function inserts a default and extended foot syntax for Markdown
-  const handlerFootSyntax = () => {
-    insertFootSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
-  };
+  
 
   // Insert Mermaid classDiagram Syntax
   const handleInsertClass = () => {
@@ -567,10 +511,7 @@ const App = () => {
     insertTimeLineSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   }
 
-  // inserterPlainFlowSyntax function inserts a plain flow syntax for Mermaid
-  const handleInsertPlainFlow = () => {
-    inserterPlainFlowSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
-  };
+  
 
   // SaveAsPDF function
   const handleSaveAsPDF = () => {
@@ -616,48 +557,303 @@ const App = () => {
       {/* <button className="menu-item" onClick={toggleLayout}>
           Toggle Dual &#8646;
         </button> */}
-        <button className="menu-item" onClick={toggleEdit}>
+        <button className="menu-item fixed-menubar-btn" onClick={toggleEdit}>
           Toggle Edit &#8646;
         </button>
-        <button className="menu-item" onClick={togglePreview}>
+        <button className="menu-item fixed-menubar-btn" onClick={togglePreview}>
           Toggle Preview &#8646;
         </button>
-          <button className="menu-item" onClick={() => handleOpenClick(setEditorContent)}>
-            Load Document &#128194;
+          <button className="menu-item fixed-menubar-btn" onClick={() => handleOpenClick(setEditorContent)}>
+            Open &#128194;
           </button>  
           <button 
-            className="menu-item" 
+            className="menu-item fixed-menubar-btn" 
             onClick={() => handleUndo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
             disabled={historyIndex <= 0}
           >
             Undo &#8630;
           </button>
           <button
-            className="menu-item"
+            className="menu-item fixed-menubar-btn"
             onClick={() => handleClear(setEditorContent)}
           >
             Clear &#128465;
           </button>
           <button 
-            className="menu-item" 
+            className="menu-item fixed-menubar-btn" 
             onClick={() => handleRedo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
             disabled={historyIndex >= documentHistory.length - 1}
           >
             Redo &#8631;
           </button>
-          <button className="menu-item" onClick={() => saveToFile(editorContent)}>
-            Save as MD &#128190;
-          </button>
-          <button className="menu-item" onClick={() => saveToTxT(editorContent)}>
-            Save as Text &#128462;
-          </button>
-          <button className="menu-item" onClick={() => saveToHTML(editorContent)}>
-            Save as HTML &#128462;
-          </button>
-          <button className="menu-item" onClick={handleSaveAsPDF}>
-            Save as PDF &#128462;
-          </button>
+          <div className="dropdown-container">
+            <button
+              className="menu-item fixed-menubar-btn"
+              ref={(el) => (tasksButtonRef.current = el)}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                cacheSelection();
+                const willShow = !showTasksDropdown;
+                setShowTasksDropdown(willShow);
+                if (willShow && tasksButtonRef.current) {
+                  const rect = tasksButtonRef.current.getBoundingClientRect();
+                  setTasksPos({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX, width: rect.width });
+                } else {
+                  setTasksPos(null);
+                }
+              }}
+              title="Tasks"
+            >
+              Tasks ▾
+            </button>
+            {showTasksDropdown && tasksPos && createPortal(
+              <div
+                className="header-dropdown format-dropdown"
+                style={{ position: 'absolute', top: tasksPos.top + 'px', left: tasksPos.left + 'px', zIndex: 999999, minWidth: tasksPos.width + 'px' }}
+              >
+                {taskTemplates.map((t, idx) => (
+                  <div key={idx}>
+                    <button
+                      className="dropdown-item"
+                      onClick={() => {
+                        handleInsertImageTemplate(t.markdown + '\n\n');
+                        setShowTasksDropdown(false);
+                        setTasksPos(null);
+                      }}
+                    >
+                      <div className="hdr-title">{t.label}</div>
+                      <div className="hdr-desc">{t.description}</div>
+                    </button>
+                    <div className="hdr-sep" />
+                  </div>
+                ))}
+              </div>,
+              document.body
+            )}
+          </div>
+          <div className="dropdown-container">
+            <button
+              className="menu-item fixed-menubar-btn"
+              ref={(el) => (templatesButtonRef.current = el)}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                cacheSelection();
+                const willShow = !showTemplatesDropdown;
+                setShowTemplatesDropdown(willShow);
+                if (willShow && templatesButtonRef.current) {
+                  const rect = templatesButtonRef.current.getBoundingClientRect();
+                  setTemplatesPos({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX, width: rect.width });
+                } else {
+                  setTemplatesPos(null);
+                }
+              }}
+              title="Templates"
+            >
+              Templates ▾
+            </button>
+            {showTemplatesDropdown && templatesPos && createPortal(
+              <div
+                className="header-dropdown format-dropdown"
+                style={{ position: 'absolute', top: templatesPos.top + 'px', left: templatesPos.left + 'px', zIndex: 999999, minWidth: templatesPos.width + 'px' }}
+              >
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildDailyJournalTemplate(new Date());
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title">🠊  Daily Journal</div>
+                    <div className="hdr-desc">Start a daily journal with priorities, reflections, and habit trackers</div>
+                  </button>
+                  <div className="hdr-sep" />
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildMeetingNotesTemplate(new Date());
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title">🠊 Meeting Notes</div>
+                    <div className="hdr-desc">Structured meeting notes with attendees, agenda, discussion points and action items</div>
+                  </button>
+                  <div className="hdr-sep" />
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildProjectPlanTemplate(new Date());
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title">🠊 Project Plan</div>
+                    <div className="hdr-desc">High-level project plan with goals, milestones, scope and task breakdown</div>
+                  </button>
+                  <div className="hdr-sep" />
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildStudyNotesTemplate(new Date());
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title">🠊 Study Notes</div>
+                    <div className="hdr-desc">Organized study template: objectives, concepts, formulas and practice problems</div>
+                  </button>
+                  <div className="hdr-sep" />
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildTravelLogsTemplate(new Date());
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title">🠊 Travel Log</div>
+                    <div className="hdr-desc">Capture trip itineraries, places visited, costs and highlights</div>
+                  </button>
+                  <div className="hdr-sep" />
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildWorkoutLogTemplate(new Date());
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title">🠊 Workout Log</div>
+                    <div className="hdr-desc">Log workouts with warm-up, strength/cardio tables, and recovery notes</div>
+                  </button>
+                  <div className="hdr-sep" />
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildBugReportTemplate(new Date());
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title">🠊 Bug Report</div>
+                    <div className="hdr-desc">Report issues with steps, logs, screenshots and assignment fields</div>
+                  </button>
+                  <div className="hdr-sep" />
+              </div>,
+              document.body
+            )}
+          </div>
+          <div className="dropdown-container">
+            <button
+              className="menu-item fixed-menubar-btn"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                setShowExportsDropdown(!showExportsDropdown);
+              }}
+              title="Exports"
+            >
+              Exports ▾
+            </button>
+            {showExportsDropdown && (
+              <div className="header-dropdown format-dropdown">
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    saveToFile(editorContent);
+                    setShowExportsDropdown(false);
+                  }}
+                >
+                  <div className="hdr-title">🠊 Export to MD</div>
+                  <div className="hdr-desc">Save current document as a Markdown (.md) file</div>
+                </button>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    saveToTxT(editorContent);
+                    setShowExportsDropdown(false);
+                  }}
+                >
+                  <div className="hdr-title">🠊 Export to TXT</div>
+                  <div className="hdr-desc">Export plain text (.txt) version for non-markdown viewers</div>
+                </button>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    saveToHTML(editorContent);
+                    setShowExportsDropdown(false);
+                  }}
+                >
+                  <div className="hdr-title">🠊 Export to HTML</div>
+                  <div className="hdr-desc">Generate a standalone HTML file with the rendered preview</div>
+                </button>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    handleSaveAsPDF();
+                    setShowExportsDropdown(false);
+                  }}
+                >
+                  <div className="hdr-title">🠊 Export to PDF</div>
+                  <div className="hdr-desc">Export a PDF snapshot of the rendered document</div>
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="dropdown-container">
+            <button
+              className="help-menubar-btn"
+              ref={(el) => (helpButtonRef.current = el)}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                const willShow = !showHelpDropdown;
+                setShowHelpDropdown(willShow);
+                if (willShow && helpButtonRef.current) {
+                  const rect = helpButtonRef.current.getBoundingClientRect();
+                  const scrollX = window.scrollX || window.pageXOffset || 0;
+                  const scrollY = window.scrollY || window.pageYOffset || 0;
+                  const dropdownMin = 140; // same minWidth used in portal
+                  const dropdownWidth = Math.max(rect.width, dropdownMin);
+                  // Always open to the left: align dropdown's right edge with the button's left edge
+                  let leftPos = rect.left + scrollX - dropdownWidth;
+                  // Clamp to keep on-screen
+                  leftPos = Math.max(0, leftPos);
+                  setHelpPos({ top: rect.bottom + scrollY, left: leftPos, width: dropdownWidth });
+                } else {
+                  setHelpPos(null);
+                }
+              }}
+              title="Help"
+            >
+              Help
+            </button>
+            {showHelpDropdown && helpPos && createPortal(
+              <div className="header-dropdown format-dropdown" style={{ position: 'absolute', top: helpPos.top + 'px', left: helpPos.left + 'px', zIndex: 999999, minWidth: helpPos.width + 'px' }}>
+                <button className="dropdown-item" onClick={() => { setAboutOpen(true); setShowHelpDropdown(false); }}>
+                  <div className="hdr-title">About</div>
+                  <div className="hdr-desc">EasyEdit version and info</div>
+                </button>
+                <div className="hdr-sep" />
+                <button className="dropdown-item" onClick={() => { setFeaturesOpen(true); setShowHelpDropdown(false); }}>
+                  <div className="hdr-title">Features</div>
+                  <div className="hdr-desc">View app features and highlights</div>
+                </button>
+              </div>, document.body
+            )}
+          </div>
       </div>
+  <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
+  <FeaturesModal open={featuresOpen} onClose={() => setFeaturesOpen(false)} />
       <div className="editor">
         <div className="toolbar">
           <img
@@ -667,7 +863,7 @@ const App = () => {
             onClick={() => window.location.reload()} title="Refresh"/>
 
             <div className="dropdown-container">
-            <button 
+              <button 
                 className="button-format"
                 onMouseDown={(e) => {
                   e.preventDefault(); // Prevent default behavior to retain focus
@@ -676,115 +872,245 @@ const App = () => {
                 }}
                 title="Header Options"
               >
-                Headers
+                Headers ▾
               </button>
               {showHeaderDropdown && (
-                <div className="header-dropdown">
-                  <button 
-                    className="dropdown-item header1-button" 
-                    onClick={() => {
-                      handlerinserth1Syntax();
-                      setShowHeaderDropdown(false);
-                    }}> Header 1 
-                  </button>
-                  <button 
-                    className="dropdown-item header2-button" 
-                    onClick={() => {
-                      handlerinserth2Syntax();
-                      setShowHeaderDropdown(false);
-                    }}> Header 2 </button>
-                  <button 
-                    className="dropdown-item header3-button" 
-                    onClick={() => {
-                      handlerinserth3Syntax();
-                      setShowHeaderDropdown(false);
-                    }}> Header 3 </button>
-                  <button 
-                    className="dropdown-item header4-button" 
-                    onClick={() => {
-                      handlerinserth4Syntax();
-                      setShowHeaderDropdown(false);
-                    }}>Header 4 </button>
-                  <button
-                    className="dropdown-item header5-button"
-                    onClick={() => {
-                      handlerinserth5Syntax();
-                      setShowHeaderDropdown(false);
-                    }}>Header 5 </button>
-                  <button
-                    className="dropdown-item header6-button"
-                    onClick={() => {
-                      handlerinserth6Syntax();
-                      setShowHeaderDropdown(false);
-                    }}>Header 6 </button>
-                </div>
+                <HeaderDropdown
+                  onInsertH1={handlerinserth1Syntax}
+                  onInsertH2={handlerinserth2Syntax}
+                  onInsertH3={handlerinserth3Syntax}
+                  onInsertH4={handlerinserth4Syntax}
+                  onInsertH5={handlerinserth5Syntax}
+                  onInsertH6={handlerinserth6Syntax}
+                  onClose={() => setShowHeaderDropdown(false)}
+                />
+              )}
+            </div>
+            <div className="dropdown-container">
+              <button
+                className="button-format"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  cacheSelection();
+                  setShowFormatDropdown(!showFormatDropdown);
+                }}
+                title="Format Options"
+              >
+                 🅑 Format ▾
+              </button>
+              {showFormatDropdown && (
+                <FormatDropdown
+                  onCodeLine={handlerinsertCodeSyntax}
+                  onCodeBlock={handlerinsertBlockCodeSyntax}
+                  onBold={handleBoldSyntax}
+                  onItalic={handlerItalicSyntax}
+                  onStrike={handlerStrikethroughSyntax}
+                  onNewLine={handleNewLineSyntax}
+                  onClose={() => setShowFormatDropdown(false)}
+                />
               )}
             </div>
 
-          <button className="button-format" onClick={handleBoldSyntax} title="Markdown make Text Bold">
-            Bold
-          </button>
-          <button className="button-format" onClick={handlerItalicSyntax} title="Markdown make Text Italic">
-            Italic
-          </button>
-          <button className="button-format" onClick={handlerStrikethroughSyntax} title="Markdown Strikethrough Text">
-            <s>Strike</s>
-          </button>
-          <button className="button-format" onClick={handleNewLineSyntax} title="Markdown Strikethrough Text">
-            NewLine &#11022;
-          </button>
+          
           &#8741;&nbsp;
-          <button className="button" onClick={handlerinsertCodeSyntax} title="Markdown set text line as code">
-            CodeLine &#10070;
-          </button>
-          <button className="button" onClick={handlerinsertBlockCodeSyntax} title="Markdown set text block as code">
-            CodeBlock &#10070;
-          </button>
-          <button className="button" onClick={handlerinsertRulerSyntax} title="Markdown ruler / page split">
-            Ruler &#8213;
-          </button>
-          <button className="button" onClick={handlerinsertIndent1Syntax} title="Markdown indent level 1">
-            Indent &ge;
-          </button>
-          <button className="button" onClick={handlerinsertIndent2Syntax} title="Markdown indent level 2">
-            Indent &gt;&gt;
-          </button>
-          <button className="button" onClick={handlerinsertList1Syntax} title="Markdown list level 1">
-            List  &#10687;
-          </button>
-          <button className="button" onClick={handlerinsertList2Syntax} title="Markdown list level 2">
-            List &#10687; &#10687;
-          </button>
-          <button className="button" onClick={handlerImageSyntax} title="Markdown insert image example">
-            Image &#128443;
-          </button>
-          <button className="button" onClick={handlerURLSyntax} title="Markdown insert URL example">
-            URL &#128279;
-          </button>
-          <button className="button" onClick={handlerTableSyntax} title="Markdown pre-defined table example">
-            Table &#128196;
-          </button>
-          <button className="button" onClick={handlerFootSyntax} title="Markdown pre-defined foot note example">   
-            FootNote &#9870;
-          </button>
-          <button className="button-mermaid" onClick={handleJourneyInsert} title="Insert Mermaid Journey example">
-            Journey &#9948;
-          </button>
-          <button className="button-mermaid" onClick={handleFlowchartRLInsert} title="Insert Mermaid flowchartRL example">
-            Flowchart &#8866; | &#8867;
-          </button>
-          <button className="button-mermaid" onClick={handleGanttInsert} title="Insert Mermaid Gantt chart" >
-            Gantt &#8760;
-          </button>
-          <button className="button-mermaid" onClick={handleGraphTDInsert} title="Insert Mermaid GraphTD example of a product life cycle">
-            GraphTD &#9797;
-          </button>
-          <button className="button-mermaid" onClick={handleErDiagramInsert} title="Insert Mermaid erDiagram">
-            erDiag &#8757;
-          </button>
-          <button className="button-mermaid" onClick={handleTimeLineSyntax} title="Markdown pre-defined TimeLine example">
-            TimeLine &#8868;
-          </button>
+          <div className="dropdown-container">
+            <button
+              className="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                cacheSelection();
+                setShowInsertDropdown(!showInsertDropdown);
+              }}
+              title="Insert Options"
+            >
+              Insert ▾
+            </button>
+            {showInsertDropdown && (
+              <InsertDropdown
+                onRuler={handlerinsertRulerSyntax}
+                onIndent1={handlerinsertIndent1Syntax}
+                onIndent2={handlerinsertIndent2Syntax}
+                onList1={handlerinsertList1Syntax}
+                onList2={handlerinsertList2Syntax}
+                onInsertTemplate={handleInsertImageTemplate}
+                onClose={() => setShowInsertDropdown(false)}
+              />
+            )}
+          </div>
+          
+          
+          <div className="dropdown-container">
+            <div className="dropdown-container">
+              <button
+                className="button"
+                title="Link templates"
+                aria-haspopup="listbox"
+                aria-expanded={showLinksDropdown}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  cacheSelection();
+                  setShowLinksDropdown(!showLinksDropdown);
+                }}
+              >
+                 &#9736; Links ▾
+              </button>
+              {showLinksDropdown && (
+                <LinksDropdown
+                  onInsertTemplate={handleInsertImageTemplate}
+                  onClose={() => setShowLinksDropdown(false)}
+                />
+              )}
+            </div>
+            
+          </div>
+          <div className="dropdown-container">
+            <button
+              className="button"
+              title="Insert images and links"
+              aria-haspopup="listbox"
+              aria-expanded={showImagesDropdown}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                cacheSelection();
+                setShowImagesDropdown(!showImagesDropdown);
+              }}
+            >
+              &#9734; Images ▾
+            </button>
+            {showImagesDropdown && (
+              <ImagesDropdown
+                onInsertTemplate={handleInsertImageTemplate}
+                onClose={() => setShowImagesDropdown(false)}
+              />
+            )}
+          </div>
+          <div className="dropdown-container">
+            <button
+              className="button"
+              title="Insert table templates"
+              aria-haspopup="listbox"
+              aria-expanded={showTablesDropdown}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                cacheSelection();
+                setShowTablesDropdown(!showTablesDropdown);
+              }}
+            >
+              &#9870; Tables ▾
+            </button>
+            {showTablesDropdown && (
+              <TablesDropdown
+                onInsertTemplate={handleInsertImageTemplate}
+                onClose={() => setShowTablesDropdown(false)}
+              />
+            )}
+          </div>
+          <div className="dropdown-container">
+            <button
+              className="button"
+              title="Insert footnote templates"
+              aria-haspopup="listbox"
+              aria-expanded={showFooterDropdown}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                cacheSelection();
+                setShowFooterDropdown(!showFooterDropdown);
+              }}
+            >
+              FootNote ▾
+            </button>
+            {showFooterDropdown && (
+              <FooterDropdown
+                onInsertTemplate={handleInsertImageTemplate}
+                onClose={() => setShowFooterDropdown(false)}
+              />
+            )}
+          </div>
+          <div className="dropdown-container">
+            <button
+              className="button-mermaid"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                cacheSelection();
+                setShowMermaidDropdown(!showMermaidDropdown);
+              }}
+              title="Mermaid Options"
+            >
+              Mermaid ▾
+            </button>
+            {showMermaidDropdown && (
+              <MermaidDropdown
+                onJourney={handleJourneyInsert}
+                onFlowchart={handleFlowchartRLInsert}
+                onGantt={handleGanttInsert}
+                onGraphTD={handleGraphTDInsert}
+                onErDiag={handleErDiagramInsert}
+                onTimeLine={handleTimeLineSyntax}
+                onClassDiag={handleInsertClass}
+                onGitGraph={handleGitInsert}
+                onBlock={handleBlockInsert}
+                onClose={() => setShowMermaidDropdown(false)}
+              />
+            )}
+          </div>
+          <div className="dropdown-container">
+            <button
+              className="button-mermaid"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                cacheSelection();
+                setShowSymbolsDropdown(!showSymbolsDropdown);
+              }}
+              title="Symbol Options"
+            >
+              Symbols ▾
+            </button>
+            {showSymbolsDropdown && (
+              <SymbolsDropdown
+                onSymbol3={insertSymbol3}
+                onSymbol4={insertSymbol4}
+                onSymbol5={insertSymbol5}
+                onSymbol6={insertSymbol6}
+                onSymbol7={insertSymbol7}
+                onSymbol8={insertSymbol8}
+                onSymbol9={insertSymbol9}
+                onSymbol11={insertSymbol11}
+                onSymbol12={insertSymbol12}
+                onSymbol17={insertSymbol17}
+                onSymbol18={insertSymbol18}
+                onSymbol19={insertSymbol19}
+                onSymbol20={insertSymbol20}
+                onSymbol21={insertSymbol21}
+                onSymbol22={insertSymbol22}
+                onSymbol23={insertSymbol23}
+                onSymbol24={insertSymbol24}
+                onSymbol25={insertSymbol25}
+                onSymbol26={insertSymbol26}
+                onSymbol27={insertSymbol27}
+                onClose={() => setShowSymbolsDropdown(false)}
+              />
+            )}
+          </div>
+          <div className="dropdown-container">
+            <button
+              className="button-mermaid"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                cacheSelection();
+                setShowIconsDropdown(!showIconsDropdown);
+              }}
+              title="Icons"
+            >
+              Icons ▾
+            </button>
+            {showIconsDropdown && (
+              <IconsDropdown
+                onInsertIcon={(icon) => { insertIcon(icon); }}
+                onClose={() => setShowIconsDropdown(false)}
+              />
+            )}
+          </div>
+          
           
           &#8741;&nbsp;
           <button className='button-auto' onClick={() => setTableModalOpen(true)} title="Support Creating a Markdown Table">
@@ -823,93 +1149,7 @@ const App = () => {
             }}/>
         </div>
 
-        <div className="toolbar">
-          <button className="button" onClick={handlerCheckSyntax} title="Markdown check / uncheck example">
-          &#9744;&nbsp;&#8741;&nbsp;&#9745;
-          </button>
-          <button className="button-html" onClick={insertSymbol3}>
-            &#8710;
-          </button>
-          <button className="button-html" onClick={insertSymbol4}>
-            &#8711;
-          </button>
-          <button className="button-html" onClick={insertSymbol5}>
-            &#8721;
-          </button>
-          <button className="button-html" onClick={insertSymbol6}>
-            &#8730;
-          </button>
-          <button className="button-html" onClick={insertSymbol7}>
-            &#8734;
-          </button>
-          <button className="button-html" onClick={insertSymbol8}>
-            &#8470;
-          </button>
-          <button className="button-html" onClick={insertSymbol9}>
-            &#8736;
-          </button>
-          <button className="button-html" onClick={insertSymbol11}>
-            &#8743;
-          </button>
-          <button className="button-html" onClick={insertSymbol12}>
-            &#8744;
-          </button>
-          <button className="button-html" onClick={insertSymbol17}>
-            &#8756;
-          </button>
-          <button className="button-html" onClick={insertSymbol18}>
-            &#8757;
-          </button>
-          <button className="button-html" onClick={insertSymbol19}>
-            &#8758;
-          </button>
-          <button className="button-html" onClick={insertSymbol20}>
-            &#8759;
-          </button>
-          <button className="button-html" onClick={insertSymbol21}>
-            &#8760;
-          </button>
-          <button className="button-html" onClick={insertSymbol22}>
-            &#8761;
-          </button>
-          <button className="button-html" onClick={insertSymbol23}>
-            &#8866;
-          </button>
-          <button className="button-html" onClick={insertSymbol24}>
-            &#8867;
-          </button>
-          <button className="button-html" onClick={insertSymbol25}>
-            &#8868;
-          </button>
-          <button className="button-html" onClick={insertSymbol26}>
-            &#8869;
-          </button>
-          <button
-            className="button-mermaid" onClick={handleInsertPlainFlow} title="Insert Plaintext flowChart">
-            TextChart &#9781;
-          </button>
-          <button
-            className="button-mermaid"
-            onClick={handleInsertClass}
-            title="Insert Mermaid classDiag"
-          >
-            ClassDiag &#8756;
-          </button>
-          <button
-            className="button-mermaid"
-            onClick={handleGitInsert}
-            title="Insert Mermaid gitGraph example"
-          >
-            gitGraph &#9903;
-          </button>
-          <button
-            className="button-mermaid"
-            onClick={handleBlockInsert}
-            title="Insert Mermaid Block (beta) example"
-          >
-            Block &#8759;
-          </button>
-        </div>
+        
         <p></p>
         
         <div
