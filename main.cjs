@@ -44,7 +44,10 @@ async function setupServer(isDev) {
     const app = express();
     app.use(express.static(path.join(__dirname, 'dist')));
     
-    app.get('*', (req, res) => {
+    // Fallback middleware: serve index.html for any request not handled by static files.
+    // Use a simple middleware instead of a route pattern to avoid path-to-regexp
+    // parsing differences between the dev environment and the packaged app.
+    app.use((req, res) => {
       res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     });
     
