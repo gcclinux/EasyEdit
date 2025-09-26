@@ -1,0 +1,17 @@
+.features-hero { display:flex; gap:12px; align-items:center }
+.features-hero-logo img { width:56px; height:56px; object-fit:contain }
+.features-title { margin:0; font-size:20px }
+.features-subtitle { color:#bdbdbd; margin-top:4px }
+.features-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:16px }
+.feature-card { background: rgba(255,255,255,0.02); padding:12px; border:2px solid rgba(255,255,255,0.08); border-radius:8px }
+.features-modal { padding:20px; min-width:520px; max-width:920px }
+
+.modal-overlay {
+	position: fixed;
+	inset: 0;
+	background-color: rgba(0,0,0,0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000001; /* above dropdown portals */
+}
