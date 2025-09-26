@@ -13,6 +13,7 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
 
   const lastUpdated = '26 September 2025';
   const [version, setVersion] = React.useState<string>('');
+  const [availableVersion, setAvailableVersion] = React.useState<string>('');
 
   React.useEffect(() => {
     // Try common sources for app version: injected env, fetch package.json, else unknown
@@ -26,19 +27,48 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
       // ignore
     }
 
-    // Try fetching package.json (works if app serves it)
+    // Try fetching package.json (works if app serves it) and also try to fetch
+    // the latest available version info (local release/latest.json or remote fallback).
     (async () => {
+      // get running version
       try {
         const resp = await fetch('/package.json');
         if (resp.ok) {
           const pkg = await resp.json();
           setVersion(pkg.version || 'unknown');
-          return;
+        } else {
+          setVersion('unknown');
         }
       } catch (e) {
-        // ignore
+        setVersion('unknown');
       }
-      setVersion('unknown');
+
+      // try local packaged latest.json first (some builds include this), then remote fallback
+      try {
+        // try a local path first
+        let remoteVer = '';
+        try {
+          const localResp = await fetch('/release/latest.json');
+          if (localResp.ok) {
+            const localData = await localResp.json();
+            remoteVer = localData.version || '';
+          }
+        } catch (e) {
+          // ignore local fetch error and try remote
+        }
+
+        if (!remoteVer) {
+          const ghResp = await fetch('https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/release/latest.json');
+          if (ghResp.ok) {
+            const ghData = await ghResp.json();
+            remoteVer = ghData.version || '';
+          }
+        }
+
+        setAvailableVersion(remoteVer || 'unknown');
+      } catch (e) {
+        setAvailableVersion('unknown');
+      }
     })();
   }, []);
 
@@ -66,8 +96,13 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
           <div className="about-card">
             <h3>What it is</h3>
             <p>
-              <strong>EasyEdit</strong> helps you capture thoughts quickly using familiar Markdown.
-              See your formatting instantly in the live preview and keep focus with a clean layout.
+              <strong>EasyEdit</strong> is an easy Markdown editor that lets you write Markdown and
+              preview it in real-time. You can save and load .md files, export your notes to PDF,
+              and quickly share or copy rendered output. It’s lightweight, works offline, and
+              stays out of the way so you can focus on writing.
+            </p>
+            <p>
+              Support & discussions: <a href="https://github.com/gcclinux/EasyEdit/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a>
             </p>
           </div>
           <div className="about-card">
@@ -77,14 +112,18 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
               <li>Insert tables, icons, images, links, tasks, footnotes, and Mermaid diagrams.</li>
               <li>Export to <strong>Markdown</strong> or <strong>TXT</strong>, or print the rendered preview.</li>
               <li>Resize the editor/preview split and switch themes on the fly.</li>
+              <li>Small, offline-first footprint — works standalone or hosted</li>
             </ul>
           </div>
           <div className="about-card">
             <h3>Why you’ll like it</h3>
             <p>
-              It’s fast, minimal, and gets out of your way. Perfect for daily journaling, structured
-              meeting notes, and planning.
+              EasyEdit focuses on speed and simplicity while giving you the tools you need to
+              capture, structure, and export notes quickly. It combines a lightweight editor with
+              a live preview, reusable templates, and one-click exports so you can stay productive
+              without distraction.
             </p>
+            <p>Great for journaling, meeting notes, planning, and any quick-capture workflow.</p>
           </div>
           <div className="about-card">
             <h3>Credits</h3>
@@ -92,8 +131,8 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
               <span className="muted">Last updated: {lastUpdated}</span>
             </p>
             <p>Contributions: <a href="https://github.com/Lewish1998" target="_blank">Lewis Halstead</a></p>
-            <p>GitHub: <a href="https://github.com/gcclinux/EasyEdit" target="_blank">gcclinux/EasyEdit</a></p>
-            <p>License: MIT<br />Version: <strong>{version || '...'}</strong></p>
+        
+            <p>License: MIT<br />Running Version: <strong>{version || '...'}</strong><br />Available Version: <strong>{availableVersion || '...'}</strong></p>
           </div>
         </div>
         <div className="modal-actions">
