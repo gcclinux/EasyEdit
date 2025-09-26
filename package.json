@@ -89,7 +89,7 @@
       ],
       "target": [
         {
-          "target": "flatpak",
+          "target": "rpm",
           "arch": [
             "x64"
           ]
@@ -100,12 +100,7 @@
       "maintainer": "Ricardo Wagemaker",
       "description": "A lightweight Markdown editor built with Electron",
       "synopsis": "Simple Markdown editor",
-      "desktop": {
-        "Name": "EasyEdit",
-        "Terminal": false,
-        "Type": "Application",
-        "Categories": "Development;TextEditor;Utility"
-      },
+      
       "artifactName": "EasyEdit-${version}-${arch}.${ext}",
       "fileAssociations": [
         {
