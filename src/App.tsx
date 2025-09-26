@@ -81,8 +81,8 @@ const App = () => {
   const [editorContent, setEditorContent] = useState<string>('');
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
   const [isHorizontal, setIsHorizontal] = useState<boolean>(false);
-  const previewRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null!);
+  const textareaRef = useRef<HTMLTextAreaElement>(null!);
   const cursorPositionRef = useRef<number>(0);
   const [tableModalOpen, setTableModalOpen] = useState(false);
   const [ganttModalOpen, setGanttModalOpen] = useState(false);
@@ -589,7 +589,7 @@ const App = () => {
           <div className="dropdown-container">
             <button
               className="menu-item fixed-menubar-btn"
-              ref={(el) => (tasksButtonRef.current = el)}
+              ref={el => { tasksButtonRef.current = el; }}
               onMouseDown={(e) => {
                 e.preventDefault();
                 cacheSelection();
@@ -634,7 +634,7 @@ const App = () => {
           <div className="dropdown-container">
             <button
               className="menu-item fixed-menubar-btn"
-              ref={(el) => (templatesButtonRef.current = el)}
+              ref={el => { templatesButtonRef.current = el; }}
               onMouseDown={(e) => {
                 e.preventDefault();
                 cacheSelection();
@@ -813,7 +813,7 @@ const App = () => {
           <div className="dropdown-container">
             <button
               className="help-menubar-btn"
-              ref={(el) => (helpButtonRef.current = el)}
+              ref={el => { helpButtonRef.current = el; }}
               onMouseDown={(e) => {
                 e.preventDefault();
                 const willShow = !showHelpDropdown;
@@ -1026,6 +1026,7 @@ const App = () => {
               />
             )}
           </div>
+          &#8741;&nbsp;
           <div className="dropdown-container">
             <button
               className="button-mermaid"
