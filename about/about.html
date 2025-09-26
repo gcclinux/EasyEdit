@@ -6,25 +6,58 @@
     <link rel="icon" href="icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EasyEdit Info</title>
-    <link rel="stylesheet" href="about.css">
+    <link rel="stylesheet" href="shared.css">
 </head>
 
 <body>
-    <div id="popup" class="popup">
-        <img src="../public/easyedit128.png" alt="EasyEdit Logo"
-            style="display: block; margin-left: auto; margin-right: auto;">
-        <p>EasyEdit is an easy markdown editor that allows you to create Markdown (MD) and preview it in real-time. You
-            can save, load .md files and export to HTML & PDF.</p>
-        <p><i>EasyEdit is a free and open-source project. You can use it for free and modify it as you like.</i></p>
-        <p>Developed by: <a href="https://github.com/gcclinux" target="_blank">Ricardo Wagemaker</a>
-        <br>Contributed by: <a href="https://github.com/Lewish1998" target="_blank">Lewis Halstead</a></p>
-        <p>GitHub: <a href="https://github.com/gcclinux/EasyEdit"
-                target="_blank">https://github.com/gcclinux/EasyEdit</a></p>
-        <p>License: MIT<br>
-            Current Version: <b id="version"></b>
-        </p>
-        <button id="closeBtn">OK</button>
-    </div>
+        <div id="popup" class="about-popup">
+            <div class="about-hero">
+                <div class="about-hero-logo">
+                    <img src="../public/easyedit128.png" alt="EasyEdit Logo">
+                </div>
+                <div class="about-hero-text">
+                    <h1 class="about-title">EasyEdit</h1>
+                    <div class="about-subtitle">Simple. Fast. Markdown‑first notes with live preview.</div>
+                    <div class="about-badges">
+                        <span class="badge">Markdown</span>
+                        <span class="badge">Templates</span>
+                        <span class="badge">Mermaid</span>
+                        <span class="badge">Export</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-grid">
+                <div class="about-card">
+                    <h3>What it is</h3>
+                    <p><strong>EasyEdit</strong> helps you capture thoughts quickly using familiar Markdown. See your formatting instantly in the live preview and keep focus with a clean layout.</p>
+                </div>
+                <div class="about-card">
+                    <h3>What it does</h3>
+                    <ul>
+                        <li>Ready-made templates: Meeting Notes, Project Plan, Study Notes, Travel Log, Workout Log, Daily Journal.</li>
+                        <li>Insert tables, icons, images, links, tasks, footnotes, and Mermaid diagrams.</li>
+                        <li>Export to Markdown or TXT; print the rendered preview.</li>
+                        <li>Resize editor/preview split; switch themes.</li>
+                    </ul>
+                </div>
+                <div class="about-card">
+                    <h3>Why you’ll like it</h3>
+                    <p>It’s fast, minimal, and gets out of your way — great for journaling, meeting notes, and planning.</p>
+                </div>
+                <div class="about-card">
+                    <h3>Credits</h3>
+                    <p>Built with care by <strong>Ricardo Wagemaker</strong>.<br><span class="muted">Last updated: 26 September 2025</span></p>
+                    <p>Contributions: <a href="https://github.com/Lewish1998" target="_blank">Lewis Halstead</a></p>
+                    <p>GitHub: <a href="https://github.com/gcclinux/EasyEdit" target="_blank">gcclinux/EasyEdit</a></p>
+                    <p>License: MIT<br>Version: <b id="version"></b></p>
+                </div>
+            </div>
+
+            <div class="about-actions">
+                <button id="closeBtn" class="btn primary">Close</button>
+            </div>
+        </div>
     <script src="about.js"></script>
 </body>
 

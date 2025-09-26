@@ -6,20 +6,44 @@
     <link rel="icon" href="icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EasyEdit Release</title>
-    <link rel="stylesheet" href="release.css">
+    <link rel="stylesheet" href="../about/shared.css">
 </head>
 
 <body>
-    <div id="popup" class="popup">
-        <img src="../public/easyedit128.png" alt="EasyEdit Logo"
-            style="display: block; margin-left: auto; margin-right: auto;">
-        <p>EasyEdit is an easy markdown editor that allows you to create Markdown (MD) and preview it in real-time. You
-            can save, load .md files and export to HTML & PDF.</p>
-        <p><i>EasyEdit is a free and open-source project. You can use it for free and modify it as you like.</i></p>
-        <p>Current Version: <b id="version"></b><br>Remote Version: <b id="remoteVersion"></b></p>
-        <p><span id="version-check" class="placeholder">Checking version status...</span></p>
-        <button id="closeBtn">OK</button>
-    </div>
+        <div class="about-popup">
+            <div class="about-hero">
+                <div class="about-hero-logo">
+                    <img src="../public/easyedit128.png" alt="EasyEdit Logo">
+                </div>
+                <div class="about-hero-text">
+                    <h1 class="about-title">Release</h1>
+                    <div class="about-subtitle">Current and remote release status</div>
+                </div>
+            </div>
+
+            <div class="about-grid">
+                <div class="about-card">
+                    <h3>Current Version</h3>
+                    <p><strong id="version">...</strong></p>
+                </div>
+                <div class="about-card">
+                    <h3>Remote Version</h3>
+                    <p><strong id="remoteVersion">...</strong></p>
+                </div>
+                <div class="about-card">
+                    <h3>Status</h3>
+                    <p><span id="version-check" class="placeholder">Checking version status...</span></p>
+                </div>
+                <div class="about-card">
+                    <h3>Notes</h3>
+                    <p>Release checks use the repository's published metadata. If you are offline, checks will fall back gracefully.</p>
+                </div>
+            </div>
+
+            <div class="about-actions">
+                <button id="closeBtn" class="btn primary">Close</button>
+            </div>
+        </div>
     <script src="release.js"></script>
 </body>
 

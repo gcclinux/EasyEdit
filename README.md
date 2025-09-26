@@ -55,7 +55,7 @@ $ docker run -d --name EASYEDIT -p 3024:3024 gcclinux/easyedit:1.3.8
 
 ## *Latest Example implementing custom tables...*
 
-<a><img src="screenshots/sample006.png" alt="Example" width="500" height="400"> <img src="screenshots/sample012.png" alt="Example" width="500" height="400"></a>
+<a><img src="screenshots/013.png" alt="Example" width="600" height="400"></a>
 
 ## *Example Gantt graph as code*
 ```mermaid
