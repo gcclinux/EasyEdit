@@ -6,6 +6,10 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
 
 ** *EasyEdit is a free and open-source project. You can use it for free and modify it as you like.* **
 
+## *Try it before Installing it*
+
+[Try EasyEdit](https://easyedit-web.web.app/ "EasyEdit")
+
 ## *Install the project*
 ```
 $ node --version
