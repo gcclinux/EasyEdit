@@ -1,7 +1,7 @@
 {
   "name": "easyedit",
   "description": "EasyEdit - A simple Markdown editor",
-  "version": "1.4.1",
+  "version": "1.4.0",
   "type": "module",
   "scripts": {
     "server": "vite --host --port 3024",
