@@ -8,6 +8,7 @@ const defaultPort = 3024;
 const viteDevPort = defaultPort; // Using same port for consistency
 const { shell } = require('electron');
 const { exec } = require('child_process');
+const https = require('https');
 const config = 'easyedit.json';
 const configPath = path.join(app.getPath('userData'), config);
 
@@ -371,6 +372,57 @@ ipcMain.handle('open-external', async (_event, url) => {
       return { success: false, error: String(err2) };
     }
   }
+});
+
+// Provide version info to renderer processes in packaged apps where fetch('/package.json') is unavailable
+ipcMain.handle('get-version-info', async () => {
+  const result = { version: 'unknown', latest: 'unknown' };
+  try {
+    // Read package.json from app directory
+    const pkgPath = path.join(__dirname, 'package.json');
+    if (fs.existsSync(pkgPath)) {
+      try {
+        const pkgRaw = fs.readFileSync(pkgPath, 'utf8');
+        const pkg = JSON.parse(pkgRaw);
+        result.version = pkg.version || 'unknown';
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    // Try local latest.json first
+    const localLatest = path.join(__dirname, 'release', 'latest.json');
+    if (fs.existsSync(localLatest)) {
+      try {
+        const latestRaw = fs.readFileSync(localLatest, 'utf8');
+        const latest = JSON.parse(latestRaw);
+        result.latest = latest.version || 'unknown';
+        return result;
+      } catch (e) {
+        // ignore and try network
+      }
+    }
+
+    // Fetch remote latest.json from GitHub raw
+    const ghUrl = 'https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/release/latest.json';
+    result.latest = await new Promise((resolve) => {
+      https.get(ghUrl, (res) => {
+        let data = '';
+        res.on('data', (chunk) => { data += chunk; });
+        res.on('end', () => {
+          try {
+            const json = JSON.parse(data);
+            resolve(json.version || 'unknown');
+          } catch (e) {
+            resolve('unknown');
+          }
+        });
+      }).on('error', () => resolve('unknown'));
+    });
+  } catch (err) {
+    console.error('get-version-info failed:', err);
+  }
+  return result;
 });
 
 // function createMenuTemplate() {

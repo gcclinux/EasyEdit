@@ -27,9 +27,34 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
       // ignore
     }
 
-    // Try fetching package.json (works if app serves it) and also try to fetch
-    // the latest available version info (local release/latest.json or remote fallback).
+    // Try to use the electron preload API when available (packaged apps).
     (async () => {
+      const electronAPI = (window as any).electronAPI;
+      if (electronAPI && typeof electronAPI.getVersionInfo === 'function') {
+        try {
+          const info = await electronAPI.getVersionInfo();
+          setVersion(info.version || 'unknown');
+          setAvailableVersion(info.latest || 'unknown');
+          return;
+        } catch (e) {
+          // fallback to fetch-based approach
+        }
+      }
+
+      // Try fetching package.json (works if app serves it) and also try to fetch
+      // the latest available version info (local release/latest.json or remote fallback).
+      
+      try {
+        const resp = await fetch('/package.json');
+        if (resp.ok) {
+          const pkg = await resp.json();
+          setVersion(pkg.version || 'unknown');
+        } else {
+          setVersion('unknown');
+        }
+      } catch (e) {
+        setVersion('unknown');
+      }
       // get running version
       try {
         const resp = await fetch('/package.json');
