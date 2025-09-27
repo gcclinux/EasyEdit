@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ipcRenderer.removeAllListeners('update-preview-spacing');
     }
   },
+  openExternal: (url) => ipcRenderer.invoke('open-external', url),
   getLineHeight: () => ipcRenderer.send('get-line-height'),
   setLineHeight: (callback) => {
     if (callback) {
