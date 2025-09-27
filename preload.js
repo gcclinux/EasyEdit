@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     }
   },
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
+  getVersionInfo: () => ipcRenderer.invoke('get-version-info'),
   getLineHeight: () => ipcRenderer.send('get-line-height'),
   setLineHeight: (callback) => {
     if (callback) {
