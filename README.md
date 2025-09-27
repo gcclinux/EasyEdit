@@ -47,7 +47,7 @@ $ docker pull gcclinux/easyedit:1.4.0-amd64
 $ docker run -d --name EASYEDIT -p 3024:3024 gcclinux/easyedit:1.4.0-amd64
 ```
 
-## *Latest Example implementing custom tables...*
+## *Latest Example implementing Templates and Examples...*
 
 <a><img src="screenshots/013.png" alt="Example" width="600" height="400"></a>
 
