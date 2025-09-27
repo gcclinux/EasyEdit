@@ -23,7 +23,7 @@ html,
   padding: 2px 6px;
   border-radius: 4px;
   margin: 4px 0;
-  white-space: pre-wrap; /* Only preserve whitespace in code blocks */
+  white-space: pre-wrap; 
   word-break: break-word;
   width: 100%;
   box-sizing: border-box;
