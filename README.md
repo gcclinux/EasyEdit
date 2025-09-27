@@ -34,23 +34,17 @@ $ npm run electron:build
 
 ## *Run Pre-built Docker Example*
 ```
-# Github x86_64
-# Pull
-$ docker pull ghcr.io/gcclinux/easyedit:main
-# Run x86_64
-$ docker run -d --name EASYEDIT-GHCR -p 3024:3024 ghcr.io/gcclinux/easyedit:main
-
 # Docker Hub aarch64
 # Pull aarch64
-$ docker pull gcclinux/easyedit:1.3.8-aarch64
+$ docker pull gcclinux/easyedit:1.4.0-aarch64
 # Run aarch64
-$ docker run -d --name EASYEDIT -p 3024:3024 gcclinux/easyedit:1.3.8-aarch64
+$ docker run -d --name EASYEDIT -p 3024:3024 gcclinux/easyedit:1.4.0-aarch64
 
 # Docker Hub x86_64
 # Pull x86_64
-$ docker pull gcclinux/easyedit:1.3.8
+$ docker pull gcclinux/easyedit:1.4.0-amd64
 # Run x86_64
-$ docker run -d --name EASYEDIT -p 3024:3024 gcclinux/easyedit:1.3.8
+$ docker run -d --name EASYEDIT -p 3024:3024 gcclinux/easyedit:1.4.0-amd64
 ```
 
 ## *Latest Example implementing custom tables...*
@@ -80,11 +74,7 @@ gantt
 
 [![GitHub Project](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png "EasyEdit Icon")](https://github.com/gcclinux/EasyEdit)
 
-## NOTE:
-### If AppImage fails with setuid_sandbox_host as it happens in some systems:
-```
-FATAL:setuid_sandbox_host.cc(163)] The SUID sandbox helper binary was found, but is not configured correctly. Rather than run without sandboxing I'm aborting now. You need to make sure that /tmp/.mount_EasyEduPn1dQ/chrome-sandbox is owned by root and has mode 4755.
-```
+
 ### Solution Exec:
 ```
 ./EasyEdit-1.3.7-x86_64.AppImage --no-sandbox
