@@ -198,6 +198,7 @@ const App = () => {
     handlePreviewSpacing?: (callback: any) => void;
     getLineHeight?: () => void;
     setLineHeight?: (callback: any) => void;
+    openExternal?: (url: string) => Promise<any>;
   }
 
   // Update the electronAPI declaration
@@ -848,6 +849,39 @@ const App = () => {
                   <div className="hdr-title">Features</div>
                   <div className="hdr-desc">View app features and highlights</div>
                 </button>
+                <div className="hdr-sep" />
+                  <button className="dropdown-item" onClick={async () => {
+                    const url = 'https://github.com/gcclinux/EasyEdit/discussions';
+                    let opened = false;
+                    try {
+                      if (electronAPI && electronAPI.openExternal) {
+                        const res = await electronAPI.openExternal(url);
+                        if (res && res.success) opened = true;
+                        else console.warn('openExternal returned failure:', res);
+                      } else {
+                        const w = window.open(url, '_blank', 'noopener');
+                        if (w) opened = true;
+                      }
+                    } catch (e) {
+                      console.warn('openExternal/window.open threw:', e);
+                    }
+
+                    if (!opened) {
+                      // Try to copy to clipboard as a last-resort fallback and inform the user
+                      try {
+                        await navigator.clipboard.writeText(url);
+                        alert('Unable to open link automatically. The URL has been copied to your clipboard:\n' + url);
+                      } catch (e) {
+                        // If clipboard isn't available, just show the URL to the user
+                        alert('Unable to open or copy link automatically. Please open this URL manually:\n' + url);
+                      }
+                    }
+
+                    setShowHelpDropdown(false);
+                  }}>
+                    <div className="hdr-title">Support</div>
+                    <div className="hdr-desc">Support & Discussion</div>
+                  </button>
               </div>, document.body
             )}
           </div>

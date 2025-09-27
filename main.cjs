@@ -7,6 +7,7 @@ const { detect } = require('detect-port');
 const defaultPort = 3024;
 const viteDevPort = defaultPort; // Using same port for consistency
 const { shell } = require('electron');
+const { exec } = require('child_process');
 const config = 'easyedit.json';
 const configPath = path.join(app.getPath('userData'), config);
 
@@ -210,6 +211,28 @@ async function handleFileOpen(filePath) {
           resolve();
         });
       } else {
+        // Detect WSL (Windows Subsystem for Linux). In WSL, Linux openers like xdg-open
+        // are often unavailable; prefer calling the Windows host to open the URL.
+        let isWSL = false;
+        try {
+          if (fs.existsSync('/proc/version')) {
+            const ver = fs.readFileSync('/proc/version', 'utf8').toLowerCase();
+            if (ver.indexOf('microsoft') !== -1 || ver.indexOf('wsl') !== -1) isWSL = true;
+          }
+        } catch (wslErr) {
+          // ignore
+        }
+
+        if (isWSL) {
+          try {
+            // Prefer cmd.exe start which opens the default Windows browser from WSL.
+            exec(`cmd.exe /C start "" "${url.replace(/"/g, '\\"')}"`, (e) => { if (e) console.error('Fallback cmd.exe start failed:', e); });
+            return { success: true, fallback: true, wsl: true };
+          } catch (we) {
+            console.error('WSL fallback failed:', we);
+            // continue to general Linux attempts below
+          }
+        }
         mainWindow.webContents.send('file-opened', content);
         resolve();
       }
@@ -249,6 +272,106 @@ function setupIPCHandlers() {
     }
   });
 }
+
+// Support opening external links from renderer safely when running inside Electron
+ipcMain.handle('open-external', async (_event, url) => {
+  // Detect WSL up-front so we can prefer Windows host openers instead of shell.openExternal
+  let isWSL = false;
+  try {
+    if (fs.existsSync('/proc/version')) {
+      const ver = fs.readFileSync('/proc/version', 'utf8').toLowerCase();
+      if (ver.indexOf('microsoft') !== -1 || ver.indexOf('wsl') !== -1) isWSL = true;
+    }
+  } catch (wslErr) {
+    // ignore
+  }
+
+  // If running inside WSL, prefer invoking the Windows cmd.exe to open the URL
+  if (isWSL) {
+    try {
+      // Try plain cmd.exe first (should be available in WSL distros), else try absolute path
+      const tryCmd = (cmd) => new Promise((resolve) => {
+        exec(`${cmd} /C start "" "${url.replace(/"/g, '\\"')}"`, (e) => {
+          if (e) {
+            console.error('WSL cmd fallback failed for', cmd, e);
+            resolve({ success: false, error: String(e) });
+          } else {
+            resolve({ success: true, used: cmd });
+          }
+        });
+      });
+
+      let res = await tryCmd('cmd.exe');
+      if (!res.success) {
+        // common absolute path in WSL mounts
+        const alt = '/mnt/c/Windows/System32/cmd.exe';
+        if (fs.existsSync(alt)) {
+          res = await tryCmd(alt);
+        }
+      }
+      return res;
+    } catch (we) {
+      console.error('WSL open-external fallback failed:', we);
+      return { success: false, error: String(we) };
+    }
+  }
+
+  // Try shell.openExternal first, then fall back to platform commands if necessary.
+  try {
+    await shell.openExternal(url);
+    return { success: true };
+  } catch (err) {
+    console.warn('shell.openExternal failed, attempting platform fallback:', err);
+    // Platform-specific fallbacks
+    try {
+      if (process.platform === 'darwin') {
+        exec(`open "${url}"`, (e) => { if (e) console.error('Fallback open failed:', e); });
+        return { success: true, fallback: true };
+      } else if (process.platform === 'win32') {
+        // start is a shell builtin on Windows; use cmd to run it
+        exec(`cmd /c start "" "${url}"`, (e) => { if (e) console.error('Fallback start failed:', e); });
+        return { success: true, fallback: true };
+      } else {
+        // Linux and other Unix-like: try common openers by absolute path first
+        const candidates = [
+          '/usr/bin/xdg-open',
+          '/bin/xdg-open',
+          '/usr/local/bin/xdg-open',
+          '/usr/bin/gio',
+          '/usr/bin/gnome-open',
+          '/usr/bin/kde-open5'
+        ];
+        let used = false;
+        for (const c of candidates) {
+          try {
+            if (fs.existsSync(c)) {
+              // gio needs different args: 'gio open <url>' works
+              if (c.endsWith('/gio')) {
+                exec(`${c} open "${url}"`, (e) => { if (e) console.error(`Fallback ${c} failed:`, e); });
+              } else {
+                exec(`${c} "${url}"`, (e) => { if (e) console.error(`Fallback ${c} failed:`, e); });
+              }
+              used = true;
+              break;
+            }
+          } catch (fsErr) {
+            // ignore and try next
+          }
+        }
+
+        if (!used) {
+          // Last resort: try xdg-open on PATH (may still fail if missing)
+          exec(`xdg-open "${url}"`, (e) => { if (e) console.error('Fallback xdg-open failed:', e); });
+        }
+
+        return { success: true, fallback: true, usedPath: used };
+      }
+    } catch (err2) {
+      console.error('All methods to open external URL failed:', err2);
+      return { success: false, error: String(err2) };
+    }
+  }
+});
 
 // function createMenuTemplate() {
 //   const menuTemplate = [
