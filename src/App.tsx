@@ -75,6 +75,8 @@ import { buildBugReportTemplate } from './templates/bugReport';
 import AboutModal from './components/AboutModal';
 import FeaturesModal from './components/FeaturesModal';
 import taskTemplates from './templates/tasks';
+import { encryptContent, decryptFile } from './cryptoHandler';
+import PasswordModal from './components/PasswordModal';
 
 const App = () => {
   const [documentHistory, setDocumentHistory] = useState<HistoryState[]>([]);
@@ -112,6 +114,17 @@ const App = () => {
   const [isEditFull, setIsEditFull] = useState<boolean>(false);
   
   const [isPreviewFull, setIsPreviewFull] = useState<boolean>(false);
+  const [passwordModalConfig, setPasswordModalConfig] = useState<{
+    open: boolean;
+    title: string;
+    promptText: string;
+    onSubmit: (password: string) => void;
+  }>({
+    open: false,
+    title: '',
+    promptText: '',
+    onSubmit: () => {},
+  });
   const lineHeightValue = useRef<number>(1);
 
   // Selection state fixing the issue with the Headers selection
@@ -161,6 +174,26 @@ const App = () => {
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
   }, []);
+
+  const handleClosePasswordModal = () => {
+    setPasswordModalConfig({ ...passwordModalConfig, open: false });
+  };
+
+  const showPasswordPrompt = (
+    title: string,
+    promptText: string,
+    onSubmit: (password: string) => void
+  ) => {
+    setPasswordModalConfig({
+      open: true,
+      title,
+      promptText,
+      onSubmit: (password) => {
+        onSubmit(password);
+        handleClosePasswordModal();
+      },
+    });
+  };
 
   
 
@@ -555,18 +588,143 @@ const App = () => {
   return (
     <div className="container">
       <div className="menubar">
-      {/* <button className="menu-item" onClick={toggleLayout}>
-          Toggle Dual &#8646;
-        </button> */}
+        <div className="dropdown-container">
+            <button
+              className="help-menubar-btn"
+              ref={el => { helpButtonRef.current = el; }}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                const willShow = !showHelpDropdown;
+                setShowHelpDropdown(willShow);
+                if (willShow && helpButtonRef.current) {
+                  const rect = helpButtonRef.current.getBoundingClientRect();
+                  const scrollX = window.scrollX || window.pageXOffset || 0;
+                  const scrollY = window.scrollY || window.pageYOffset || 0;
+                  const dropdownMin = 140; // same minWidth used in portal
+                  const dropdownWidth = Math.max(rect.width, dropdownMin);
+                  // Center the dropdown under the button
+                  let leftPos = rect.left + scrollX + (rect.width - dropdownWidth) / 2;
+                  // Clamp to keep on-screen
+                  leftPos = Math.max(0, leftPos);
+                  setHelpPos({ top: rect.bottom + scrollY, left: leftPos, width: dropdownWidth });
+                } else {
+                  setHelpPos(null);
+                }
+              }}
+              title="Help"
+            >
+              File
+            </button>
+            {showHelpDropdown && helpPos && createPortal(
+              <div className="header-dropdown format-dropdown" style={{ position: 'absolute', top: helpPos.top + 'px', left: helpPos.left + 'px', zIndex: 999999, minWidth: helpPos.width + 'px' }}>
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    handleOpenClick(setEditorContent);
+                    setShowHelpDropdown(false);
+                  }}
+                >
+                  <div className="hdr-title">&#9755; Open MarkDown</div>
+                  <div className="hdr-desc">Open a file from the filesystem</div>
+                </button>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    const showPrompt = (onSubmit: (password: string) => void) => 
+                      showPasswordPrompt('Decrypt File', 'Enter the password for the .sstp file.', onSubmit);
+                    decryptFile(setEditorContent, showPrompt);
+                    setShowHelpDropdown(false);
+                  }}
+                >
+                  <div className="hdr-title">&#9755; Open Encrypted</div>
+                  <div className="hdr-desc">Open and decrypt .sstp file</div>
+                </button>
+                <div className="hdr-sep" />
+                <button className="dropdown-item" onClick={() => { setFeaturesOpen(true); setShowHelpDropdown(false); }}>
+                  <div className="hdr-title">&#9755; Features</div>
+                  <div className="hdr-desc">View latest features</div>
+                </button>
+                <div className="hdr-sep" />
+                  <button className="dropdown-item" onClick={async () => {
+                    const url = 'https://github.com/gcclinux/EasyEdit/discussions';
+                    let opened = false;
+                    try {
+                      if (electronAPI && electronAPI.openExternal) {
+                        const res = await electronAPI.openExternal(url);
+                        if (res && res.success) opened = true;
+                        else console.warn('openExternal returned failure:', res);
+                      } else {
+                        const w = window.open(url, '_blank', 'noopener');
+                        if (w) opened = true;
+                      }
+                    } catch (e) {
+                      console.warn('openExternal/window.open threw:', e);
+                    }
+
+                    if (!opened) {
+                      // Try to copy to clipboard as a last-resort fallback and inform the user
+                      try {
+                        await navigator.clipboard.writeText(url);
+                        alert('Unable to open link automatically. The URL has been copied to your clipboard:\n' + url);
+                      } catch (e) {
+                        // If clipboard isn't available, just show the URL to the user
+                        alert('Unable to open or copy link automatically. Please open this URL manually:\n' + url);
+                      }
+                    }
+
+                    setShowHelpDropdown(false);
+                  }}>
+                    <div className="hdr-title">&#9755; Support</div>
+                    <div className="hdr-desc">Support & Discussion</div>
+                  </button>
+                <div className="hdr-sep" />
+                <button className="dropdown-item" onClick={async () => {
+                    const url = 'https://buymeacoffee.com/gcclinux';
+                    let opened = false;
+                    try {
+                      if (electronAPI && electronAPI.openExternal) {
+                        const res = await electronAPI.openExternal(url);
+                        if (res && res.success) opened = true;
+                        else console.warn('openExternal returned failure:', res);
+                      } else {
+                        const w = window.open(url, '_blank', 'noopener');
+                        if (w) opened = true;
+                      }
+                    } catch (e) {
+                      console.warn('openExternal/window.open threw:', e);
+                    }
+
+                    if (!opened) {
+                      // Try to copy to clipboard as a last-resort fallback and inform the user
+                      try {
+                        await navigator.clipboard.writeText(url);
+                        alert('Unable to open link automatically. The URL has been copied to your clipboard:\n' + url);
+                      } catch (e) {
+                        // If clipboard isn't available, just show the URL to the user
+                        alert('Unable to open or copy link automatically. Please open this URL manually:\n' + url);
+                      }
+                    }
+
+                    setShowHelpDropdown(false);
+                  }}>
+                    <div className="hdr-title">&#9755; Buy me a coffee &#9832;</div>
+                    <div className="hdr-desc">Sponsor the project</div>
+                  </button>
+                <div className="hdr-sep" />
+                <button className="dropdown-item" onClick={() => { setAboutOpen(true); setShowHelpDropdown(false); }}>
+                  <div className="hdr-title">&#9755; About</div>
+                  <div className="hdr-desc">EasyEdit version and info</div>
+                </button>
+              </div>, document.body
+            )}
+          </div>
         <button className="menu-item fixed-menubar-btn" onClick={toggleEdit}>
           Toggle Edit &#8646;
         </button>
         <button className="menu-item fixed-menubar-btn" onClick={togglePreview}>
           Toggle Preview &#8646;
         </button>
-          <button className="menu-item fixed-menubar-btn" onClick={() => handleOpenClick(setEditorContent)}>
-            Open &#128194;
-          </button>  
           <button 
             className="menu-item fixed-menubar-btn" 
             onClick={() => handleUndo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
@@ -808,86 +966,32 @@ const App = () => {
                   <div className="hdr-title">🠊 Export to PDF</div>
                   <div className="hdr-desc">Export a PDF snapshot of the rendered document</div>
                 </button>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    const showPrompt = (onSubmit: (password: string) => void) => 
+                      showPasswordPrompt('Encrypt Content', 'Enter a password (min 8 characters) to encrypt the current content.', onSubmit);
+                    encryptContent(editorContent, showPrompt);
+                    setShowExportsDropdown(false);
+                  }}
+                >
+                  <div className="hdr-title">🠊 Export Encrypted</div>
+                  <div className="hdr-desc">Encrypt and save as .sstp file</div>
+                </button>
               </div>
-            )}
-          </div>
-          <div className="dropdown-container">
-            <button
-              className="help-menubar-btn"
-              ref={el => { helpButtonRef.current = el; }}
-              onMouseDown={(e) => {
-                e.preventDefault();
-                const willShow = !showHelpDropdown;
-                setShowHelpDropdown(willShow);
-                if (willShow && helpButtonRef.current) {
-                  const rect = helpButtonRef.current.getBoundingClientRect();
-                  const scrollX = window.scrollX || window.pageXOffset || 0;
-                  const scrollY = window.scrollY || window.pageYOffset || 0;
-                  const dropdownMin = 140; // same minWidth used in portal
-                  const dropdownWidth = Math.max(rect.width, dropdownMin);
-                  // Always open to the left: align dropdown's right edge with the button's left edge
-                  let leftPos = rect.left + scrollX - dropdownWidth;
-                  // Clamp to keep on-screen
-                  leftPos = Math.max(0, leftPos);
-                  setHelpPos({ top: rect.bottom + scrollY, left: leftPos, width: dropdownWidth });
-                } else {
-                  setHelpPos(null);
-                }
-              }}
-              title="Help"
-            >
-              Help
-            </button>
-            {showHelpDropdown && helpPos && createPortal(
-              <div className="header-dropdown format-dropdown" style={{ position: 'absolute', top: helpPos.top + 'px', left: helpPos.left + 'px', zIndex: 999999, minWidth: helpPos.width + 'px' }}>
-                <button className="dropdown-item" onClick={() => { setAboutOpen(true); setShowHelpDropdown(false); }}>
-                  <div className="hdr-title">About</div>
-                  <div className="hdr-desc">EasyEdit version and info</div>
-                </button>
-                <div className="hdr-sep" />
-                <button className="dropdown-item" onClick={() => { setFeaturesOpen(true); setShowHelpDropdown(false); }}>
-                  <div className="hdr-title">Features</div>
-                  <div className="hdr-desc">View app features and highlights</div>
-                </button>
-                <div className="hdr-sep" />
-                  <button className="dropdown-item" onClick={async () => {
-                    const url = 'https://github.com/gcclinux/EasyEdit/discussions';
-                    let opened = false;
-                    try {
-                      if (electronAPI && electronAPI.openExternal) {
-                        const res = await electronAPI.openExternal(url);
-                        if (res && res.success) opened = true;
-                        else console.warn('openExternal returned failure:', res);
-                      } else {
-                        const w = window.open(url, '_blank', 'noopener');
-                        if (w) opened = true;
-                      }
-                    } catch (e) {
-                      console.warn('openExternal/window.open threw:', e);
-                    }
-
-                    if (!opened) {
-                      // Try to copy to clipboard as a last-resort fallback and inform the user
-                      try {
-                        await navigator.clipboard.writeText(url);
-                        alert('Unable to open link automatically. The URL has been copied to your clipboard:\n' + url);
-                      } catch (e) {
-                        // If clipboard isn't available, just show the URL to the user
-                        alert('Unable to open or copy link automatically. Please open this URL manually:\n' + url);
-                      }
-                    }
-
-                    setShowHelpDropdown(false);
-                  }}>
-                    <div className="hdr-title">Support</div>
-                    <div className="hdr-desc">Support & Discussion</div>
-                  </button>
-              </div>, document.body
             )}
           </div>
       </div>
   <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
   <FeaturesModal open={featuresOpen} onClose={() => setFeaturesOpen(false)} />
+  <PasswordModal
+    open={passwordModalConfig.open}
+    onClose={handleClosePasswordModal}
+    onSubmit={passwordModalConfig.onSubmit}
+    title={passwordModalConfig.title}
+    promptText={passwordModalConfig.promptText}
+  />
       <div className="editor">
         <div className="toolbar">
           <img
