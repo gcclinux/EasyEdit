@@ -40,6 +40,12 @@ $ npm run electron:build
 
 ## *Run Pre-built Docker Example*
 ```
+# Latest build automatic on every code submition
+$ docker pull ghcr.io/gcclinux/easyedit:main
+$ docker run -d --name EASYEDIT -p 3024:3024 ghcr.io/gcclinux/easyedit:main
+```
+### Regularly manually updated docker images
+```
 # Docker Hub aarch64
 # Pull aarch64
 $ docker pull gcclinux/easyedit:1.4.0-aarch64
@@ -81,7 +87,7 @@ gantt
 [![GitHub Project](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png "EasyEdit Icon")](https://github.com/gcclinux/EasyEdit)
 
 
-### Solution Exec:
+### AppImage Solution Exec:
 ```
-./EasyEdit-1.3.7-x86_64.AppImage --no-sandbox
+$ ./EasyEdit-1.4.0-x86_64.AppImage --no-sandbox
 ```
