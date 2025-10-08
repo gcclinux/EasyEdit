@@ -103,7 +103,6 @@
       "maintainer": "Ricardo Wagemaker",
       "description": "A lightweight Markdown editor built with Electron",
       "synopsis": "Simple Markdown editor",
-      
       "artifactName": "EasyEdit-${version}-${arch}.${ext}",
       "fileAssociations": [
         {
@@ -163,6 +162,7 @@
   "author": "Ricardo Wagemaker <wagemra@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "crypto-js": "^4.2.0",
     "detect-port": "^2.1.0",
     "electron-is-dev": "^3.0.1",
     "express": "^5.1.0",
@@ -181,6 +181,7 @@
     "@electron-forge/publisher-github": "^7.9.0",
     "@eslint/js": "^9.36.0",
     "@playwright/test": "^1.55.1",
+    "@types/crypto-js": "^4.2.2",
     "@types/file-saver": "^2.0.7",
     "@types/lodash.debounce": "^4.0.9",
     "@types/mermaid": "^9.2.0",

@@ -201,10 +201,10 @@ html,
 
 /* Fixed menubar button size for uniform buttons */
 .fixed-menubar-btn {
-  width: 180px;
+  width: 175px;
   height: 36px;
   box-sizing: border-box;
-  padding: 6px 8px;
+  padding: 4px 4px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -213,17 +213,17 @@ html,
 
 /* Help button: half the fixed size and light green */
 .help-menubar-btn {
-  width: 85px;
+  width: 125px;
   height: 36px;
   box-sizing: border-box;
-  padding: 4px 6px;
+  padding: 4px 4px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background-color: #d9f7d9; /* light green */
   color: #063b09;
-  border: none;
-  border-radius: 4px;
+  border: 1px solid #063b09;
+  border-radius: 6px;
   cursor: pointer;
 }
 
