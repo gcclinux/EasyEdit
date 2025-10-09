@@ -1,47 +1,109 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000001; /* above dropdown portals */
+  z-index: 1000001;
+  /* above dropdown portals */
 }
+
 .modal-content.about-modal {
   background-color: var(--bg, #1e1e1e);
   color: var(--fg, #fff);
   padding: 20px;
   border-radius: 8px;
-  min-width: 520px;
-  max-width: 920px;
+  width: 1280px;
 }
+
 .about-hero {
-  display:flex;
-  gap:16px;
-  align-items:center;
+  display: flex;
+  gap: 16px;
+  align-items: center;
 }
-.about-hero-logo img { width:64px; height:64px; object-fit:contain }
-.about-title { margin:0; font-size:20px }
-.about-subtitle { color: #bdbdbd; margin-top:4px }
-.about-badges { margin-top:8px }
-.badge { display:inline-block; background:#2d2d2d; color:#fff; padding:4px 8px; margin-right:6px; border-radius:4px; font-size:12px }
-.about-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:18px }
+
+.about-hero-logo img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain
+}
+
+.about-title {
+  margin: 0;
+  font-size: 20px
+}
+
+.about-subtitle {
+  color: #bdbdbd;
+  margin-top: 4px
+}
+
+.about-badges {
+  margin-top: 8px
+}
+
+.badge {
+  display: inline-block;
+  background: #2d2d2d;
+  color: #fff;
+  padding: 4px 8px;
+  margin-right: 6px;
+  border-radius: 4px;
+  font-size: 12px
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 18px
+}
+
 .about-card {
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   padding: 12px;
-  border: 2px solid rgba(255,255,255,0.12);
+  border: 2px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
 }
+
 /* Make paragraph text in the About modal italic for a softer, note-like feel */
 .about-modal p {
   font-style: italic;
 }
+
 /* Also make lists italic so list items match the paragraph tone */
 .about-modal ul,
 .about-modal li {
   font-style: italic;
 }
-.about-close { position:absolute; right:18px; top:18px; background:transparent; border:none; color:inherit; font-size:18px; cursor:pointer }
-.modal-actions { display:flex; justify-content:flex-end; margin-top:12px }
-.btn.primary { background:#0b84ff; color:#fff; padding:8px 12px; border-radius:6px; border:none; cursor:pointer }
-.muted { color:#9a9a9a }
+
+.about-close {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 18px;
+  cursor: pointer
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px
+}
+
+.btn.primary {
+  background: #0b84ff;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer
+}
+
+.muted {
+  color: #9a9a9a
+}
