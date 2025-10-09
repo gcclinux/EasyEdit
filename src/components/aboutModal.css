@@ -14,7 +14,8 @@
   color: var(--fg, #fff);
   padding: 20px;
   border-radius: 8px;
-  width: 1280px;
+  width: 1500px;
+  max-width: 95vw;
 }
 
 .about-hero {

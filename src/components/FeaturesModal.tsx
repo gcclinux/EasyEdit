@@ -26,7 +26,7 @@ export function FeaturesModal({ open, onClose }: FeaturesModalProps) {
         <div className="features-grid">
           <div className="feature-card">
             <h3>Templates</h3>
-            <p>Kickstart with ready-made templates: Meeting Notes, Project Plan, Study Notes, Travel Log, Workout Log, and a Daily Journal.</p>
+            <p>Kickstart with ready-made templates: Meeting Notes, Project Plan, Study Notes, Travel Log, Workout Log, and a Daily Journal & Diagrams </p>
           </div>
           <div className="feature-card">
             <h3>Formatting</h3>
@@ -34,11 +34,11 @@ export function FeaturesModal({ open, onClose }: FeaturesModalProps) {
           </div>
           <div className="feature-card">
             <h3>Tables & Media</h3>
-            <p>Insert tables, icons, images, links, tasks, and footnotes. Build rich notes that stay readable.</p>
+            <p>Manual or automatic insert tables, icons, images, links, tasks, and footnotes. Build rich notes that stay readable.</p>
           </div>
           <div className="feature-card">
             <h3>Diagrams</h3>
-            <p>Use Mermaid and UML to create flowcharts, sequence diagrams, ER diagrams, and more—right inside your notes.</p>
+            <p>Use Mermaid or UML or even both together to create flowcharts, sequence diagrams, ER diagrams, and more—right inside your notes.</p>
           </div>
           <div className="feature-card">
             <h3>Export & Security</h3>

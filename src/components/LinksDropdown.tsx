@@ -53,7 +53,7 @@ const linkTemplates: LinkTemplate[] = [
     description: 'Relative path link for downloadable assets',
   },
   {
-    name: 'Markdown Image URL',
+    name: 'Markdown Img URL',
     markdown: '#### *Markdown Image URL Example*\n\n[![GitHub Project](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png "EasyEdit")](https://github.com/gcclinux/EasyEdit)\n\n',
     description: 'Embed an image that links to the EasyEdit project',
   },

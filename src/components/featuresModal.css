@@ -4,7 +4,7 @@
 .features-subtitle { color:#bdbdbd; margin-top:4px }
 .features-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:16px }
 .feature-card { background: rgba(255,255,255,0.02); padding:12px; border:2px solid rgba(255,255,255,0.08); border-radius:8px }
-.features-modal { padding:20px; min-width:520px; max-width:920px }
+.features-modal { padding:20px; width:1500px; max-width:95vw }
 
 .modal-overlay {
 	position: fixed;
