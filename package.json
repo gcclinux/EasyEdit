@@ -162,6 +162,7 @@
   "author": "Ricardo Wagemaker <wagemra@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@twemoji/api": "^16.0.1",
     "crypto-js": "^4.2.0",
     "detect-port": "^2.1.0",
     "electron-is-dev": "^3.0.1",
@@ -175,9 +176,12 @@
     "plantuml-encoder": "^1.4.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-icons": "^5.5.0",
     "react-markdown": "^10.1.0",
     "rehype-raw": "^7.0.0",
-    "remark-gfm": "^4.0.1"
+    "remark-emoji": "^5.0.2",
+    "remark-gfm": "^4.0.1",
+    "twemoji": "^14.0.2"
   },
   "devDependencies": {
     "@electron-forge/publisher-github": "^7.9.0",

@@ -9,77 +9,77 @@ export function buildTravelLogsTemplate(date = new Date()) {
   const today = formatDate(date);
   const content = `## Travel Log: [Destination]
 
-**Dates:** [Start Date] - [End Date]
-**Travel Companions:** [Who you traveled with]
-**Transportation:** [How you got there]
-**Accommodation:** [Where you stayed]
+**Dates:** [Start Date] - [End Date]   
+**Travel Companions:** [Who you traveled with]   
+**Transportation:** [How you got there]   
+**Accommodation:** [Where you stayed]   
 
 ## Trip Overview
-[Brief summary of the trip purpose and highlights]
+[Brief summary of the trip purpose and highlights]   
 
 ## Itinerary
 
-### Day 1 - ${today}
+### Day 1 - ${today}   
 **Activities:**
 - [Activity 1] - [Time]
 - [Activity 2] - [Time]
 - [Activity 3] - [Time]
 
 **Meals:**
-- **Breakfast:** [Where/What]
-- **Lunch:** [Where/What]
-- **Dinner:** [Where/What]
+- **Breakfast:** [Where/What]   
+- **Lunch:** [Where/What]   
+- **Dinner:** [Where/What]   
 
-**Highlights:** [Best part of the day]
-**Challenges:** [Any issues or problems]
+**Highlights:** [Best part of the day]   
+**Challenges:** [Any issues or problems]   
 
 ### Day 2 - ${today}
-**Activities:**
-- [Activity 1] - [Time]
-- [Activity 2] - [Time]
+**Activities:**   
+- [Activity 1] - [Time]   
+- [Activity 2] - [Time]   
 
 **Meals:**
-- **Breakfast:** [Where/What]
-- **Lunch:** [Where/What]
-- **Dinner:** [Where/What]
+- **Breakfast:** [Where/What]   
+- **Lunch:** [Where/What]   
+- **Dinner:** [Where/What]   
 
-**Highlights:** [Best part of the day]
-**Challenges:** [Any issues or problems]
+**Highlights:** [Best part of the day]   
+**Challenges:** [Any issues or problems]   
 
 ## Places Visited
 
 ### [Location 1]
-- **Rating:** ★★★★☆
-- **Description:** [What you did/saw there]
-- **Tips:** [Advice for future visitors]
-- **Cost:** [If applicable]
+- **Rating:** ★★★★☆   
+- **Description:** [What you did/saw there]   
+- **Tips:** [Advice for future visitors]   
+- **Cost:** [If applicable]   
 
 ### [Location 2]
-- **Rating:** ★★★★☆
-- **Description:** [What you did/saw there]
-- **Tips:** [Advice for future visitors]
+- **Rating:** ★★★★☆   
+- **Description:** [What you did/saw there]   
+- **Tips:** [Advice for future visitors]   
 - **Cost:** [If applicable]
 
 ## Food & Restaurants
 
-### [Restaurant Name]
-- **Type:** [Cuisine type]
-- **Location:** [Address/area]
-- **Must Try:** [Recommended dishes]
-- **Rating:** ★★★★☆
-- **Price Range:** [$ - $$$]
+### [Restaurant Name]   
+- **Type:** [Cuisine type]   
+- **Location:** [Address/area]   
+- **Must Try:** [Recommended dishes]   
+- **Rating:** ★★★★☆   
+- **Price Range:** [$ - $$$]   
 
 ## Accommodations
-**Hotel/Airbnb:** [Name and location]
-**Rating:** ★★★★☆
-**Pros:** [What was good]
-**Cons:** [What could be better]
-**Would stay again:** [Yes/No]
+**Hotel/Airbnb:** [Name and location]   
+**Rating:** ★★★★☆   
+**Pros:** [What was good]   
+**Cons:** [What could be better]   
+**Would stay again:** [Yes/No]   
 
 ## Transportation
-**Method:** [Plane/Train/Car/etc.]
-**Experience:** [How it went]
-**Tips:** [Advice for future trips]
+**Method:** [Plane/Train/Car/etc.]   
+**Experience:** [How it went]   
+**Tips:** [Advice for future trips]   
 
 ## Budget Breakdown
 | Category | Planned | Actual | Notes |
@@ -91,7 +91,7 @@ export function buildTravelLogsTemplate(date = new Date()) {
 | **Total** | **$[Amount]** | **$[Amount]** | |
 
 ## Packing Notes
-**What I packed but didn't need:**
+**What I packed but didn't need:**   
 - [Item 1]
 - [Item 2]
 
@@ -117,9 +117,9 @@ export function buildTravelLogsTemplate(date = new Date()) {
 - [Change 2]
 
 ## Recommendations for Others
-**Must-see:** [Essential attractions]
-**Must-eat:** [Essential foods]
-**Must-do:** [Essential experiences]
+**Must-see:** [Essential attractions]   
+**Must-eat:** [Essential foods]   
+**Must-do:** [Essential experiences]   
 
 ## Photo Highlights
 [List of best photo opportunities or memorable shots taken]

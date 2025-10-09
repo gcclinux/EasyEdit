@@ -2,16 +2,22 @@ body,
 html,
 #root {
   width: 100%;
+  height: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   text-align: center;
+  height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .editor {
@@ -49,6 +55,7 @@ html,
 .textarea-horizontal-full {
   /* Base textarea styles */
   width: 98%;
+  max-width: 98%;
   padding: 10px;
   margin: 1px 0;
   font-size: 16px;
@@ -61,7 +68,7 @@ html,
   height: 75vh;
   overflow: auto;
   box-sizing: border-box;
-  font-family: monospace;
+  font-family: monospace, "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   
   /* Container styles */
   display: flex;
@@ -92,7 +99,22 @@ html,
 .preview-horizontal,
 .preview-parallel,
 .preview-horizontal-full {
-  line-height: 1; /* Start with normal line height */
+  line-height: 1.5; /* Normal line height */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  letter-spacing: normal;
+  word-spacing: normal;
+  
+  /* Font rendering improvements */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Apply emoji fonts only to elements that actually need them (emojis, icons) */
+.preview-horizontal .icon-glyph,
+.preview-parallel .icon-glyph,
+.preview-horizontal-full .icon-glyph {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
 }
 
 /* Paragraph spacing */
@@ -124,10 +146,10 @@ html,
 .preview-horizontal-full {
   /* Base preview styles */
   width: 98%;
+  max-width: 98%;
   border: 1px solid #000000;
   padding: 10px;
-  margin-left: 20px;
-  margin-right: 20px;
+  margin: 1px 0;
   text-align: left;
   font-family: Arial, sans-serif;
   font-size: 16px;
@@ -168,7 +190,7 @@ html,
   border: 1px solid #ccc;
   padding: 10px;
   text-align: left;
-  font-family: monospace;
+  font-family: monospace, "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 16px;
   background-color: black;
   color: white;
@@ -182,7 +204,7 @@ html,
   border: 1px solid #ccc;
   padding: 10px;
   text-align: left;
-  font-family: Arial, sans-serif;
+  font-family: Arial, sans-serif, "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 16px;
   overflow-y: auto;    /* Vertical scrolling */
   overflow-x: hidden;  /* Hide horizontal scrollbar */
@@ -197,11 +219,13 @@ html,
   margin: 0;
   box-sizing: border-box;
   height: 75vh;
+  flex: 1;
+  min-width: 0;
 }
 
 /* Fixed menubar button size for uniform buttons */
 .fixed-menubar-btn {
-  width: 175px;
+  width: 188px;
   height: 36px;
   box-sizing: border-box;
   padding: 4px 4px;
@@ -232,12 +256,18 @@ html,
   display: flex;
   flex-direction: row;
   justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 
 /* Horizontal Previewer */
 .textarea-horizontal {
   width: 98%;
+  max-width: 98%;
   padding: 10px;
   margin: 1px 0; 
   font-size: 16px;
@@ -250,16 +280,18 @@ html,
   height: 37.5vh;
   overflow: auto; /* Enable scrolling */
   box-sizing: border-box;
+  font-family: monospace, "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 /* Horizontal Previewer */
 .preview-horizontal {
   width: 98%;
+  max-width: 98%;
   border: 1px solid #ccc;
   padding: 10px;
   margin: 1px 0; /* Adjust margins to be consistent */
   text-align: left;
-  font-family: Arial, sans-serif;
+  font-family: Arial, sans-serif, "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 16px;
   font-weight: normal;
   font-style: normal;
@@ -275,6 +307,11 @@ html,
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  max-width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .preview-horizontal table,
@@ -340,7 +377,6 @@ html,
   margin-top: 4px;
   margin-bottom: 2px;
   height: 32px;
-  line-height: 12px;
   background-color: rgb(19, 0, 128);
   color: white;
   font-family: Arial, sans-serif;
@@ -348,6 +384,12 @@ html,
   font-weight: normal;
   font-style: normal;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  border: none;
+  cursor: pointer;
 }
 
 .button-auto { 
@@ -445,6 +487,7 @@ html,
 .icon-glyph {
   font-size: 20px;
   line-height: 1;
+  font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
 }
 
 .icon-label {
@@ -486,12 +529,27 @@ html,
 }
 
 .menubar {
-  width: 90%;
+  width: 100%;
   /* allow dropdowns to overflow the menubar so they aren't clipped */
   overflow: visible;
   display: flex;
-  justify-content: space-around;
-  padding: 10px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 5px;
+  gap: 5px;
+}
+
+.menubar-bottom {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 5px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #3d3d3d;
 }
 
 .menu-item {
