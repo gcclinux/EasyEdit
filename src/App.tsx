@@ -809,7 +809,7 @@ const App = () => {
 
                     setShowHelpDropdown(false);
                   }}>
-                    <div className="hdr-title"><FaHeart /> Buy me a coffee ★</div>
+                    <div className="hdr-title"><FaHeart /> Buy me a coffee</div>
                     <div className="hdr-desc">Sponsor the project</div>
                   </button>
                 <div className="hdr-sep" />

@@ -232,6 +232,31 @@ html,
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+}
+
+.fixed-menubar-btn:hover {
+  background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+}
+
+.fixed-menubar-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.fixed-menubar-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 
@@ -377,11 +402,11 @@ html,
   margin-top: 4px;
   margin-bottom: 2px;
   height: 32px;
-  background-color: rgb(19, 0, 128);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   font-family: Arial, sans-serif;
   font-size: 16px;
-  font-weight: normal;
+  font-weight: 500;
   font-style: normal;
   text-decoration: none;
   display: inline-flex;
@@ -389,7 +414,21 @@ html,
   justify-content: center;
   padding: 0 10px;
   border: none;
+  border-radius: 6px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.button-mermaid:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.button-mermaid:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .button-auto { 
@@ -558,13 +597,24 @@ html,
   padding: 10px 14px;
   text-decoration: none;
   font-size: 17px;
-  background-color: rgb(59, 59, 61);
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
   border: none;
+  border-radius: 6px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
 }
 
 .menu-item:hover {
-  background-color: #7d7d7d;
+  background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+  transform: translateY(-1px);
+}
+
+.menu-item:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .dropdown-container {
