@@ -1140,7 +1140,7 @@ const App = () => {
             )}
           </div>
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowFormatDropdown(!showFormatDropdown); }} title="Text Formatting"><CgFormatText />Formatting</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowFormatDropdown(!showFormatDropdown); }} title="Text Formatting"><CgFormatText />&nbsp;Formatting</button>
             {showFormatDropdown && (
               <FormatDropdown
                 onBold={handleBoldSyntax}
@@ -1153,8 +1153,9 @@ const App = () => {
               />
             )}
           </div>
+          &#8741;
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowInsertDropdown(!showInsertDropdown); }} title="Insert Elements"><MdOutlineInsertChartOutlined />Insert</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowInsertDropdown(!showInsertDropdown); }} title="Insert Elements"><MdOutlineInsertChartOutlined />&nbsp;Insert</button>
             {showInsertDropdown && (
               <InsertDropdown
                 onRuler={handlerinsertRulerSyntax}
@@ -1168,7 +1169,7 @@ const App = () => {
             )}
           </div>
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowLinksDropdown(!showLinksDropdown); }} title="Insert Links"><FaLink />Links</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowLinksDropdown(!showLinksDropdown); }} title="Insert Links"><FaLink />&nbsp;Links</button>
             {showLinksDropdown && (
               <LinksDropdown
                 onInsertTemplate={handleInsertImageTemplate}
@@ -1177,7 +1178,7 @@ const App = () => {
             )}
           </div>
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowImagesDropdown(!showImagesDropdown); }} title="Insert Images"><FaImage />Images</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowImagesDropdown(!showImagesDropdown); }} title="Insert Images"><FaImage />&nbsp;Images</button>
             {showImagesDropdown && (
               <ImagesDropdown
                 onInsertTemplate={handleInsertImageTemplate}
@@ -1186,7 +1187,7 @@ const App = () => {
             )}
           </div>
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowTablesDropdown(!showTablesDropdown); }} title="Insert Tables"><FaTable />Tables</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowTablesDropdown(!showTablesDropdown); }} title="Insert Tables"><FaTable />&nbsp;Tables</button>
             {showTablesDropdown && (
               <TablesDropdown
                 onInsertTemplate={handleInsertImageTemplate}
@@ -1195,7 +1196,7 @@ const App = () => {
             )}
           </div>
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowFooterDropdown(!showFooterDropdown); }} title="Insert Footnotes"><FaStickyNote />FootNote</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowFooterDropdown(!showFooterDropdown); }} title="Insert Footnotes"><FaStickyNote />&nbsp;FootNote</button>
             {showFooterDropdown && (
               <FooterDropdown
                 onInsertTemplate={handleInsertImageTemplate}
@@ -1203,7 +1204,7 @@ const App = () => {
               />
             )}
           </div>
-          &#8741;&nbsp;
+          &#8741;
           <div className="dropdown-container">
             <button
               className="button-mermaid"
@@ -1225,7 +1226,7 @@ const App = () => {
               />
             )}
           </div>
-          &#8741;&nbsp;
+          &#8741;
           <div className="dropdown-container">
             <button
               className="button-mermaid"
