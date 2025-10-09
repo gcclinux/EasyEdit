@@ -82,10 +82,10 @@ async function createMainWindow() {
 
   // default window options
   let windowOptions = {
-    width: Math.min(1200, width),
-    height: Math.min(800, height),
-    minWidth: 1200,
-    minHeight: 800,
+    width: Math.min(1850, width),
+    height: Math.min(900, height),
+    minWidth: 1850,
+    minHeight: 900,
     icon: iconPath,
     webPreferences: {
       nodeIntegration: false,

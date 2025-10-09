@@ -19,6 +19,14 @@ import {
   insertTimeLineSyntax,
   insertererDiagramSyntax
 } from './insertMermaid.ts';
+import {
+  insertUMLClassDiagram,
+  insertUMLSequenceDiagram,
+  insertUMLUseCaseDiagram,
+  insertUMLActivityDiagram,
+  insertUMLComponentDiagram,
+  insertUMLStateDiagram
+} from './insertUML.ts';
 import { TableGenerator } from './autoGenerator/TableGenerator.tsx';
 import { GanttGenerator } from './autoGenerator/GanttGenerator.tsx';
 import { TimelineGenerator } from './autoGenerator/TimelineGenerator.tsx';
@@ -58,6 +66,7 @@ import PreviewComponent from './components/PreviewComponent.tsx';
 import HeaderDropdown from './components/HeaderDropdown';
 import FormatDropdown from './components/FormatDropdown';
 import MermaidDropdown from './components/MermaidDropdown';
+import UMLDropdown from './components/UMLDropdown';
 import InsertDropdown from './components/InsertDropdown';
 import ImagesDropdown from './components/ImagesDropdown';
 import LinksDropdown from './components/LinksDropdown';
@@ -92,6 +101,7 @@ const App = () => {
   const [showHeaderDropdown, setShowHeaderDropdown] = useState(false);
   const [showFormatDropdown, setShowFormatDropdown] = useState(false);
   const [showMermaidDropdown, setShowMermaidDropdown] = useState(false);
+  const [showUMLDropdown, setShowUMLDropdown] = useState(false);
   const [showSymbolsDropdown, setShowSymbolsDropdown] = useState(false);
   const [showIconsDropdown, setShowIconsDropdown] = useState(false);
   const [showLinksDropdown, setShowLinksDropdown] = useState(false);
@@ -544,6 +554,31 @@ const App = () => {
   const handleTimeLineSyntax = () => {
     insertTimeLineSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   }
+
+  // UML Diagram Handlers
+  const handleUMLClassDiagram = () => {
+    insertUMLClassDiagram(textareaRef, editorContent, setEditorContent, cursorPositionRef);
+  };
+
+  const handleUMLSequenceDiagram = () => {
+    insertUMLSequenceDiagram(textareaRef, editorContent, setEditorContent, cursorPositionRef);
+  };
+
+  const handleUMLUseCaseDiagram = () => {
+    insertUMLUseCaseDiagram(textareaRef, editorContent, setEditorContent, cursorPositionRef);
+  };
+
+  const handleUMLActivityDiagram = () => {
+    insertUMLActivityDiagram(textareaRef, editorContent, setEditorContent, cursorPositionRef);
+  };
+
+  const handleUMLComponentDiagram = () => {
+    insertUMLComponentDiagram(textareaRef, editorContent, setEditorContent, cursorPositionRef);
+  };
+
+  const handleUMLStateDiagram = () => {
+    insertUMLStateDiagram(textareaRef, editorContent, setEditorContent, cursorPositionRef);
+  };
 
   
 
@@ -1189,6 +1224,30 @@ const App = () => {
                 onGitGraph={handleGitInsert}
                 onBlock={handleBlockInsert}
                 onClose={() => setShowMermaidDropdown(false)}
+              />
+            )}
+          </div>
+          <div className="dropdown-container">
+            <button
+              className="button-mermaid"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                cacheSelection();
+                setShowUMLDropdown(!showUMLDropdown);
+              }}
+              title="UML Diagram Options"
+            >
+              UML ▾
+            </button>
+            {showUMLDropdown && (
+              <UMLDropdown
+                onClassDiagram={handleUMLClassDiagram}
+                onSequenceDiagram={handleUMLSequenceDiagram}
+                onUseCaseDiagram={handleUMLUseCaseDiagram}
+                onActivityDiagram={handleUMLActivityDiagram}
+                onComponentDiagram={handleUMLComponentDiagram}
+                onStateDiagram={handleUMLStateDiagram}
+                onClose={() => setShowUMLDropdown(false)}
               />
             )}
           </div>
