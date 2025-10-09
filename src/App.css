@@ -646,13 +646,13 @@ html,
 }
 
 .hdr-title {
-  font-weight: 600;
+  font-weight: 550;
 }
 
 .hdr-desc {
   /* Use a fixed size (matches header4 button size) so descriptions don't scale with parent button font-size */
-  font-size: 0.875rem; /* 14px when root is 16px */
-  font-weight: 400; /* normal weight, not bold */
+  font-size: 0.800rem; /* 14px when root is 16px */
+  font-weight: 300; /* normal weight, not bold */
   font-style: italic;
   color: #cfcfcf;
   margin-top: 2px;

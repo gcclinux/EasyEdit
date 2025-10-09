@@ -214,6 +214,51 @@ const App = () => {
     textareaRef.current?.focus(); // Ensure textarea remains focused
   };
 
+  // Function to close all dropdowns
+  const closeAllDropdowns = () => {
+    setShowHeaderDropdown(false);
+    setShowFormatDropdown(false);
+    setShowMermaidDropdown(false);
+    setShowUMLDropdown(false);
+    setShowSymbolsDropdown(false);
+    setShowIconsDropdown(false);
+    setShowAutoDropdown(false);
+    setShowLinksDropdown(false);
+    setShowTablesDropdown(false);
+    setShowFooterDropdown(false);
+    setShowInsertDropdown(false);
+    setShowImagesDropdown(false);
+    setShowExportsDropdown(false);
+    setExportsPos(null);
+    setShowTemplatesDropdown(false);
+    setTemplatesPos(null);
+    setShowHelpDropdown(false);
+    setHelpPos(null);
+    setShowTasksDropdown(false);
+    setTasksPos(null);
+  };
+
+  // Click-away listener to close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      
+      // Check if click is outside dropdown containers and dropdown content
+      const isDropdownButton = target.closest('.dropdown-container, .menu-item, .fixed-menubar-btn, .button-mermaid');
+      const isDropdownContent = target.closest('.header-dropdown, .format-dropdown');
+      
+      // If clicking outside both the button and dropdown content, close all
+      if (!isDropdownButton && !isDropdownContent) {
+        closeAllDropdowns();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   // Add this effect to handle clicking outside
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
@@ -695,9 +740,9 @@ const App = () => {
               ref={el => { helpButtonRef.current = el; }}
               onMouseDown={(e) => {
                 e.preventDefault();
-                const willShow = !showHelpDropdown;
-                setShowHelpDropdown(willShow);
-                if (willShow && helpButtonRef.current) {
+                closeAllDropdowns();
+                setShowHelpDropdown(true);
+                if (helpButtonRef.current) {
                   const rect = helpButtonRef.current.getBoundingClientRect();
                   const scrollX = window.scrollX || window.pageXOffset || 0;
                   const scrollY = window.scrollY || window.pageYOffset || 0;
@@ -853,9 +898,9 @@ const App = () => {
               onMouseDown={(e) => {
                 e.preventDefault();
                 cacheSelection();
-                const willShow = !showTasksDropdown;
-                setShowTasksDropdown(willShow);
-                if (willShow && tasksButtonRef.current) {
+                closeAllDropdowns();
+                setShowTasksDropdown(true);
+                if (tasksButtonRef.current) {
                   const rect = tasksButtonRef.current.getBoundingClientRect();
                   setTasksPos({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX, width: rect.width });
                 } else {
@@ -898,9 +943,9 @@ const App = () => {
               onMouseDown={(e) => {
                 e.preventDefault();
                 cacheSelection();
-                const willShow = !showTemplatesDropdown;
-                setShowTemplatesDropdown(willShow);
-                if (willShow && templatesButtonRef.current) {
+                closeAllDropdowns();
+                setShowTemplatesDropdown(true);
+                if (templatesButtonRef.current) {
                   const rect = templatesButtonRef.current.getBoundingClientRect();
                   setTemplatesPos({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX, width: rect.width });
                 } else {
@@ -1031,9 +1076,9 @@ const App = () => {
               onMouseDown={(e) => {
                 e.preventDefault();
                 cacheSelection();
-                const willShow = !showExportsDropdown;
-                setShowExportsDropdown(willShow);
-                if (willShow && exportsButtonRef.current) {
+                closeAllDropdowns();
+                setShowExportsDropdown(true);
+                if (exportsButtonRef.current) {
                   const rect = exportsButtonRef.current.getBoundingClientRect();
                   setExportsPos({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX, width: rect.width });
                 } else {
@@ -1126,7 +1171,7 @@ const App = () => {
 
           <div className="menubar-bottom">
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowHeaderDropdown(!showHeaderDropdown); }} title="Headers"><CgFormatHeading />Headers</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowHeaderDropdown(true); }} title="Headers"><CgFormatHeading />Headers</button>
             {showHeaderDropdown && (
               <HeaderDropdown
                 onInsertH1={handlerinserth1Syntax}
@@ -1139,8 +1184,9 @@ const App = () => {
               />
             )}
           </div>
+          &#8741;
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowFormatDropdown(!showFormatDropdown); }} title="Text Formatting"><CgFormatText />&nbsp;Formatting</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowFormatDropdown(true); }} title="Text Formatting"><CgFormatText />&nbsp;Formatting</button>
             {showFormatDropdown && (
               <FormatDropdown
                 onBold={handleBoldSyntax}
@@ -1155,7 +1201,7 @@ const App = () => {
           </div>
           &#8741;
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowInsertDropdown(!showInsertDropdown); }} title="Insert Elements"><MdOutlineInsertChartOutlined />&nbsp;Insert</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowInsertDropdown(true); }} title="Insert Elements"><MdOutlineInsertChartOutlined />&nbsp;Insert</button>
             {showInsertDropdown && (
               <InsertDropdown
                 onRuler={handlerinsertRulerSyntax}
@@ -1168,8 +1214,9 @@ const App = () => {
               />
             )}
           </div>
+          &#8741;
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowLinksDropdown(!showLinksDropdown); }} title="Insert Links"><FaLink />&nbsp;Links</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowLinksDropdown(true); }} title="Insert Links"><FaLink />&nbsp;Links</button>
             {showLinksDropdown && (
               <LinksDropdown
                 onInsertTemplate={handleInsertImageTemplate}
@@ -1177,8 +1224,9 @@ const App = () => {
               />
             )}
           </div>
+          &#8741;
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowImagesDropdown(!showImagesDropdown); }} title="Insert Images"><FaImage />&nbsp;Images</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowImagesDropdown(true); }} title="Insert Images"><FaImage />&nbsp;Images</button>
             {showImagesDropdown && (
               <ImagesDropdown
                 onInsertTemplate={handleInsertImageTemplate}
@@ -1186,8 +1234,9 @@ const App = () => {
               />
             )}
           </div>
+          &#8741;
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowTablesDropdown(!showTablesDropdown); }} title="Insert Tables"><FaTable />&nbsp;Tables</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowTablesDropdown(true); }} title="Insert Tables"><FaTable />&nbsp;Tables</button>
             {showTablesDropdown && (
               <TablesDropdown
                 onInsertTemplate={handleInsertImageTemplate}
@@ -1195,8 +1244,9 @@ const App = () => {
               />
             )}
           </div>
+          &#8741;
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowFooterDropdown(!showFooterDropdown); }} title="Insert Footnotes"><FaStickyNote />&nbsp;FootNote</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowFooterDropdown(true); }} title="Insert Footnotes"><FaStickyNote />&nbsp;FootNote</button>
             {showFooterDropdown && (
               <FooterDropdown
                 onInsertTemplate={handleInsertImageTemplate}
@@ -1211,7 +1261,8 @@ const App = () => {
               onMouseDown={(e) => {
                 e.preventDefault();
                 cacheSelection();
-                setShowAutoDropdown(!showAutoDropdown);
+                closeAllDropdowns();
+                setShowAutoDropdown(true);
               }}
               title="Auto Generate Options"
             >
@@ -1233,7 +1284,8 @@ const App = () => {
               onMouseDown={(e) => {
                 e.preventDefault();
                 cacheSelection();
-                setShowMermaidDropdown(!showMermaidDropdown);
+                closeAllDropdowns();
+                setShowMermaidDropdown(true);
               }}
               title="Mermaid Options"
             >
@@ -1254,13 +1306,15 @@ const App = () => {
               />
             )}
           </div>
+          &#8741;
           <div className="dropdown-container">
             <button
               className="button-mermaid"
               onMouseDown={(e) => {
                 e.preventDefault();
                 cacheSelection();
-                setShowUMLDropdown(!showUMLDropdown);
+                closeAllDropdowns();
+                setShowUMLDropdown(true);
               }}
               title="UML Diagram Options"
             >
@@ -1278,13 +1332,15 @@ const App = () => {
               />
             )}
           </div>
+          &#8741;
           <div className="dropdown-container">
             <button
               className="button-mermaid"
               onMouseDown={(e) => {
                 e.preventDefault();
                 cacheSelection();
-                setShowSymbolsDropdown(!showSymbolsDropdown);
+                closeAllDropdowns();
+                setShowSymbolsDropdown(true);
               }}
               title="Symbol Options"
             >
@@ -1316,13 +1372,15 @@ const App = () => {
               />
             )}
           </div>
+          &#8741;
           <div className="dropdown-container">
             <button
               className="button-mermaid"
               onMouseDown={(e) => {
                 e.preventDefault();
                 cacheSelection();
-                setShowIconsDropdown(!showIconsDropdown);
+                closeAllDropdowns();
+                setShowIconsDropdown(true);
               }}
               title="Icons"
             >
