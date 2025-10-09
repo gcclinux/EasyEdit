@@ -74,6 +74,7 @@ import TablesDropdown from './components/TablesDropdown';
 import FooterDropdown from './components/FooterDropdown';
 import SymbolsDropdown from './components/SymbolsDropdown';
 import IconsDropdown from './components/IconsDropdown';
+import AutoDropdown from './components/AutoDropdown';
 import { buildDailyJournalTemplate } from './templates/dailyJournal';
 import { buildMeetingNotesTemplate } from './templates/meetingNotes';
 import { buildProjectPlanTemplate } from './templates/projectPlan';
@@ -104,6 +105,7 @@ const App = () => {
   const [showUMLDropdown, setShowUMLDropdown] = useState(false);
   const [showSymbolsDropdown, setShowSymbolsDropdown] = useState(false);
   const [showIconsDropdown, setShowIconsDropdown] = useState(false);
+  const [showAutoDropdown, setShowAutoDropdown] = useState(false);
   const [showLinksDropdown, setShowLinksDropdown] = useState(false);
   const [showTablesDropdown, setShowTablesDropdown] = useState(false);
   const [showFooterDropdown, setShowFooterDropdown] = useState(false);
@@ -1199,6 +1201,27 @@ const App = () => {
               />
             )}
           </div>
+          <div className="dropdown-container">
+            <button
+              className="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                cacheSelection();
+                setShowAutoDropdown(!showAutoDropdown);
+              }}
+              title="Auto Generate Options"
+            >
+              Auto ▾
+            </button>
+            {showAutoDropdown && (
+              <AutoDropdown
+                onAutoTable={() => setTableModalOpen(true)}
+                onAutoGantt={() => setGanttModalOpen(true)}
+                onAutoTimeline={() => setTimelineModalOpen(true)}
+                onClose={() => setShowAutoDropdown(false)}
+              />
+            )}
+          </div>
           &#8741;&nbsp;
           <div className="dropdown-container">
             <button
@@ -1308,44 +1331,33 @@ const App = () => {
               />
             )}
           </div>
-          
-          
-          &#8741;&nbsp;
-          <button className='button-auto' onClick={() => setTableModalOpen(true)} title="Support Creating a Markdown Table">
-            Auto Table &#8711;
-          </button>
-          <TableGenerator
-            isOpen={tableModalOpen}
-            onClose={() => setTableModalOpen(false)}
-            onInsert={(tableText) => {
-              setEditorContent(editorContent + tableText);
-              setTableModalOpen(false);
-            }}
-          />
-          &#8741;&nbsp;
-          <button className='button-auto' onClick={() => setGanttModalOpen(true)} title="Support Creating a Mermaid Gantt Chart">
-            Auto Gantt &#8711;
-          </button>
-          <GanttGenerator
-            isOpen={ganttModalOpen}
-            onClose={() => setGanttModalOpen(false)}
-            onInsert={(ganttText) => {
-              setEditorContent(editorContent + ganttText);
-              setGanttModalOpen(false);
-            }}/>
-
-          &#8741;&nbsp;
-            <button className='button-auto' onClick={() => setTimelineModalOpen(true)} title="Support Creating a Mermaid Timeline Chart">
-              Auto Timeline &#8711;
-            </button>
-            <TimelineGenerator
-              isOpen={timelineModalOpen}
-              onClose={() => setTimelineModalOpen(false)}
-              onInsert={(timelineText) => {
-                setEditorContent(editorContent + timelineText);
-                setTimelineModalOpen(false);
-            }}/>
         </div>
+
+        {/* Modal Generators */}
+        <TableGenerator
+          isOpen={tableModalOpen}
+          onClose={() => setTableModalOpen(false)}
+          onInsert={(tableText) => {
+            setEditorContent(editorContent + tableText);
+            setTableModalOpen(false);
+          }}
+        />
+        <GanttGenerator
+          isOpen={ganttModalOpen}
+          onClose={() => setGanttModalOpen(false)}
+          onInsert={(ganttText) => {
+            setEditorContent(editorContent + ganttText);
+            setGanttModalOpen(false);
+          }}
+        />
+        <TimelineGenerator
+          isOpen={timelineModalOpen}
+          onClose={() => setTimelineModalOpen(false)}
+          onInsert={(timelineText) => {
+            setEditorContent(editorContent + timelineText);
+            setTimelineModalOpen(false);
+          }}
+        />
 
         
         <p></p>

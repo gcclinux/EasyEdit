@@ -68,15 +68,12 @@ export const GanttGenerator: React.FC<GanttGeneratorProps> = ({ isOpen, onClose,
         <h2>Gantt Chart Generator</h2>
         
         <div className="input-group">
-          <label>
-            Project Title:
-            <input 
+          <input 
             className="project-title"
-              type="text" 
-              value={projectTitle} 
-              onChange={e => setProjectTitle(e.target.value)}
-            />
-          </label>
+            type="text" 
+            value={projectTitle} 
+            onChange={e => setProjectTitle(e.target.value)}
+          />
         </div>
         <div className="input-group">
           <div className='task-title'>
