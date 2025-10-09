@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkEmoji from 'remark-emoji';
 import rehypeRaw from 'rehype-raw';
 import mermaid from 'mermaid';
 import nomnoml from 'nomnoml';
@@ -89,7 +90,7 @@ const PreviewComponent: React.FC<PreviewComponentProps> = React.memo(({
       ref={previewRef}
     >
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkEmoji]}
         rehypePlugins={[rehypeRaw]}
         components={{
           code({ className, children, ...props }) {

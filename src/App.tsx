@@ -1,10 +1,38 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import {
+  FaUndo,
+  FaRedo,
+  FaTrash,
+  FaExchangeAlt,
+  FaFileImport,
+  FaInfoCircle,
+  FaGithub,
+  FaHeart,
+  FaStar,
+  FaTable,
+  FaLink,
+  FaImage,
+  FaStickyNote,
+  FaDownload,
+  FaFilePdf,
+  FaFileCode,
+  FaFileAlt,
+  FaLock
+} from 'react-icons/fa';
+import { VscSymbolKeyword } from "react-icons/vsc";
+import { GoTasklist } from "react-icons/go";
+import { GrDocumentText } from "react-icons/gr";
+import { AiOutlineLayout } from "react-icons/ai";
+import { BsFileEarmarkLockFill, BsJournalBookmarkFill, BsKanban, BsClipboard2Check, BsPersonWorkspace, BsTropicalStorm, BsFillBugFill, BsDiagram3 } from "react-icons/bs";
+import { GiJourney } from "react-icons/gi";
+import { SiMermaid } from "react-icons/si";
+import { CgFormatText, CgFormatHeading } from "react-icons/cg";
+import { MdAutoAwesome, MdOutlineInsertChartOutlined } from "react-icons/md";
 
 import mermaid from 'mermaid';
 import debounce from 'lodash.debounce';
 import './App.css';
-import markdownMarkWhite from './assets/md.svg';
 // import { IpcRendererEvent } from 'electron';
 // const electronAPI = (window as any).electronAPI;
 import { saveAsPDF } from './saveAsPDF.tsx';
@@ -38,9 +66,9 @@ import {
   handleClear, 
   handleRedo,
   handleOpenClick,
+  saveToHTML,
   saveToFile,
-  saveToTxT,
-  saveToHTML 
+  saveToTxT
 } from './insertSave.ts';
 import { 
   insertBoldSyntax,
@@ -82,6 +110,7 @@ import { buildStudyNotesTemplate } from './templates/studyNotes';
 import { buildTravelLogsTemplate } from './templates/travelLogs';
 import { buildWorkoutLogTemplate } from './templates/workoutLog';
 import { buildBugReportTemplate } from './templates/bugReport';
+import { buildDiagramExamplesTemplate } from './templates/diagramExamples';
 import AboutModal from './components/AboutModal';
 import FeaturesModal from './components/FeaturesModal';
 import taskTemplates from './templates/tasks';
@@ -112,6 +141,8 @@ const App = () => {
   const [showInsertDropdown, setShowInsertDropdown] = useState(false);
   const [showImagesDropdown, setShowImagesDropdown] = useState(false);
   const [showExportsDropdown, setShowExportsDropdown] = useState(false);
+  const exportsButtonRef = useRef<HTMLButtonElement | null>(null);
+  const [exportsPos, setExportsPos] = useState<{ top: number; left: number; width: number } | null>(null);
   const [showTemplatesDropdown, setShowTemplatesDropdown] = useState(false);
   const templatesButtonRef = useRef<HTMLButtonElement | null>(null);
   const [templatesPos, setTemplatesPos] = useState<{ top: number; left: number; width: number } | null>(null);
@@ -138,6 +169,13 @@ const App = () => {
     onSubmit: () => {},
   });
   const lineHeightValue = useRef<number>(1);
+
+  // Detect Electron environment and add class to body for CSS targeting
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (window as any).electronAPI) {
+      document.body.classList.add('electron-app');
+    }
+  }, []);
 
   // Selection state fixing the issue with the Headers selection
   const [selectionStart, setSelectionStart] = useState<number | null>(null);
@@ -589,6 +627,32 @@ const App = () => {
     saveAsPDF(editorContent);
   };
 
+  // Save to HTML wrapper
+  const handleSaveToHTML = () => {
+    saveToHTML(editorContent);
+  };
+
+  // Save to Markdown wrapper
+  const handleSaveToMarkdown = () => {
+    saveToFile(editorContent);
+  };
+
+  // Save to TXT wrapper
+  const handleSaveToTXT = () => {
+    saveToTxT(editorContent);
+  };
+
+  // Save Encrypted wrapper
+  const handleSaveEncrypted = () => {
+    encryptContent(editorContent, (onSubmit) => {
+      showPasswordPrompt(
+        'Encrypt Content',
+        'Enter a password to encrypt the file (min 8 characters):',
+        onSubmit
+      );
+    });
+  };
+
   // Update effect to include cursor position
   useEffect(() => {
     if (editorContent !== documentHistory[historyIndex]?.content) {
@@ -650,7 +714,7 @@ const App = () => {
               }}
               title="Help"
             >
-              File
+              <FaFileImport /> &nbsp; File ▾
             </button>
             {showHelpDropdown && helpPos && createPortal(
               <div className="header-dropdown format-dropdown" style={{ position: 'absolute', top: helpPos.top + 'px', left: helpPos.left + 'px', zIndex: 999999, minWidth: helpPos.width + 'px' }}>
@@ -661,8 +725,8 @@ const App = () => {
                     setShowHelpDropdown(false);
                   }}
                 >
-                  <div className="hdr-title">&#9755; Open MarkDown</div>
-                  <div className="hdr-desc">Open a file from the filesystem</div>
+                  <div className="hdr-title"><FaFileImport /> Open MarkDown</div>
+                  <div className="hdr-desc">Open markdown .md file</div>
                 </button>
                 <div className="hdr-sep" />
                 <button
@@ -674,12 +738,12 @@ const App = () => {
                     setShowHelpDropdown(false);
                   }}
                 >
-                  <div className="hdr-title">&#9755; Open Encrypted</div>
-                  <div className="hdr-desc">Open and decrypt .sstp file</div>
+                  <div className="hdr-title"><BsFileEarmarkLockFill /> Open Encrypted</div>
+                  <div className="hdr-desc">Open encrypted .sstp file</div>
                 </button>
                 <div className="hdr-sep" />
                 <button className="dropdown-item" onClick={() => { setFeaturesOpen(true); setShowHelpDropdown(false); }}>
-                  <div className="hdr-title">&#9755; Features</div>
+                  <div className="hdr-title"><FaStar /> Features</div>
                   <div className="hdr-desc">View latest features</div>
                 </button>
                 <div className="hdr-sep" />
@@ -712,7 +776,7 @@ const App = () => {
 
                     setShowHelpDropdown(false);
                   }}>
-                    <div className="hdr-title">&#9755; Support</div>
+                    <div className="hdr-title"><FaGithub /> Support</div>
                     <div className="hdr-desc">Support & Discussion</div>
                   </button>
                 <div className="hdr-sep" />
@@ -745,42 +809,42 @@ const App = () => {
 
                     setShowHelpDropdown(false);
                   }}>
-                    <div className="hdr-title">&#9755; Buy me a coffee &#9832;</div>
+                    <div className="hdr-title"><FaHeart /> Buy me a coffee ★</div>
                     <div className="hdr-desc">Sponsor the project</div>
                   </button>
                 <div className="hdr-sep" />
                 <button className="dropdown-item" onClick={() => { setAboutOpen(true); setShowHelpDropdown(false); }}>
-                  <div className="hdr-title">&#9755; About</div>
+                  <div className="hdr-title"><FaInfoCircle /> About</div>
                   <div className="hdr-desc">EasyEdit version and info</div>
                 </button>
               </div>, document.body
             )}
           </div>
         <button className="menu-item fixed-menubar-btn" onClick={toggleEdit}>
-          Toggle Edit &#8646;
+          <FaExchangeAlt /> &nbsp; Toggle Edit
         </button>
         <button className="menu-item fixed-menubar-btn" onClick={togglePreview}>
-          Toggle Preview &#8646;
+          <FaExchangeAlt /> &nbsp; Toggle Preview
         </button>
           <button 
             className="menu-item fixed-menubar-btn" 
             onClick={() => handleUndo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
             disabled={historyIndex <= 0}
           >
-            Undo &#8630;
+            <FaUndo /> &nbsp; Undo
           </button>
           <button
             className="menu-item fixed-menubar-btn"
             onClick={() => handleClear(setEditorContent)}
           >
-            Clear &#128465;
+            <FaTrash /> &nbsp; Clear
           </button>
           <button 
             className="menu-item fixed-menubar-btn" 
             onClick={() => handleRedo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
             disabled={historyIndex >= documentHistory.length - 1}
           >
-            Redo &#8631;
+            <FaRedo /> &nbsp; Redo
           </button>
           <div className="dropdown-container">
             <button
@@ -800,7 +864,7 @@ const App = () => {
               }}
               title="Tasks"
             >
-              Tasks ▾
+              <GoTasklist /> &nbsp; Tasks ▾
             </button>
             {showTasksDropdown && tasksPos && createPortal(
               <div
@@ -817,7 +881,7 @@ const App = () => {
                         setTasksPos(null);
                       }}
                     >
-                      <div className="hdr-title">{t.label}</div>
+                      <div className="hdr-title"><GoTasklist /> {t.label}</div>
                       <div className="hdr-desc">{t.description}</div>
                     </button>
                     <div className="hdr-sep" />
@@ -845,7 +909,7 @@ const App = () => {
               }}
               title="Templates"
             >
-              Templates ▾
+              <GrDocumentText /> &nbsp; Templates ▾
             </button>
             {showTemplatesDropdown && templatesPos && createPortal(
               <div
@@ -861,8 +925,8 @@ const App = () => {
                       setTemplatesPos(null);
                     }}
                   >
-                    <div className="hdr-title">🠊  Daily Journal</div>
-                    <div className="hdr-desc">Start a daily journal with priorities, reflections, and habit trackers</div>
+                    <div className="hdr-title"><BsJournalBookmarkFill />  Daily Journal</div>
+                    <div className="hdr-desc">Start a daily journal</div>
                   </button>
                   <div className="hdr-sep" />
                   <button
@@ -874,8 +938,8 @@ const App = () => {
                       setTemplatesPos(null);
                     }}
                   >
-                    <div className="hdr-title">🠊 Meeting Notes</div>
-                    <div className="hdr-desc">Structured meeting notes with attendees, agenda, discussion points and action items</div>
+                    <div className="hdr-title"><BsKanban /> Meeting Notes</div>
+                    <div className="hdr-desc">Structured meeting notes</div>
                   </button>
                   <div className="hdr-sep" />
                   <button
@@ -887,8 +951,8 @@ const App = () => {
                       setTemplatesPos(null);
                     }}
                   >
-                    <div className="hdr-title">🠊 Project Plan</div>
-                    <div className="hdr-desc">High-level project plan with goals, milestones, scope and task breakdown</div>
+                    <div className="hdr-title"><BsClipboard2Check /> Project Plan</div>
+                    <div className="hdr-desc">High-level project plan</div>
                   </button>
                   <div className="hdr-sep" />
                   <button
@@ -900,8 +964,8 @@ const App = () => {
                       setTemplatesPos(null);
                     }}
                   >
-                    <div className="hdr-title">🠊 Study Notes</div>
-                    <div className="hdr-desc">Organized study template: objectives, concepts, formulas and practice problems</div>
+                    <div className="hdr-title"><BsPersonWorkspace /> Study Notes</div>
+                    <div className="hdr-desc">Organized study template</div>
                   </button>
                   <div className="hdr-sep" />
                   <button
@@ -913,8 +977,8 @@ const App = () => {
                       setTemplatesPos(null);
                     }}
                   >
-                    <div className="hdr-title">🠊 Travel Log</div>
-                    <div className="hdr-desc">Capture trip itineraries, places visited, costs and highlights</div>
+                    <div className="hdr-title"><GiJourney /> Travel Log</div>
+                    <div className="hdr-desc">Capture trip itineraries</div>
                   </button>
                   <div className="hdr-sep" />
                   <button
@@ -926,8 +990,8 @@ const App = () => {
                       setTemplatesPos(null);
                     }}
                   >
-                    <div className="hdr-title">🠊 Workout Log</div>
-                    <div className="hdr-desc">Log workouts with warm-up, strength/cardio tables, and recovery notes</div>
+                    <div className="hdr-title"><BsTropicalStorm /> Workout Log</div>
+                    <div className="hdr-desc">Log workouts notes</div>
                   </button>
                   <div className="hdr-sep" />
                   <button
@@ -939,8 +1003,21 @@ const App = () => {
                       setTemplatesPos(null);
                     }}
                   >
-                    <div className="hdr-title">🠊 Bug Report</div>
-                    <div className="hdr-desc">Report issues with steps, logs, screenshots and assignment fields</div>
+                    <div className="hdr-title"><BsFillBugFill /> Bug Report</div>
+                    <div className="hdr-desc">Report issues tracker</div>
+                  </button>
+                  <div className="hdr-sep" />
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildDiagramExamplesTemplate();
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title"><BsDiagram3 /> Diagram Example</div>
+                    <div className="hdr-desc">UML & Mermaid diagram</div>
                   </button>
                   <div className="hdr-sep" />
               </div>,
@@ -950,156 +1027,134 @@ const App = () => {
           <div className="dropdown-container">
             <button
               className="menu-item fixed-menubar-btn"
+              ref={exportsButtonRef}
               onMouseDown={(e) => {
                 e.preventDefault();
-                setShowExportsDropdown(!showExportsDropdown);
+                cacheSelection();
+                const willShow = !showExportsDropdown;
+                setShowExportsDropdown(willShow);
+                if (willShow && exportsButtonRef.current) {
+                  const rect = exportsButtonRef.current.getBoundingClientRect();
+                  setExportsPos({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX, width: rect.width });
+                } else {
+                  setExportsPos(null);
+                }
               }}
               title="Exports"
             >
-              Exports ▾
+              <FaDownload /> &nbsp; Exports ▾
             </button>
-            {showExportsDropdown && (
-              <div className="header-dropdown format-dropdown">
-                <button
-                  className="dropdown-item"
-                  onClick={() => {
-                    saveToFile(editorContent);
-                    setShowExportsDropdown(false);
-                  }}
-                >
-                  <div className="hdr-title">🠊 Export to MD</div>
-                  <div className="hdr-desc">Save current document as a Markdown (.md) file</div>
-                </button>
-                <div className="hdr-sep" />
-                <button
-                  className="dropdown-item"
-                  onClick={() => {
-                    saveToTxT(editorContent);
-                    setShowExportsDropdown(false);
-                  }}
-                >
-                  <div className="hdr-title">🠊 Export to TXT</div>
-                  <div className="hdr-desc">Export plain text (.txt) version for non-markdown viewers</div>
-                </button>
-                <div className="hdr-sep" />
-                <button
-                  className="dropdown-item"
-                  onClick={() => {
-                    saveToHTML(editorContent);
-                    setShowExportsDropdown(false);
-                  }}
-                >
-                  <div className="hdr-title">🠊 Export to HTML</div>
-                  <div className="hdr-desc">Generate a standalone HTML file with the rendered preview</div>
-                </button>
-                <div className="hdr-sep" />
+            {showExportsDropdown && exportsPos && createPortal(
+              <div
+                className="header-dropdown format-dropdown"
+                style={{ position: 'absolute', top: exportsPos.top + 'px', left: exportsPos.left + 'px', zIndex: 999999, minWidth: exportsPos.width + 'px' }}
+              >
                 <button
                   className="dropdown-item"
                   onClick={() => {
                     handleSaveAsPDF();
                     setShowExportsDropdown(false);
+                    setExportsPos(null);
                   }}
                 >
-                  <div className="hdr-title">🠊 Export to PDF</div>
-                  <div className="hdr-desc">Export a PDF snapshot of the rendered document</div>
+                  <div className="hdr-title"><FaFilePdf /> Export to PDF</div>
+                  <div className="hdr-desc">Save as a PDF file</div>
                 </button>
                 <div className="hdr-sep" />
                 <button
                   className="dropdown-item"
                   onClick={() => {
-                    const showPrompt = (onSubmit: (password: string) => void) => 
-                      showPasswordPrompt('Encrypt Content', 'Enter a password (min 8 characters) to encrypt the current content.', onSubmit);
-                    encryptContent(editorContent, showPrompt);
+                    handleSaveToHTML();
                     setShowExportsDropdown(false);
+                    setExportsPos(null);
                   }}
                 >
-                  <div className="hdr-title">🠊 Export Encrypted</div>
-                  <div className="hdr-desc">Encrypt and save as .sstp file</div>
+                  <div className="hdr-title"><FaFileCode /> Export to HTML</div>
+                  <div className="hdr-desc">Save as an HTML file</div>
                 </button>
-              </div>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    handleSaveToMarkdown();
+                    setShowExportsDropdown(false);
+                    setExportsPos(null);
+                  }}
+                >
+                  <div className="hdr-title"><FaFileAlt /> Export to Markdown</div>
+                  <div className="hdr-desc">Save as a Markdown (.md) file</div>
+                </button>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    handleSaveToTXT();
+                    setShowExportsDropdown(false);
+                    setExportsPos(null);
+                  }}
+                >
+                  <div className="hdr-title"><FaFileAlt /> Export to TXT</div>
+                  <div className="hdr-desc">Save as a plain text (.txt) file</div>
+                </button>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    handleSaveEncrypted();
+                    setShowExportsDropdown(false);
+                    setExportsPos(null);
+                  }}
+                >
+                  <div className="hdr-title"><FaLock /> Export Encrypted</div>
+                  <div className="hdr-desc">Save as encrypted (.sstp) file</div>
+                </button>
+              </div>,
+              document.body
             )}
           </div>
-      </div>
-  <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
-  <FeaturesModal open={featuresOpen} onClose={() => setFeaturesOpen(false)} />
-  <PasswordModal
-    open={passwordModalConfig.open}
-    onClose={handleClosePasswordModal}
-    onSubmit={passwordModalConfig.onSubmit}
-    title={passwordModalConfig.title}
-    promptText={passwordModalConfig.promptText}
-  />
-      <div className="editor">
-        <div className="toolbar">
-          <img
-            className="markdown-mark"
-            src={markdownMarkWhite}
-            alt="MD"
-            onClick={() => window.location.reload()} title="Refresh"/>
 
-            <div className="dropdown-container">
-              <button 
-                className="button-format"
-                onMouseDown={(e) => {
-                  e.preventDefault(); // Prevent default behavior to retain focus
-                  cacheSelection();
-                  setShowHeaderDropdown(!showHeaderDropdown);
-                }}
-                title="Header Options"
-              >
-                Headers ▾
-              </button>
-              {showHeaderDropdown && (
-                <HeaderDropdown
-                  onInsertH1={handlerinserth1Syntax}
-                  onInsertH2={handlerinserth2Syntax}
-                  onInsertH3={handlerinserth3Syntax}
-                  onInsertH4={handlerinserth4Syntax}
-                  onInsertH5={handlerinserth5Syntax}
-                  onInsertH6={handlerinserth6Syntax}
-                  onClose={() => setShowHeaderDropdown(false)}
-                />
-              )}
-            </div>
-            <div className="dropdown-container">
-              <button
-                className="button-format"
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  cacheSelection();
-                  setShowFormatDropdown(!showFormatDropdown);
-                }}
-                title="Format Options"
-              >
-                 🅑 Format ▾
-              </button>
-              {showFormatDropdown && (
-                <FormatDropdown
-                  onCodeLine={handlerinsertCodeSyntax}
-                  onCodeBlock={handlerinsertBlockCodeSyntax}
-                  onBold={handleBoldSyntax}
-                  onItalic={handlerItalicSyntax}
-                  onStrike={handlerStrikethroughSyntax}
-                  onNewLine={handleNewLineSyntax}
-                  onClose={() => setShowFormatDropdown(false)}
-                />
-              )}
-            </div>
+          {/* About & Features Modals */}
+          <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
+          <FeaturesModal open={featuresOpen} onClose={() => setFeaturesOpen(false)} />
+          <PasswordModal
+            open={passwordModalConfig.open}
+            onClose={handleClosePasswordModal}
+            onSubmit={passwordModalConfig.onSubmit}
+            title={passwordModalConfig.title}
+            promptText={passwordModalConfig.promptText}
+          />
 
-          
-          &#8741;&nbsp;
+          <div className="menubar-bottom">
           <div className="dropdown-container">
-            <button
-              className="button"
-              onMouseDown={(e) => {
-                e.preventDefault();
-                cacheSelection();
-                setShowInsertDropdown(!showInsertDropdown);
-              }}
-              title="Insert Options"
-            >
-              Insert ▾
-            </button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowHeaderDropdown(!showHeaderDropdown); }} title="Headers"><CgFormatHeading />Headers</button>
+            {showHeaderDropdown && (
+              <HeaderDropdown
+                onInsertH1={handlerinserth1Syntax}
+                onInsertH2={handlerinserth2Syntax}
+                onInsertH3={handlerinserth3Syntax}
+                onInsertH4={handlerinserth4Syntax}
+                onInsertH5={handlerinserth5Syntax}
+                onInsertH6={handlerinserth6Syntax}
+                onClose={() => setShowHeaderDropdown(false)}
+              />
+            )}
+          </div>
+          <div className="dropdown-container">
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowFormatDropdown(!showFormatDropdown); }} title="Text Formatting"><CgFormatText />Formatting</button>
+            {showFormatDropdown && (
+              <FormatDropdown
+                onBold={handleBoldSyntax}
+                onItalic={handlerItalicSyntax}
+                onStrike={handlerStrikethroughSyntax}
+                onCodeLine={handlerinsertCodeSyntax}
+                onCodeBlock={handlerinsertBlockCodeSyntax}
+                onNewLine={handleNewLineSyntax}
+                onClose={() => setShowFormatDropdown(false)}
+              />
+            )}
+          </div>
+          <div className="dropdown-container">
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowInsertDropdown(!showInsertDropdown); }} title="Insert Elements"><MdOutlineInsertChartOutlined />Insert</button>
             {showInsertDropdown && (
               <InsertDropdown
                 onRuler={handlerinsertRulerSyntax}
@@ -1112,46 +1167,17 @@ const App = () => {
               />
             )}
           </div>
-          
-          
           <div className="dropdown-container">
-            <div className="dropdown-container">
-              <button
-                className="button"
-                title="Link templates"
-                aria-haspopup="listbox"
-                aria-expanded={showLinksDropdown}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  cacheSelection();
-                  setShowLinksDropdown(!showLinksDropdown);
-                }}
-              >
-                 &#9736; Links ▾
-              </button>
-              {showLinksDropdown && (
-                <LinksDropdown
-                  onInsertTemplate={handleInsertImageTemplate}
-                  onClose={() => setShowLinksDropdown(false)}
-                />
-              )}
-            </div>
-            
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowLinksDropdown(!showLinksDropdown); }} title="Insert Links"><FaLink />Links</button>
+            {showLinksDropdown && (
+              <LinksDropdown
+                onInsertTemplate={handleInsertImageTemplate}
+                onClose={() => setShowLinksDropdown(false)}
+              />
+            )}
           </div>
           <div className="dropdown-container">
-            <button
-              className="button"
-              title="Insert images and links"
-              aria-haspopup="listbox"
-              aria-expanded={showImagesDropdown}
-              onMouseDown={(e) => {
-                e.preventDefault();
-                cacheSelection();
-                setShowImagesDropdown(!showImagesDropdown);
-              }}
-            >
-              &#9734; Images ▾
-            </button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowImagesDropdown(!showImagesDropdown); }} title="Insert Images"><FaImage />Images</button>
             {showImagesDropdown && (
               <ImagesDropdown
                 onInsertTemplate={handleInsertImageTemplate}
@@ -1160,19 +1186,7 @@ const App = () => {
             )}
           </div>
           <div className="dropdown-container">
-            <button
-              className="button"
-              title="Insert table templates"
-              aria-haspopup="listbox"
-              aria-expanded={showTablesDropdown}
-              onMouseDown={(e) => {
-                e.preventDefault();
-                cacheSelection();
-                setShowTablesDropdown(!showTablesDropdown);
-              }}
-            >
-              &#9870; Tables ▾
-            </button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowTablesDropdown(!showTablesDropdown); }} title="Insert Tables"><FaTable />Tables</button>
             {showTablesDropdown && (
               <TablesDropdown
                 onInsertTemplate={handleInsertImageTemplate}
@@ -1181,19 +1195,7 @@ const App = () => {
             )}
           </div>
           <div className="dropdown-container">
-            <button
-              className="button"
-              title="Insert footnote templates"
-              aria-haspopup="listbox"
-              aria-expanded={showFooterDropdown}
-              onMouseDown={(e) => {
-                e.preventDefault();
-                cacheSelection();
-                setShowFooterDropdown(!showFooterDropdown);
-              }}
-            >
-              FootNote ▾
-            </button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); setShowFooterDropdown(!showFooterDropdown); }} title="Insert Footnotes"><FaStickyNote />FootNote</button>
             {showFooterDropdown && (
               <FooterDropdown
                 onInsertTemplate={handleInsertImageTemplate}
@@ -1201,9 +1203,10 @@ const App = () => {
               />
             )}
           </div>
+          &#8741;&nbsp;
           <div className="dropdown-container">
             <button
-              className="button"
+              className="button-mermaid"
               onMouseDown={(e) => {
                 e.preventDefault();
                 cacheSelection();
@@ -1211,7 +1214,7 @@ const App = () => {
               }}
               title="Auto Generate Options"
             >
-              Auto ▾
+              <MdAutoAwesome /> &nbsp; Auto ▾
             </button>
             {showAutoDropdown && (
               <AutoDropdown
@@ -1233,7 +1236,7 @@ const App = () => {
               }}
               title="Mermaid Options"
             >
-              Mermaid ▾
+              <SiMermaid /> &nbsp; Mermaid ▾
             </button>
             {showMermaidDropdown && (
               <MermaidDropdown
@@ -1260,7 +1263,7 @@ const App = () => {
               }}
               title="UML Diagram Options"
             >
-              UML ▾
+              <AiOutlineLayout /> &nbsp; UML ▾
             </button>
             {showUMLDropdown && (
               <UMLDropdown
@@ -1284,7 +1287,7 @@ const App = () => {
               }}
               title="Symbol Options"
             >
-              Symbols ▾
+              <VscSymbolKeyword /> &nbsp; Symbols ▾
             </button>
             {showSymbolsDropdown && (
               <SymbolsDropdown
@@ -1322,7 +1325,7 @@ const App = () => {
               }}
               title="Icons"
             >
-              Icons ▾
+              <FaImage /> &nbsp; Icons ▾
             </button>
             {showIconsDropdown && (
               <IconsDropdown

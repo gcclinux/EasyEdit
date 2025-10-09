@@ -9,35 +9,35 @@ export function buildProjectPlanTemplate(date = new Date()) {
   const today = formatDate(date);
   const content = `## Project: [Project Name]
 
-**Status:** [Planning/In Progress/On Hold/Completed]
-**Priority:** [High/Medium/Low]
-**Start Date:** ${today}
-**Target Completion:** ${today}
+**Status:** [Planning/In Progress/On Hold/Completed]   
+**Priority:** [High/Medium/Low]   
+**Start Date:** ${today}   
+**Target Completion:** ${today}   
 
 ## Project Overview
-[Brief description of the project goals and objectives]
+[Brief description of the project goals and objectives]   
 
 ## Stakeholders
-- **Project Manager:** [Name]
-- **Team Lead:** [Name]
-- **Client/Sponsor:** [Name]
-- **Team Members:** [Names]
+- **Project Manager:** [Name]   
+- **Team Lead:** [Name]   
+- **Client/Sponsor:** [Name]   
+- **Team Members:** [Names]   
 
 ## Goals & Objectives
-1. [Primary goal]
-2. [Secondary goal]
-3. [Additional objectives]
+1. [Primary goal]   
+2. [Secondary goal]   
+3. [Additional objectives]   
 
 ## Project Scope
 
 ### In Scope
-- [Feature/requirement 1]
-- [Feature/requirement 2]
-- [Feature/requirement 3]
+- [Feature/requirement 1]   
+- [Feature/requirement 2]   
+- [Feature/requirement 3]   
 
 ### Out of Scope
-- [Excluded item 1]
-- [Excluded item 2]
+- [Excluded item 1]   
+- [Excluded item 2]   
 
 ## Timeline & Milestones
 | Milestone | Target Date | Status | Notes |
@@ -47,20 +47,20 @@ export function buildProjectPlanTemplate(date = new Date()) {
 | [Milestone 3] | ${today} | [ ] | [Notes] |
 
 ## Task Breakdown
-- [ ] **Phase 1: [Phase Name]**
-  - [ ] [Task 1]
-  - [ ] [Task 2]
-  - [ ] [Task 3]
+- [ ] **Phase 1: [Phase Name]**   
+  - [ ] [Task 1]   
+  - [ ] [Task 2]   
+  - [ ] [Task 3]   
 
-- [ ] **Phase 2: [Phase Name]**
-  - [ ] [Task 1]
-  - [ ] [Task 2]
-  - [ ] [Task 3]
+- [ ] **Phase 2: [Phase Name]**   
+  - [ ] [Task 1]   
+  - [ ] [Task 2]   
+  - [ ] [Task 3]   
 
 ## Resources Required
-- **Budget:** [Amount]
-- **Tools/Software:** [List]
-- **External Resources:** [List]
+- **Budget:** [Amount]   
+- **Tools/Software:** [List]   
+- **External Resources:** [List]   
 
 ## Risk Assessment
 | Risk | Impact | Probability | Mitigation Strategy |
@@ -69,12 +69,12 @@ export function buildProjectPlanTemplate(date = new Date()) {
 | [Risk 2] | [High/Med/Low] | [High/Med/Low] | [Strategy] |
 
 ## Success Criteria
-- [ ] [Criteria 1]
-- [ ] [Criteria 2]
-- [ ] [Criteria 3]
+- [ ] [Criteria 1]   
+- [ ] [Criteria 2]   
+- [ ] [Criteria 3]   
 
 ## Notes
-[Additional project notes and considerations]
+[Additional project notes and considerations]   
 
 ---
 *Project template created on ${today}*`;

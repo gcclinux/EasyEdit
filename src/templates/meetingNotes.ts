@@ -9,10 +9,10 @@ export function buildMeetingNotesTemplate(date = new Date()) {
   const today = formatDate(date);
   const content = `## Meeting Notes - ${today}
 
-**Meeting Type:** [Weekly/Monthly/Project/Team/Client]
-**Date:** ${today}
-**Time:** [Start Time] - [End Time]
-**Location:** [Physical/Virtual]
+**Meeting Type:** [Weekly/Monthly/Project/Team/Client]   
+**Date:** ${today}   
+**Time:** [Start Time] - [End Time]   
+**Location:** [Physical/Virtual]   
 
 ## Attendees
 - [Name] - [Role]
@@ -49,7 +49,7 @@ export function buildMeetingNotesTemplate(date = new Date()) {
 - [ ] [Next step 3]
 
 ## Next Meeting
-**Date:** [Next meeting date]
+**Date:** [Next meeting date]   
 **Topics to cover:**
 - [Topic 1]
 - [Topic 2]

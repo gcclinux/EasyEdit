@@ -9,10 +9,10 @@ export function buildStudyNotesTemplate(date = new Date()) {
   const today = formatDate(date);
   const content = `## Study Notes: [Subject/Topic]
 
-**Course:** [Course Name]
-**Chapter/Unit:** [Chapter/Unit Number]
-**Date:** ${today}
-**Instructor:** [Instructor Name]
+**Course:** [Course Name]   
+**Chapter/Unit:** [Chapter/Unit Number]   
+**Date:** ${today}   
+**Instructor:** [Instructor Name]   
 
 ## Learning Objectives
 - [ ] [Objective 1]
@@ -22,16 +22,16 @@ export function buildStudyNotesTemplate(date = new Date()) {
 ## Key Concepts
 
 ### [Concept 1]
-**Definition:** [Define the concept]
-**Explanation:** [Detailed explanation]
-**Examples:** 
+**Definition:** [Define the concept]   
+**Explanation:** [Detailed explanation]   
+**Examples:**    
 - [Example 1]
 - [Example 2]
 
 ### [Concept 2]
-**Definition:** [Define the concept]
-**Explanation:** [Detailed explanation]
-**Examples:**
+**Definition:** [Define the concept]   
+**Explanation:** [Detailed explanation]   
+**Examples:**   
 - [Example 1]
 - [Example 2]
 
@@ -47,14 +47,14 @@ export function buildStudyNotesTemplate(date = new Date()) {
 - **[Term 3]:** [Definition]
 
 ## Practice Problems
-1. **Problem:** [Problem statement]
-   **Solution:** [Step-by-step solution]
+1. **Problem:** [Problem statement]   
+   **Solution:** [Step-by-step solution]   
 
-2. **Problem:** [Problem statement]
-   **Solution:** [Step-by-step solution]
+2. **Problem:** [Problem statement]   
+   **Solution:** [Step-by-step solution]   
 
 ## Summary
-[Brief summary of main points learned]
+[Brief summary of main points learned]   
 
 ## Questions for Review
 - [ ] [Question 1]

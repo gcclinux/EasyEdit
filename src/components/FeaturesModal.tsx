@@ -30,7 +30,7 @@ export function FeaturesModal({ open, onClose }: FeaturesModalProps) {
           </div>
           <div className="feature-card">
             <h3>Formatting</h3>
-            <p>Bold, Italic, Strikethrough, Inline Code, Code Blocks, Blockquotes, Headers—apply in a click with live preview.</p>
+            <p>Bold, Italic, Strikethrough, Inline Code, Code Blocks, Blockquotes, Headers—apply, Icons in a click with live preview.</p>
           </div>
           <div className="feature-card">
             <h3>Tables & Media</h3>
@@ -38,11 +38,11 @@ export function FeaturesModal({ open, onClose }: FeaturesModalProps) {
           </div>
           <div className="feature-card">
             <h3>Diagrams</h3>
-            <p>Use Mermaid to create flowcharts, sequence diagrams, ER diagrams, and more—right inside your notes.</p>
+            <p>Use Mermaid and UML to create flowcharts, sequence diagrams, ER diagrams, and more—right inside your notes.</p>
           </div>
           <div className="feature-card">
-            <h3>Export & Print</h3>
-            <p>Export any note to Markdown or TXT. Print a clean, styled preview whenever you need a hard copy.</p>
+            <h3>Export & Security</h3>
+            <p>Export any note to Markdown (md) or (txt). Print a clean, styled preview whenever you need a hard copy, Encrypt your notes for added security (sstp).</p>
           </div>
           <div className="feature-card">
             <h3>Flexible Layout</h3>

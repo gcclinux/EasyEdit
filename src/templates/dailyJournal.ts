@@ -18,9 +18,9 @@ export function buildDailyJournalTemplate(date = new Date()) {
 3. [Priority 3]
 
 ## Morning Reflection
-**Mood:** [How are you feeling?]
-**Energy Level:** [1-10]
-**Weather:** [Current weather]
+**Mood:** [How are you feeling?]   
+**Energy Level:** [1-10]   
+**Weather:** [Current weather]   
 
 **Gratitude:**
 - [Thing you're grateful for 1]
@@ -43,27 +43,27 @@ export function buildDailyJournalTemplate(date = new Date()) {
 - [ ] Water Intake
 
 ## Highlights
-**Best Part of Today:**
-[What made today special?]
+**Best Part of Today:**   
+[What made today special?]   
 
-**Something I Learned:**
-[New insight, skill, or knowledge gained]
+**Something I Learned:**   
+[New insight, skill, or knowledge gained]   
 
-**Acts of Kindness:**
-[Kind acts given or received]
+**Acts of Kindness:**   
+[Kind acts given or received]   
 
 ## Challenges & Solutions
-**Challenge:** [What was difficult today?]
-**How I handled it:** [Your response/solution]
-**What I learned:** [Insight gained]
+**Challenge:** [What was difficult today?]   
+**How I handled it:** [Your response/solution]   
+**What I learned:** [Insight gained]   
 
 ## Evening Reflection
-**Accomplishments:**
-- [What did you achieve today?]
-- [Small wins count too!]
+**Accomplishments:**   
+- [What did you achieve today?]   
+- [Small wins count too!]   
 
-**Things to Improve:**
-- [What could be better tomorrow?]
+**Things to Improve:**   
+- [What could be better tomorrow?]   
 
 **Tomorrow's Preparation:**
 - [ ] [Prep task 1]
