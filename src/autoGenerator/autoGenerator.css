@@ -30,7 +30,7 @@
     background-color: #1e1e1e;
     padding: 20px;
     border-radius: 8px;
-    min-width: 500px;
+    min-width: 800px;
     max-width: 1024px;
     color: #ffffff;
   }
@@ -81,7 +81,7 @@
   }
 
   .project-title {
-    width: 400px !important;
+    width: 100% !important;
     height: 20px !important;
     flex: 1 1 auto !important;
     border: 1px solid #3d3d3d;
@@ -92,9 +92,10 @@
   }
   
   .input-group input.project-title {
-    min-width: 400px;
+    min-width: 200px;
     min-height: 20px;
-    width: calc(100% - 120px) !important;
+    width: 100% !important;
+    margin-left: 0 !important;
   }
 
   .task-inputs {
@@ -106,8 +107,9 @@
   }
   
   .task-inputs input[type="text"] {
-    width: 200px;
-    min-width: 200px;
+    flex: 1;
+    min-width: 120px;
+    max-width: 200px;
     background-color: #2d2d2d;
     border: 1px solid #3d3d3d;
     color: #ffffff;
@@ -116,8 +118,7 @@
   }
   
   .task-inputs input[type="date"] {
-    width: 150px;
-    min-width: 150px;
+    flex: 0 0 130px;
     background-color: #2d2d2d;
     border: 1px solid #3d3d3d;
     color: #ffffff;
@@ -126,8 +127,7 @@
   }
   
   .task-inputs input[type="number"] {
-    width: 100px;
-    min-width: 100px;
+    flex: 0 0 80px;
     background-color: #2d2d2d;
     border: 1px solid #3d3d3d;
     color: #ffffff;
@@ -136,8 +136,9 @@
   }
   
   .task-inputs select {
-    width: 150px;
-    min-width: 150px;
+    flex: 1;
+    min-width: 120px;
+    max-width: 180px;
     background-color: #2d2d2d;
     border: 1px solid #3d3d3d;
     color: #ffffff;
@@ -184,12 +185,14 @@
   }
 
 .time-modal-content {
-    /* background: white; */
+    background-color: #1e1e1e;
     padding: 2rem;
     border-radius: 8px;
-    min-width: 600px;
+    min-width: 800px;
+    max-width: 1024px;
     max-height: 80vh;
     overflow-y: auto;
+    color: #ffffff;
 }
 
 .time-task-duration {
