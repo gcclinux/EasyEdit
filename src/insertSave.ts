@@ -3,6 +3,7 @@ import { RefObject, MutableRefObject } from 'react';
 import { saveAs } from 'file-saver';
 import mermaid from 'mermaid';
 import { marked } from 'marked';
+import nomnoml from 'nomnoml';
 
 
 export interface HistoryState {
@@ -54,6 +55,32 @@ export const saveToHTML = async (editorContent: string): Promise<void> => {
           console.error('Mermaid rendering error:', error);
         }
       }));
+
+      // Find all Nomnoml/UML code blocks
+      const plantumlBlocks = tempDiv.querySelectorAll('code.language-plantuml');
+      
+      // Process each Nomnoml block (offline rendering)
+      plantumlBlocks.forEach((block) => {
+        try {
+          const umlCode = block.textContent || '';
+          const svg = nomnoml.renderSvg(umlCode);
+          
+          // Create a container for the diagram
+          const container = document.createElement('div');
+          container.className = 'plantuml-diagram';
+          container.style.textAlign = 'center';
+          container.style.margin = '1em 0';
+          container.innerHTML = svg;
+          
+          // Replace the code block with rendered diagram
+          const pre = block.closest('pre');
+          if (pre?.parentElement) {
+            pre.parentElement.replaceChild(container, pre);
+          }
+        } catch (error) {
+          console.error('Nomnoml rendering error:', error);
+        }
+      });
   
       // Create final HTML with proper styling and mermaid script
       const finalHTML = `
@@ -71,7 +98,11 @@ export const saveToHTML = async (editorContent: string): Promise<void> => {
               text-align: center;
               margin: 1em 0;
             }
-            svg {
+            .plantuml-diagram {
+              text-align: center;
+              margin: 1em 0;
+            }
+            svg, img {
               max-width: 100%;
               height: auto;
             }

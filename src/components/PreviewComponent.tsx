@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import mermaid from 'mermaid';
+import nomnoml from 'nomnoml';
 
 interface PreviewComponentProps {
   previewRef: React.RefObject<HTMLDivElement | null>;
@@ -92,14 +93,50 @@ const PreviewComponent: React.FC<PreviewComponentProps> = React.memo(({
         rehypePlugins={[rehypeRaw]}
         components={{
           code({ className, children, ...props }) {
-            const match = /language-mermaid/.test(className || "");
-            if (match) {
+            const isMermaid = /language-mermaid/.test(className || "");
+            const isPlantUML = /language-plantuml/.test(className || "");
+            
+            if (isMermaid) {
               return (
                 <div className="mermaid">
                   {String(children).replace(/\n$/, "")}
                 </div>
               );
             }
+            
+            if (isPlantUML) {
+              const umlCode = String(children).replace(/\n$/, "");
+              
+              // Render nomnoml diagram offline
+              try {
+                const svg = nomnoml.renderSvg(umlCode);
+                
+                return (
+                  <div 
+                    className="plantuml-diagram" 
+                    style={{ textAlign: 'center', margin: '1em 0' }}
+                    dangerouslySetInnerHTML={{ __html: svg }}
+                  />
+                );
+              } catch (error) {
+                // If rendering fails, show the code with error message
+                return (
+                  <div className="plantuml-diagram" style={{ textAlign: 'center', margin: '1em 0', color: 'red' }}>
+                    <p>Error rendering UML diagram:</p>
+                    <pre style={{ textAlign: 'left', background: '#f5f5f5', padding: '10px', borderRadius: '5px' }}>
+                      {String(error)}
+                    </pre>
+                    <details style={{ marginTop: '10px' }}>
+                      <summary style={{ cursor: 'pointer' }}>View source code</summary>
+                      <pre style={{ textAlign: 'left', background: '#f5f5f5', padding: '10px', borderRadius: '5px' }}>
+                        {umlCode}
+                      </pre>
+                    </details>
+                  </div>
+                );
+              }
+            }
+            
             const isInline = !className;
             
             return (
