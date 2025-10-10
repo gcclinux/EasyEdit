@@ -14,6 +14,12 @@ export default function Docs() {
       <section className="docs-content">
         <div className="container">
           <div className="docs-grid">
+            <Link to="/docs/project-summary" className="doc-card">
+              <div className="doc-icon">🎉</div>
+              <h3>Project Summary</h3>
+              <p>Complete overview of the GitHub Pages site and its features</p>
+            </Link>
+
             <Link to="/docs/uml-quick-start" className="doc-card">
               <div className="doc-icon">🚀</div>
               <h3>UML Quick Start</h3>

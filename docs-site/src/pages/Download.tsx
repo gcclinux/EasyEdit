@@ -75,6 +75,23 @@ export default function Download() {
                   Download .rpm
                 </a>
               </div>
+
+              <div className="download-card">
+                <div className="download-icon">📦</div>
+                <h3>Flatpak (x86_64)</h3>
+                <p>Universal Linux package with sandboxing</p>
+                <div className="file-info">
+                  <span className="file-size">TBD</span>
+                </div>
+                <a 
+                  href={`${GITHUB_RELEASE}/EasyEdit-1.4.2-x86_64.flatpak`}
+                  className="btn btn-primary"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Download Flatpak
+                </a>
+              </div>
             </div>
 
             <div className="download-options">
@@ -191,7 +208,7 @@ export default function Download() {
 
             <div className="download-options">
               <div className="download-card">
-                <div className="download-icon">�</div>
+                <div className="download-icon">🪟</div>
                 <h3>Portable (.zip)</h3>
                 <p>Windows portable version as ZIP archive</p>
                 <div className="file-info">
@@ -258,6 +275,10 @@ export default function Download() {
                 <div className="checksum-item">
                   <strong>EasyEdit-1.4.2-x86_64.rpm</strong>
                   <code>b57f37a397e75377db595bcff3402895c856ec7ecc16007d6b44800118f391a3</code>
+                </div>
+                <div className="checksum-item">
+                  <strong>EasyEdit-1.4.2-x86_64.flatpak</strong>
+                  <code>582a063b3b8d39bc0f077d82afea31f52b12b07d22b8de7696abcc708010cdb2</code>
                 </div>
                 <div className="checksum-item">
                   <strong>EasyEdit-1.4.2-amd64.snap</strong>
@@ -351,6 +372,16 @@ export default function Download() {
                 <li>Install: <code>sudo rpm -i EasyEdit-1.4.2-x86_64.rpm</code></li>
                 <li>Or use dnf: <code>sudo dnf install EasyEdit-1.4.2-x86_64.rpm</code></li>
                 <li>Launch from applications menu or run: <code>easyedit</code></li>
+              </ol>
+            </div>
+
+            <div className="install-section">
+              <h3>🐧 Linux - Flatpak</h3>
+              <ol>
+                <li>Ensure Flatpak is installed on your system</li>
+                <li>Download the .flatpak file</li>
+                <li>Install: <code>flatpak install EasyEdit-1.4.2-x86_64.flatpak</code></li>
+                <li>Run: <code>flatpak run io.github.gcclinux.EasyEdit</code></li>
               </ol>
             </div>
 
