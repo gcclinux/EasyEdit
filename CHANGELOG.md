@@ -7,10 +7,11 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
 *EasyEdit is a free and open-source project. You can use it for free and modify it as you like.*
 
 ## Latest CODE version
-- 1.4.1 - Implemented encrypt and decrypt compatibility with smalltextpad app file extentions (sstp)
+- 1.4.2 - Implemented UML diagram and new look & feel 
 
 
 ## Version changes
+- 1.4.1 - Implemented encrypt and decrypt compatibility with smalltextpad app file extentions (sstp)
 - 1.4.0 - Implemented new features, Look&Feel and templates
 - 1.3.8 - Implemented Server side for hosting the application online / docker
 - 1.3.7 - Timeline Generator BUG fix
