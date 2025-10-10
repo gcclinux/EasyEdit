@@ -93,7 +93,7 @@
       ],
       "target": [
         {
-          "target": "snap",
+          "target": "zip",
           "arch": [
             "x64"
           ]

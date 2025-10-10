@@ -1,0 +1,27 @@
+import { Routes, Route } from 'react-router-dom'
+import Layout from './components/Layout'
+import Home from './pages/Home'
+import Features from './pages/Features'
+import Download from './pages/Download'
+import Docs from './pages/Docs'
+import UMLQuickStart from './pages/docs/UMLQuickStart'
+import UMLExamples from './pages/docs/UMLExamples'
+import NomnomlGuide from './pages/docs/NomnomlGuide'
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Home />} />
+        <Route path="features" element={<Features />} />
+        <Route path="download" element={<Download />} />
+        <Route path="docs" element={<Docs />} />
+        <Route path="docs/uml-quick-start" element={<UMLQuickStart />} />
+        <Route path="docs/uml-examples" element={<UMLExamples />} />
+        <Route path="docs/nomnoml-guide" element={<NomnomlGuide />} />
+      </Route>
+    </Routes>
+  )
+}
+
+export default App
