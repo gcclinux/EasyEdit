@@ -1,9 +1,10 @@
 {
   "name": "easyedit",
   "description": "EasyEdit - A simple Markdown editor",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "type": "module",
   "scripts": {
+    "dev": "vite",
     "server": "vite --host --port 3024",
     "app": "concurrently \"vite\" \"wait-on http://localhost:3024 && electron .\"",
     "build": "tsc && vite build",
