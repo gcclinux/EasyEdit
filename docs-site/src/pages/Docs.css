@@ -159,6 +159,68 @@ kbd {
   transition: color 0.3s ease;
 }
 
+.try-it-section {
+  margin-top: 4rem;
+  padding: 3rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  border-radius: 12px;
+  text-align: center;
+  color: white;
+}
+
+.try-it-section h2 {
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.try-it-section p {
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  opacity: 0.95;
+}
+
+.cta-links {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cta-button {
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: inline-block;
+}
+
+.cta-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+}
+
+.cta-button.primary {
+  background-color: white;
+  color: var(--primary-color);
+}
+
+.cta-button.primary:hover {
+  background-color: #f0f0f0;
+}
+
+.cta-button.secondary {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid white;
+}
+
+.cta-button.secondary:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
 @media (max-width: 768px) {
   .docs-grid {
     grid-template-columns: 1fr;
@@ -174,5 +236,22 @@ kbd {
   
   .getting-started {
     padding: 2rem 1.5rem;
+  }
+
+  .try-it-section {
+    padding: 2rem 1.5rem;
+  }
+
+  .try-it-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .cta-links {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cta-button {
+    width: 100%;
   }
 }
