@@ -17,11 +17,14 @@ export default function Home() {
               Built for Linux with advanced features for developers and writers.
             </p>
             <div className="hero-buttons">
-              <Link to="/download" className="btn btn-primary">
-                Download Now
-              </Link>
               <Link to="/docs" className="btn btn-secondary">
-                View Documentation
+                📚 Documentation
+              </Link>
+              <a href="https://easyedit-web.web.app/" target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+                🚀 Try It Online
+              </a>
+              <Link to="/download" className="btn btn-secondary">
+                ⬇️ Download
               </Link>
             </div>
           </div>
