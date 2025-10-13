@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import '../DocsPage.css'
@@ -22,6 +23,7 @@ Nomnoml is a **lightweight, offline JavaScript library** for creating UML diagra
 
 Every Nomnoml diagram uses this basic structure:
 
+\`\`\`
 \`\`\`plantuml
 #title: Diagram Title
 #direction: down
@@ -51,6 +53,7 @@ Directives customize the diagram appearance:
 
 ### Basic Class
 
+\`\`\`
 \`\`\`plantuml
 [ClassName|
   attribute1: type;
@@ -69,7 +72,7 @@ Directives customize the diagram appearance:
 - \`[A] o-o [B]\` - Composition
 
 ### Example
-
+\`\`\`
 \`\`\`plantuml
 #title: Class Relationships
 
@@ -93,7 +96,7 @@ Directives customize the diagram appearance:
 \`\`\`
 
 ## Sequence Diagrams
-
+\`\`\`
 \`\`\`plantuml
 #title: Message Flow
 #direction: right
@@ -125,7 +128,7 @@ Nomnoml supports special visual representations:
 - \`[<frame> Name]\` - Frame/boundary
 
 ### Example with Visual Types
-
+\`\`\`
 \`\`\`plantuml
 #title: System Overview
 
@@ -142,7 +145,7 @@ Nomnoml supports special visual representations:
 \`\`\`
 
 ## Component Diagrams
-
+\`\`\`
 \`\`\`plantuml
 #title: Microservices Architecture
 #direction: right
@@ -173,7 +176,7 @@ Nomnoml supports special visual representations:
 \`\`\`
 
 ## Activity/State Diagrams
-
+\`\`\`
 \`\`\`plantuml
 #title: Order Processing
 #direction: down
@@ -193,7 +196,7 @@ Nomnoml supports special visual representations:
 ## Nested Containers
 
 You can nest components within packages:
-
+\`\`\`
 \`\`\`plantuml
 #title: Layered Architecture
 
@@ -228,7 +231,7 @@ You can nest components within packages:
 ## Styling Tips
 
 ### Custom Colors
-
+\`\`\`
 \`\`\`plantuml
 #stroke: #4488ff
 #fill: #fff8dc
@@ -238,7 +241,7 @@ You can nest components within packages:
 \`\`\`
 
 ### Better Layouts
-
+\`\`\`
 \`\`\`plantuml
 #direction: right
 #spacing: 60
@@ -250,7 +253,7 @@ You can nest components within packages:
 ## Common Patterns
 
 ### MVC Pattern
-
+\`\`\`
 \`\`\`plantuml
 #title: MVC Architecture
 #direction: down
@@ -278,7 +281,7 @@ You can nest components within packages:
 \`\`\`
 
 ### Database Schema
-
+\`\`\`
 \`\`\`plantuml
 #title: Database Relationships
 
@@ -352,6 +355,9 @@ export default function NomnomlGuide() {
       <div className="container">
         <div className="markdown-content">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+        </div>
+        <div className="doc-nav">
+          <Link to="/docs" className="btn btn-outline">← Back to Documentation</Link>
         </div>
       </div>
     </div>

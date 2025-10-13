@@ -356,11 +356,11 @@ export default function Download() {
                 </div>
                 <div className="checksum-item">
                   <strong>EasyEdit-1.4.2-arm64.dmg</strong>
-                  <code>TODO_CHECKSUM_ARM64_DMG</code>
+                  <code>dfef38d31478c4ea919ce310f9781ca8078317249340cce54c1201a7ab079b84</code>
                 </div>
                 <div className="checksum-item">
                   <strong>EasyEdit-1.4.2-arm64-mac.zip</strong>
-                  <code>TODO_CHECKSUM_ARM64_ZIP</code>
+                  <code>592f7b801436ab050f9e0095a0a027a21e6362fd270d76e6eb81510e31f6b151</code>
                 </div>
               </div>
               <div className="verify-instructions">
@@ -462,6 +462,27 @@ export default function Download() {
                 <li>Extract if ZIP (no installation needed for .exe)</li>
                 <li>Run EasyEdit.exe directly</li>
                 <li>Can be run from USB or any folder</li>
+              </ol>
+            </div>
+
+            <div className="install-section">
+              <h3> macOS - DMG</h3>
+              <ol>
+                <li>Download the <code>EasyEdit-1.4.2-arm64.dmg</code> file from the links above.</li>
+                <li>Open the downloaded .dmg file to mount it (double-click the file).</li>
+                <li>In the mounted window, drag the <strong>EasyEdit</strong> app icon into the <strong>Applications</strong> folder.</li>
+                <li>Eject the mounted image and launch EasyEdit from the Applications folder.</li>
+                <li>If macOS blocks the app, open System Settings → Privacy & Security and allow the app, or right-click the app and choose <em>Open</em> to bypass Gatekeeper.</li>
+              </ol>
+            </div>
+
+            <div className="install-section">
+              <h3> macOS - ZIP</h3>
+              <ol>
+                <li>Download the <code>EasyEdit-1.4.2-arm64-mac.zip</code> file.</li>
+                <li>Unzip the archive: <code>unzip EasyEdit-1.4.2-arm64-mac.zip</code></li>
+                <li>Move the extracted <strong>EasyEdit.app</strong> to your <code>/Applications</code> folder or run it from the extracted folder.</li>
+                <li>If macOS warns about an unverified developer, right-click the app and choose <em>Open</em> to allow it.</li>
               </ol>
             </div>
 

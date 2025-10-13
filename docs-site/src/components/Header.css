@@ -47,6 +47,21 @@
   text-decoration: none;
 }
 
+.webapp-link {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+  color: white !important;
+  border-radius: 6px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  font-weight: 600;
+}
+
+.webapp-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+}
+
 .github-link {
   padding: 0.5rem 1rem;
   background-color: var(--primary-color);

@@ -62,16 +62,21 @@ $ docker run -d --name EASYEDIT -p 3024:3024 ghcr.io/gcclinux/easyedit:main
 
 ## *Markdown Image URL Example*
 
-## *Markdown Image URL Example*
-
 [![GitHub Project](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png "EasyEdit Icon")](https://github.com/gcclinux/EasyEdit)
 
 ---
+
+## *Links*
+
+- [Home](https://gcclinux.github.io/EasyEdit/)
+- [Docs](https://gcclinux.github.io/EasyEdit/docs)
+- [Features](https://gcclinux.github.io/EasyEdit/features)
+- [Downloads](https://gcclinux.github.io/EasyEdit/download)
+- [Project](https://github.com/gcclinux/EasyEdit)
+- [Latest releases](https://github.com/gcclinux/EasyEdit/releases)
 
 ## *Support & Community*
 
 [![Issues](https://img.shields.io/badge/🐛_Report_Issues-GitHub-red?style=for-the-badge)](https://github.com/gcclinux/EasyEdit/issues)
 [![Discussions](https://img.shields.io/badge/💬_Join_Discussions-GitHub-blue?style=for-the-badge)](https://github.com/gcclinux/EasyEdit/discussions)
 [![Buy Me A Coffee](https://img.shields.io/badge/☕_Buy_Me_A_Coffee-Support-yellow?style=for-the-badge)](https://www.buymeacoffee.com/gcclinux)
-
-````
