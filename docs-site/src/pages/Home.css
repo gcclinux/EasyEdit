@@ -36,26 +36,56 @@
   flex-wrap: wrap;
 }
 
+.hero-buttons .btn-primary {
+  background-color: white;
+  color: #667eea !important;
+  text-shadow: none;
+}
+
+.hero-buttons .btn-primary:hover {
+  background-color: #f8f9ff;
+  color: #5570d6 !important;
+}
+
+.btn-webapp {
+  background-color: #ffffff !important;
+  color: #4a5568 !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+  border: 2px solid #e2e8f0 !important;
+}
+
+.btn-webapp:hover {
+  background-color: #f7fafc !important;
+  color: #2d3748 !important;
+  border-color: #cbd5e0 !important;
+  transform: translateY(-2px);
+}
+
 .btn {
   padding: 0.875rem 2rem;
   border-radius: 8px;
   font-weight: 600;
-  text-decoration: none;
+  text-decoration: none !important;
   transition: all 0.3s ease;
   display: inline-block;
   font-size: 1rem;
   border: 2px solid transparent;
+  cursor: pointer;
 }
 
 .btn-primary {
   background-color: white;
-  color: #667eea;
+  color: #667eea !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  text-decoration: none !important;
+  color: #5570d6 !important;
+  background-color: #f8f9ff;
 }
 
 .btn-secondary {
