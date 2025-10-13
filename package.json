@@ -8,6 +8,7 @@
     "server": "vite --host --port 3024",
     "app": "concurrently \"vite\" \"wait-on http://localhost:3024 && electron .\"",
     "build": "tsc && vite build",
+    "build:web": "tsc && vite build --config vite.config.web.ts",
     "electron:build": "npm run build && electron-builder && node renameArtifacts.cjs"
   },
   "main": "main.cjs",

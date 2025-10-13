@@ -16,6 +16,16 @@ export default function Header() {
             <li><Link to="/download">Download</Link></li>
             <li>
               <a 
+                href="/EasyEdit/webapp/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="webapp-link"
+              >
+                🚀 Web App
+              </a>
+            </li>
+            <li>
+              <a 
                 href="https://github.com/gcclinux/EasyEdit" 
                 target="_blank" 
                 rel="noopener noreferrer"

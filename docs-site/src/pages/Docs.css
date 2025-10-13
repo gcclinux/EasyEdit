@@ -162,21 +162,65 @@ kbd {
 .try-it-section {
   margin-top: 4rem;
   padding: 3rem;
-  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  background: white;
   border-radius: 12px;
   text-align: center;
-  color: white;
+  color: var(--text-color);
+  box-shadow: var(--shadow);
 }
 
 .try-it-section h2 {
   margin-bottom: 1rem;
   font-size: 2rem;
+  color: var(--primary-color);
 }
 
 .try-it-section p {
   margin-bottom: 2rem;
   font-size: 1.1rem;
-  opacity: 0.95;
+  color: var(--text-light);
+}
+
+.try-it-section .btn {
+  padding: 0.875rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-block;
+  font-size: 1rem;
+  border: 2px solid transparent;
+}
+
+.try-it-section .btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.try-it-section .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+}
+
+.try-it-section .btn-secondary {
+  background-color: transparent;
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.try-it-section .btn-secondary:hover {
+  background-color: var(--primary-color);
+  color: white;
+  text-decoration: none;
+}
+
+.try-it-section .hero-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .cta-links {

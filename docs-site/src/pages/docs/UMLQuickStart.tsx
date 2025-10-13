@@ -121,12 +121,17 @@ The diagram appears instantly in the preview panel!
 That's it! You're ready to create professional UML diagrams in your markdown documents. 🎉
 `
 
+import { Link } from 'react-router-dom'
+
 export default function UMLQuickStart() {
   return (
     <div className="docs-page-content">
       <div className="container">
         <div className="markdown-content">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+        </div>
+        <div className="doc-nav">
+          <Link to="/docs" className="btn btn-outline">← Back to Documentation</Link>
         </div>
       </div>
     </div>

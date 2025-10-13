@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import '../DocsPage.css'
@@ -193,6 +194,9 @@ export default function UMLExamples() {
       <div className="container">
         <div className="markdown-content">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+        </div>
+        <div className="doc-nav">
+          <Link to="/docs" className="btn btn-outline">← Back to Documentation</Link>
         </div>
       </div>
     </div>

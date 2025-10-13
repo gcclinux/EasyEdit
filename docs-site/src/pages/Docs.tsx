@@ -32,11 +32,24 @@ export default function Docs() {
               <p>Explore real-world UML diagram examples and use cases</p>
             </Link>
 
+            <Link to="/docs/templates-guide" className="doc-card">
+              <div className="doc-icon">📝</div>
+              <h3>Templates Guide</h3>
+              <p>Learn how to use pre-built templates for quick document creation</p>
+            </Link>
+
+            <Link to="/docs/mermaid-guide" className="doc-card">
+              <div className="doc-icon">🧜‍♀️</div>
+              <h3>Mermaid Guide</h3>
+              <p>Create flowcharts, Gantt charts, and diagrams with Mermaid syntax</p>
+            </Link>
+
             <Link to="/docs/nomnoml-guide" className="doc-card">
               <div className="doc-icon">📖</div>
               <h3>Nomnoml Guide</h3>
               <p>Complete guide to Nomnoml syntax and features</p>
             </Link>
+
           </div>
 
           <div className="getting-started">
@@ -121,10 +134,10 @@ export default function Docs() {
           <div className="try-it-section">
             <h2>Try EasyEdit Online</h2>
             <p>Experience EasyEdit directly in your browser without downloading anything!</p>
-            <div className="cta-links">
-              <Link to="/EasyEdit/docs" className="cta-button secondary">📚 Docs</Link>
-              <a href="https://easyedit-web.web.app/" target="_blank" rel="noopener noreferrer" className="cta-button primary">🚀 Try It</a>
-              <Link to="/EasyEdit/download" className="cta-button secondary">⬇️ Download</Link>
+            <div className="hero-buttons">
+              <Link to="/docs" className="btn btn-secondary">📚 Documentation</Link>
+              <a href="https://easyedit-web.web.app/" target="_blank" rel="noopener noreferrer" className="btn btn-primary">🚀 Try It Online</a>
+              <Link to="/download" className="btn btn-secondary">⬇️ Download</Link>
             </div>
           </div>
         </div>
