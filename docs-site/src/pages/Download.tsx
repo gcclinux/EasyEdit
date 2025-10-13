@@ -257,6 +257,48 @@ export default function Download() {
             </div>
           </div>
 
+          {/* macOS Downloads */}
+          <div className="platform-section">
+            <h2 className="platform-title"> macOS</h2>
+
+            <div className="download-options">
+              <div className="download-card featured">
+                <div className="featured-badge">Universal</div>
+                <div className="download-icon">🖥️</div>
+                <h3>DMG (ARM64)</h3>
+                <p>Installer for Apple Silicon (arm64)</p>
+                <div className="file-info">
+                  <span className="file-size">278.05 MB</span>
+                </div>
+                <a
+                  href={`${GITHUB_RELEASE}/EasyEdit-1.4.2-arm64.dmg`}
+                  className="btn btn-primary"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Download DMG
+                </a>
+              </div>
+
+              <div className="download-card">
+                <div className="download-icon">📦</div>
+                <h3>ZIP (ARM64)</h3>
+                <p>Zipped macOS build (arm64)</p>
+                <div className="file-info">
+                  <span className="file-size">274.15 MB</span>
+                </div>
+                <a
+                  href={`${GITHUB_RELEASE}/EasyEdit-1.4.2-arm64-mac.zip`}
+                  className="btn btn-primary"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Download ZIP
+                </a>
+              </div>
+            </div>
+          </div>
+
           {/* Checksums Section */}
           <div className="checksums-section">
             <h2>🔒 SHA256 Checksums</h2>
@@ -311,6 +353,14 @@ export default function Download() {
                 <div className="checksum-item">
                   <strong>EasyEdit-1.4.2-x64.zip</strong>
                   <code>b08a2d0839b3658a7080da4a5decd683090738fa2b37a166fc063e7589dc37f7</code>
+                </div>
+                <div className="checksum-item">
+                  <strong>EasyEdit-1.4.2-arm64.dmg</strong>
+                  <code>TODO_CHECKSUM_ARM64_DMG</code>
+                </div>
+                <div className="checksum-item">
+                  <strong>EasyEdit-1.4.2-arm64-mac.zip</strong>
+                  <code>TODO_CHECKSUM_ARM64_ZIP</code>
                 </div>
               </div>
               <div className="verify-instructions">
