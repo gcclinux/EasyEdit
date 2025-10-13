@@ -131,13 +131,13 @@ export default function Docs() {
             </div>
           </div>
 
-          <div className="try-it-section">
+                    <div className="try-it-section">
             <h2>Try EasyEdit Online</h2>
             <p>Experience EasyEdit directly in your browser without downloading anything!</p>
-            <div className="hero-buttons">
-              <Link to="/docs" className="btn btn-secondary">📚 Documentation</Link>
-              <a href="https://easyedit-web.web.app/" target="_blank" rel="noopener noreferrer" className="btn btn-primary">🚀 Try It Online</a>
-              <Link to="/download" className="btn btn-secondary">⬇️ Download</Link>
+            <div className="cta-links">
+              <Link to="/EasyEdit/docs" className="cta-button secondary">📚 Docs</Link>
+              <a href="/EasyEdit/webapp/" target="_blank" rel="noopener noreferrer" className="cta-button primary">🚀 Try It</a>
+              <Link to="/EasyEdit/download" className="cta-button secondary">⬇️ Download</Link>
             </div>
           </div>
         </div>

@@ -20,8 +20,8 @@ export default function Home() {
               <Link to="/docs" className="btn btn-secondary">
                 📚 Documentation
               </Link>
-              <a href="https://easyedit-web.web.app/" target="_blank" rel="noopener noreferrer" className="btn btn-primary">
-                🚀 Try It Online
+              <a href="/EasyEdit/webapp/" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-webapp">
+                🚀 WebApp
               </a>
               <Link to="/download" className="btn btn-secondary">
                 ⬇️ Download

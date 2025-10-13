@@ -10,7 +10,7 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
 
 ## *Try it before Installing it*
 
-[Try EasyEdit](https://easyedit-web.web.app/ "EasyEdit")
+[![Try EasyEdit Online](https://img.shields.io/badge/🚀_Try_EasyEdit-Launch_Web_App-success?style=for-the-badge&logo=rocket)](https://gcclinux.github.io/EasyEdit/webapp/)
 
 ## *Install the project*
 ```
@@ -60,20 +60,21 @@ $ docker run -d --name EASYEDIT -p 3024:3024 ghcr.io/gcclinux/easyedit:main
 | row1 | col2 | col3 |
 | row2 | col2 | col3 |
 
-## *Markdown Image URL Example*
-
-[![GitHub Project](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png "EasyEdit Icon")](https://github.com/gcclinux/EasyEdit)
-
 ---
 
-## *Links*
+## *Quick Links*
 
-- [Home](https://gcclinux.github.io/EasyEdit/)
-- [Docs](https://gcclinux.github.io/EasyEdit/docs)
-- [Features](https://gcclinux.github.io/EasyEdit/features)
-- [Downloads](https://gcclinux.github.io/EasyEdit/download)
-- [Project](https://github.com/gcclinux/EasyEdit)
-- [Latest releases](https://github.com/gcclinux/EasyEdit/releases)
+[![Home](https://img.shields.io/badge/🏠_Home-Visit_Site-blue?style=for-the-badge)](https://gcclinux.github.io/EasyEdit/) 
+[![Docs](https://img.shields.io/badge/📚_Documentation-Read_Docs-green?style=for-the-badge)](https://gcclinux.github.io/EasyEdit/docs) 
+[![Features](https://img.shields.io/badge/✨_Features-Explore-purple?style=for-the-badge)](https://gcclinux.github.io/EasyEdit/features) 
+
+[![Download](https://img.shields.io/badge/⬇️_Download-Get_Latest-orange?style=for-the-badge)](https://gcclinux.github.io/EasyEdit/download) 
+[![WebApp](https://img.shields.io/badge/🚀_Web_App-Try_Online-success?style=for-the-badge)](https://gcclinux.github.io/EasyEdit/webapp/) 
+[![Releases](https://img.shields.io/badge/📦_Releases-View_All-blueviolet?style=for-the-badge)](https://github.com/gcclinux/EasyEdit/releases) 
+
+[![GitHub](https://img.shields.io/badge/💻_Source_Code-GitHub-black?style=for-the-badge&logo=github)](https://github.com/gcclinux/EasyEdit) 
+[![Stars](https://img.shields.io/github/stars/gcclinux/EasyEdit?style=for-the-badge&logo=github)](https://github.com/gcclinux/EasyEdit/stargazers) 
+[![License](https://img.shields.io/github/license/gcclinux/EasyEdit?style=for-the-badge)](LICENSE) 
 
 ## *Support & Community*
 
