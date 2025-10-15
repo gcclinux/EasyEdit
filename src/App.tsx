@@ -66,6 +66,7 @@ import {
   handleClear, 
   handleRedo,
   handleOpenClick,
+  handleOpenTxtClick,
   saveToHTML,
   saveToFile,
   saveToTxT
@@ -772,6 +773,17 @@ const App = () => {
                 >
                   <div className="hdr-title"><FaFileImport /> Open MarkDown</div>
                   <div className="hdr-desc">Open markdown .md file</div>
+                </button>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    handleOpenTxtClick(setEditorContent);
+                    setShowHelpDropdown(false);
+                  }}
+                >
+                  <div className="hdr-title"><FaFileImport /> Open TXT</div>
+                  <div className="hdr-desc">Open plain text .txt file</div>
                 </button>
                 <div className="hdr-sep" />
                 <button

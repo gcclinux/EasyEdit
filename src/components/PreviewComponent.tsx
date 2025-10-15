@@ -93,7 +93,9 @@ const PreviewComponent: React.FC<PreviewComponentProps> = React.memo(({
         remarkPlugins={[remarkGfm, remarkEmoji]}
         rehypePlugins={[rehypeRaw]}
         components={{
-          code({ className, children, ...props }) {
+          code(_props) {
+            const { className, children, ...props } = _props as any;
+            const isInlineFlag = (_props as any)?.inline as boolean | undefined;
             const isMermaid = /language-mermaid/.test(className || "");
             const isPlantUML = /language-plantuml/.test(className || "");
             
@@ -138,7 +140,8 @@ const PreviewComponent: React.FC<PreviewComponentProps> = React.memo(({
               }
             }
             
-            const isInline = !className;
+            // ReactMarkdown provides `inline` flag to distinguish inline vs fenced code
+            const isInline = !!isInlineFlag;
             
             return (
               <code 
@@ -148,6 +151,36 @@ const PreviewComponent: React.FC<PreviewComponentProps> = React.memo(({
                 {children}
               </code>
             );
+          },
+          p({ children }) {
+            // Detect box-drawing characters so ASCII UI blocks render with fixed width
+            const flatten = (nodes: any): string => {
+              if (!nodes) return '';
+              const arr = Array.isArray(nodes) ? nodes : [nodes];
+              return arr
+                .map((n) => {
+                  if (typeof n === 'string') return n;
+                  // Treat <br/> as newline
+                  // @ts-ignore
+                  if (n && n.type === 'br') return '\n';
+                  // @ts-ignore
+                  if (n && n.props && n.props.children) return flatten(n.props.children as any);
+                  return '';
+                })
+                .join('');
+            };
+
+            const text = flatten(children);
+            const hasBoxChars = /[\u2500-\u257F]/.test(text);
+            const looksLikeAsciiArt = hasBoxChars && /\n/.test(text);
+
+            if (looksLikeAsciiArt) {
+              return (
+                <pre className="ascii-art">{text}</pre>
+              );
+            }
+
+            return <p>{children}</p>;
           },
           pre({ children }) {
             return (

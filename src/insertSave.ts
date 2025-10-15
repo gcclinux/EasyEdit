@@ -146,6 +146,29 @@ export const handleOpenClick = (
     input.click();
   };
 
+// Open a plain text (.txt) file and load its contents into the editor
+export const handleOpenTxtClick = (
+  setEditorContent: (content: string) => void
+): void => {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".txt,text/plain";
+  input.onchange = (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const contents = e.target?.result;
+        if (typeof contents === "string") {
+          setEditorContent(contents);
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+  input.click();
+};
+
 export const saveToFile = (editorContent: string): void => {
 const blob = new Blob([editorContent], { type: "text/markdown;charset=utf-8" });
 saveAs(blob, "easyedit.md");

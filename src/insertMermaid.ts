@@ -106,10 +106,6 @@ graph LR
     I -->|Ready| J[Product Manufacture]
     I -->|Not Ready| K[Delay in Production]
     K --> H
-    
-    J --> L[Market Release]
-    L -->|Approved| M[Launch Campaign]
-    L -->|Not Approved| N[Postponement Decision]
 \`\`\``;
     const newText =
       editorContent.substring(0, start) +
