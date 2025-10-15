@@ -26,30 +26,45 @@ html,
 
 .code-block-container {
   background-color: #e3e3e3;
-  padding: 2px 6px;
+  padding: 10px;
   border-radius: 4px;
   margin: 4px 0;
-  white-space: pre-wrap; 
-  word-break: break-word;
+  white-space: pre;
+  overflow-x: auto;
   width: 100%;
   box-sizing: border-box;
   color: #000;
+  font-family: monospace;
 }
 
 .inline-code {
   background-color: #e3e3e3;
   padding: 2px 6px;
   border-radius: 3px;
-  font-family: monospace;
-  display: block;
-  width: 100%;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "DejaVu Sans Mono", "Noto Sans Mono", "Courier New", monospace;
+  display: inline;
+  width: auto;
   box-sizing: border-box;
-  margin: 4px 0;
+  margin: 0;
   color: #000;
 }
 
 .code-block {
   font-family: monospace;
+}
+
+/* ASCII art blocks detected from paragraph content */
+.ascii-art {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "DejaVu Sans Mono", "Noto Sans Mono", "Courier New", monospace, "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  white-space: pre;
+  margin: 4px 0;
+  padding: 6px 8px;
+  background: transparent;
+  color: inherit;
+  overflow-x: auto;
+  line-height: 1.2;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .textarea-horizontal-full {
@@ -100,7 +115,7 @@ html,
 .preview-parallel,
 .preview-horizontal-full {
   line-height: 1.5; /* Normal line height */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: monospace;
   letter-spacing: normal;
   word-spacing: normal;
   
@@ -110,6 +125,13 @@ html,
   text-rendering: optimizeLegibility;
 }
 
+.preview-horizontal p,
+.preview-parallel p,
+.preview-horizontal-full p {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  white-space: pre-wrap;
+}
+
 /* Apply emoji fonts only to elements that actually need them (emojis, icons) */
 .preview-horizontal .icon-glyph,
 .preview-parallel .icon-glyph,
@@ -117,12 +139,7 @@ html,
   font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
 }
 
-/* Paragraph spacing */
-.preview-horizontal p,
-.preview-parallel p,
-.preview-horizontal-full p {
-  margin: 0.5em 0;
-}
+
 
 /* Header spacing */
 .preview-horizontal h1, .preview-horizontal h2, .preview-horizontal h3, 
