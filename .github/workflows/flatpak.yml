@@ -5,6 +5,7 @@ on:
   push:
     branches: [ main ]
     tags: [ 'v*', '*.*.*' ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -62,7 +63,9 @@ jobs:
         run: |
           rm -rf repo
           mkdir -p repo
+          ostree --repo=repo init --mode=archive-z2
           flatpak build-import-bundle repo EasyEdit.flatpak
+          flatpak build-update-repo --generate-static-deltas repo
 
       - name: Publish repo to gh-pages
         uses: peaceiris/actions-gh-pages@v3
@@ -92,3 +95,31 @@ jobs:
             EasyEdit.flatpak
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  validate-flathub:
+    name: Build Flathub-ready manifest (validation)
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
+      options: --privileged
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build bundle with flatpak-builder (flathub variant)
+        id: build_flathub
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          manifest-path: linux/io.github.gcclinux.EasyEdit-flathub.yml
+          build-bundle: true
+          bundle: EasyEdit-flathub.flatpak
+          cache-key: flatpak-24.08-flathub
+          # The skeleton may not fully build until TODOs are completed; allow failures on PRs if desired
+          # verbose: true
+
+      - name: Upload flathub bundle artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: EasyEdit-flathub.flatpak
+          path: EasyEdit-flathub.flatpak
