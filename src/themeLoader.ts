@@ -20,7 +20,9 @@ export const loadTheme = (themeName: string, isCustom: boolean = false) => {
     // Load built-in theme
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = `/src/themes/${themeName}.css`;
+    // Use relative path for production builds
+    const base = import.meta.env.BASE_URL || '/';
+    link.href = `${base}src/themes/${themeName}.css`;
     link.setAttribute('data-theme', themeName);
     document.head.appendChild(link);
   }
