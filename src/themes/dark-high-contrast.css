@@ -74,6 +74,7 @@
   --border-card: rgba(255, 255, 255, 0.5);
   --border-card-light: rgba(255, 255, 255, 0.3);
   --btn-primary-modal: #00ffff;
+  --btn-primary-modal-text: #000000;
   --btn-cancel: #ff0000;
   --btn-submit: #00ff00;
 

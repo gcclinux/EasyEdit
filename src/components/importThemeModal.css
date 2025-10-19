@@ -1,0 +1,126 @@
+.import-theme-modal {
+  background-color: var(--bg-modal);
+  color: var(--color-text-primary);
+  padding: 20px;
+  border-radius: 8px;
+  width: 700px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.import-form {
+  margin: 20px 0;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.file-upload-section {
+  margin-bottom: 10px;
+}
+
+.btn-file-upload {
+  background: var(--bg-input);
+  border: 1px solid var(--border-input);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.btn-file-upload:hover {
+  background: var(--bg-dropdown-hover);
+  border-color: var(--btn-primary-modal);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.theme-input {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.theme-textarea {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 13px;
+  font-family: monospace;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.theme-input:focus,
+.theme-textarea:focus {
+  outline: none;
+  border-color: var(--btn-primary-modal);
+}
+
+.import-error {
+  background-color: rgba(255, 0, 0, 0.1);
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  color: #ff6b6b;
+  padding: 10px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn.primary {
+  background: var(--btn-primary-modal);
+  color: var(--btn-primary-modal-text, #000000);
+  font-weight: 600;
+}
+
+.btn.primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn.secondary {
+  background: var(--btn-cancel);
+  color: #ffffff;
+}
+
+.btn.secondary:hover {
+  opacity: 0.9;
+}

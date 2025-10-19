@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+import { loadTheme, getCurrentTheme, isCurrentThemeCustom } from './themeLoader';
 
 // ============================================
 // THEME SELECTION
@@ -11,12 +12,19 @@ import App from './App';
 // - './themes/sunset-orange.css'     (Warm orange theme)
 // - './themes/jade-green.css'        (Natural green theme)
 // - './themes/dark-high-contrast.css' (High contrast black/white/bright)
-// To create your own theme, see: THEMING.md
+// Users can also import custom themes via File → Select Theme → Import
+// To create your own theme, see: THEMING.md and CUSTOM-THEMES.md
 // ============================================
-import './themes/jade-green.css';
-
+import './themes/default.css';
 
 import './index.css';
+
+// Load saved theme on startup
+const savedTheme = getCurrentTheme();
+const isCustom = isCurrentThemeCustom();
+if (savedTheme !== 'default' || isCustom) {
+  loadTheme(savedTheme, isCustom);
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
