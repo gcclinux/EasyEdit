@@ -50,6 +50,12 @@ export default function Docs() {
               <p>Complete guide to Nomnoml syntax and features</p>
             </Link>
 
+            <Link to="/docs/custom-themes" className="doc-card">
+              <div className="doc-icon">🎨</div>
+              <h3>Custom Themes</h3>
+              <p>Create and import custom color themes for EasyEdit</p>
+            </Link>
+
           </div>
 
           <div className="getting-started">
