@@ -218,7 +218,7 @@ html,
 
 /* Preview Parallel */
 .preview-parallel {
-  border: 1px solid var(--border-primary);
+  border: 1px solid var(--border-dark);
   padding: 10px;
   text-align: left;
   font-family: Arial, sans-serif, "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -329,7 +329,7 @@ html,
 .preview-horizontal {
   width: 98%;
   max-width: 98%;
-  border: 1px solid var(--border-primary);
+  border: 1px solid var(--border-dark);
   padding: 10px;
   margin: 1px 0; /* Adjust margins to be consistent */
   text-align: left;

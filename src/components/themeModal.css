@@ -30,6 +30,31 @@
   margin: 4px 0 0 0;
 }
 
+.theme-actions {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-import {
+  background: var(--btn-primary-modal);
+  color: var(--btn-primary-modal-text, white);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-import:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
 .theme-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -66,6 +91,12 @@
   margin-bottom: 8px;
 }
 
+.theme-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .theme-card-header h3 {
   margin: 0;
   font-size: 16px;
@@ -80,6 +111,22 @@
   border-radius: 12px;
   font-size: 11px;
   font-weight: bold;
+}
+
+.theme-delete {
+  background: rgba(255, 0, 0, 0.2);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  transition: all 0.2s ease;
+}
+
+.theme-delete:hover {
+  background: rgba(255, 0, 0, 0.3);
+  color: #ff4444;
 }
 
 .theme-card-desc {

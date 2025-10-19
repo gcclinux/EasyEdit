@@ -116,10 +116,12 @@ import { buildDiagramExamplesTemplate } from './templates/diagramExamples';
 import AboutModal from './components/AboutModal';
 import FeaturesModal from './components/FeaturesModal';
 import ThemeModal from './components/ThemeModal';
+import ImportThemeModal from './components/ImportThemeModal';
 import taskTemplates from './templates/tasks';
 import { encryptContent, decryptFile } from './cryptoHandler';
 import PasswordModal from './components/PasswordModal';
-import { loadTheme, getCurrentTheme } from './themeLoader';
+import { loadTheme, getCurrentTheme, isCurrentThemeCustom } from './themeLoader';
+import { saveCustomTheme } from './customThemeManager';
 
 const App = () => {
   const [documentHistory, setDocumentHistory] = useState<HistoryState[]>([]);
@@ -156,7 +158,15 @@ const App = () => {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [featuresOpen, setFeaturesOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
+  const [importThemeOpen, setImportThemeOpen] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(getCurrentTheme());
+
+  const handleImportTheme = (name: string, description: string, css: string) => {
+    const id = name.toLowerCase().replace(/\s+/g, '-');
+    saveCustomTheme({ id, name, description, css });
+    loadTheme(id, true);
+    setCurrentTheme(id);
+  };
   const [showTasksDropdown, setShowTasksDropdown] = useState(false);
   const tasksButtonRef = useRef<HTMLButtonElement | null>(null);
   const [tasksPos, setTasksPos] = useState<{ top: number; left: number; width: number } | null>(null);
@@ -1186,8 +1196,14 @@ const App = () => {
           <ThemeModal 
             open={themeOpen} 
             onClose={() => setThemeOpen(false)} 
-            onSelectTheme={(theme) => { loadTheme(theme); setCurrentTheme(theme); }}
+            onSelectTheme={(theme, isCustom) => { loadTheme(theme, isCustom); setCurrentTheme(theme); }}
             currentTheme={currentTheme}
+            onOpenImport={() => setImportThemeOpen(true)}
+          />
+          <ImportThemeModal
+            open={importThemeOpen}
+            onClose={() => setImportThemeOpen(false)}
+            onImport={handleImportTheme}
           />
           <PasswordModal
             open={passwordModalConfig.open}
