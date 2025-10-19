@@ -10,7 +10,17 @@ export default defineConfig({
   server: {
     port: port,
     strictPort: true,
-    host: '0.0.0.0'
+    host: '0.0.0.0',
+    // Prevent watcher from following large or symlink-heavy build dirs (fixes ELOOP)
+    watch: {
+      ignored: [
+        '**/build-prebuilt/**',
+        '**/build-flathub/**',
+        '**/build-*/**',
+        '**/.flatpak-builder/**',
+        '**/build/**'
+      ]
+    }
   },
   build: {
     outDir: 'dist',
