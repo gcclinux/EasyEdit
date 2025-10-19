@@ -18,7 +18,8 @@ import {
   FaFilePdf,
   FaFileCode,
   FaFileAlt,
-  FaLock
+  FaLock,
+  FaPalette
 } from 'react-icons/fa';
 import { VscSymbolKeyword } from "react-icons/vsc";
 import { GoTasklist } from "react-icons/go";
@@ -114,9 +115,11 @@ import { buildBugReportTemplate } from './templates/bugReport';
 import { buildDiagramExamplesTemplate } from './templates/diagramExamples';
 import AboutModal from './components/AboutModal';
 import FeaturesModal from './components/FeaturesModal';
+import ThemeModal from './components/ThemeModal';
 import taskTemplates from './templates/tasks';
 import { encryptContent, decryptFile } from './cryptoHandler';
 import PasswordModal from './components/PasswordModal';
+import { loadTheme, getCurrentTheme } from './themeLoader';
 
 const App = () => {
   const [documentHistory, setDocumentHistory] = useState<HistoryState[]>([]);
@@ -152,6 +155,8 @@ const App = () => {
   const [helpPos, setHelpPos] = useState<{ top: number; left: number; width: number } | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [featuresOpen, setFeaturesOpen] = useState(false);
+  const [themeOpen, setThemeOpen] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState(getCurrentTheme());
   const [showTasksDropdown, setShowTasksDropdown] = useState(false);
   const tasksButtonRef = useRef<HTMLButtonElement | null>(null);
   const [tasksPos, setTasksPos] = useState<{ top: number; left: number; width: number } | null>(null);
@@ -870,6 +875,11 @@ const App = () => {
                     <div className="hdr-desc">Sponsor the project</div>
                   </button>
                 <div className="hdr-sep" />
+                <button className="dropdown-item" onClick={() => { setThemeOpen(true); setShowHelpDropdown(false); }}>
+                  <div className="hdr-title"><FaPalette /> Select Theme</div>
+                  <div className="hdr-desc">Choose color scheme</div>
+                </button>
+                <div className="hdr-sep" />
                 <button className="dropdown-item" onClick={() => { setAboutOpen(true); setShowHelpDropdown(false); }}>
                   <div className="hdr-title"><FaInfoCircle /> About</div>
                   <div className="hdr-desc">EasyEdit version and info</div>
@@ -1173,6 +1183,12 @@ const App = () => {
           {/* About & Features Modals */}
           <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
           <FeaturesModal open={featuresOpen} onClose={() => setFeaturesOpen(false)} />
+          <ThemeModal 
+            open={themeOpen} 
+            onClose={() => setThemeOpen(false)} 
+            onSelectTheme={(theme) => { loadTheme(theme); setCurrentTheme(theme); }}
+            currentTheme={currentTheme}
+          />
           <PasswordModal
             open={passwordModalConfig.open}
             onClose={handleClosePasswordModal}

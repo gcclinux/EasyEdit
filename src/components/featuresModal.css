@@ -1,15 +1,15 @@
 .features-hero { display:flex; gap:12px; align-items:center }
 .features-hero-logo img { width:56px; height:56px; object-fit:contain }
 .features-title { margin:0; font-size:20px }
-.features-subtitle { color:#bdbdbd; margin-top:4px }
+.features-subtitle { color:var(--color-text-muted); margin-top:4px }
 .features-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:16px }
-.feature-card { background: rgba(255,255,255,0.02); padding:12px; border:2px solid rgba(255,255,255,0.08); border-radius:8px }
+.feature-card { background: var(--bg-card); padding:12px; border:2px solid var(--border-card-light); border-radius:8px }
 .features-modal { padding:20px; width:1500px; max-width:95vw }
 
 .modal-overlay {
 	position: fixed;
 	inset: 0;
-	background-color: rgba(0,0,0,0.5);
+	background-color: var(--bg-modal-overlay);
 	display: flex;
 	justify-content: center;
 	align-items: center;

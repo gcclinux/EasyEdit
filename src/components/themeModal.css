@@ -1,0 +1,106 @@
+.theme-modal {
+  background-color: var(--bg-modal);
+  color: var(--color-text-primary);
+  padding: 20px;
+  border-radius: 8px;
+  width: 800px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.theme-hero {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.theme-hero-icon {
+  color: var(--btn-primary-modal);
+}
+
+.theme-title {
+  margin: 0;
+  font-size: 24px;
+}
+
+.theme-subtitle {
+  color: var(--color-text-muted);
+  margin: 4px 0 0 0;
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.theme-card {
+  background: var(--bg-card);
+  padding: 16px;
+  border: 2px solid var(--border-card-light);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.theme-card:hover {
+  border-color: var(--border-card);
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
+}
+
+.theme-card.theme-active {
+  border-color: var(--btn-primary-modal);
+  background: rgba(11, 132, 255, 0.1);
+}
+
+.theme-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.theme-card-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.theme-badge {
+  background: var(--btn-primary-modal);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.theme-card-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.theme-close {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.theme-close:hover {
+  color: var(--btn-primary-modal);
+}
