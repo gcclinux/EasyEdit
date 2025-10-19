@@ -68,6 +68,7 @@
   --bg-modal: #000000;
   --bg-modal-overlay: rgba(0, 0, 0, 0.9);
   --color-text-primary: #ffffff;
+  --color-text-modal: #ffffff;
   --color-text-muted: #cccccc;
   --color-text-muted-dark: #aaaaaa;
   --bg-card: rgba(255, 255, 255, 0.1);

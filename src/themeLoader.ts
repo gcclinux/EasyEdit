@@ -20,7 +20,11 @@ export const loadTheme = (themeName: string, isCustom: boolean = false) => {
     // Load built-in theme
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = `/themes/${themeName}.css`;
+    // Build URL using Vite base so it works both locally and on GitHub Pages (/EasyEdit/webapp/).
+    // Avoid URL() constructor because BASE_URL may be relative (e.g. '/'), which is invalid as a base.
+    const base = (import.meta.env.BASE_URL || '/');
+    const normalizedBase = base.endsWith('/') ? base : `${base}/`;
+    link.href = `${normalizedBase}themes/${themeName}.css`;
     link.setAttribute('data-theme', themeName);
     document.head.appendChild(link);
   }

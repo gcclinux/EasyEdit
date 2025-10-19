@@ -68,6 +68,7 @@
   --bg-modal: #0f1822;
   --bg-modal-overlay: rgba(10, 16, 21, 0.7);
   --color-text-primary: #e8f4f8;
+  --color-text-modal: #e8f4f8;
   --color-text-muted: #a8c5d1;
   --color-text-muted-dark: #7a9aaa;
   --bg-card: rgba(74, 144, 226, 0.08);
@@ -137,5 +138,6 @@
     --bg-root: #f0f8ff;
     --btn-standard-hover: #e8f4f8;
     --link-hover: #6ab0ff;
+      --color-text-modal: #e8f4f8; /* modal bg remains dark */
   }
 }
