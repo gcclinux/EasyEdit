@@ -6,6 +6,11 @@ on:
     branches: [ main ]
     tags: [ 'v*', '*.*.*' ]
   workflow_dispatch:
+    inputs:
+      publish_repo:
+        description: 'Also publish an OSTree repo to gh-pages (may fail on large apps due to GitHub file size limits)'
+        required: false
+        default: 'false'
 
 permissions:
   contents: write
@@ -49,7 +54,8 @@ jobs:
   publish-repo:
     name: Export and publish OSTree repo (gh-pages)
     needs: build
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_repo == 'true'
+    continue-on-error: true
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
@@ -69,8 +75,8 @@ jobs:
           rm -rf repo
           mkdir -p repo
           ostree --repo=repo init --mode=archive-z2
-          flatpak build-import-bundle repo EasyEdit.flatpak
-          flatpak build-update-repo --generate-static-deltas repo
+          flatpak build-import-bundle --no-update-summary repo EasyEdit.flatpak
+          flatpak build-update-repo --static-deltas=false repo
 
       - name: Publish repo to gh-pages
         uses: peaceiris/actions-gh-pages@v3

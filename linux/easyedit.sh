@@ -6,10 +6,19 @@ set -euo pipefail
 HERE="$(dirname "$(readlink -f "$0")")"
 APPDIR="/app/share/io.github.gcclinux.EasyEdit"
 
-# Electron provided by BaseApp
-ELECTRON="/app/electron/electron"
-if [ ! -x "$ELECTRON" ]; then
-  echo "Electron binary not found at $ELECTRON" >&2
+# Ensure Electron treats this as a production build (not dev)
+export ELECTRON_IS_DEV=0
+export NODE_ENV=production
+
+# Prefer bundled Electron ELF binary from node_modules if present (from-source build)
+if [ -x "/app/share/io.github.gcclinux.EasyEdit/node_modules/electron/dist/electron" ]; then
+  ELECTRON="/app/share/io.github.gcclinux.EasyEdit/node_modules/electron/dist/electron"
+elif [ -x "/app/electron/electron" ]; then
+  ELECTRON="/app/electron/electron"
+elif [ -x "/app/bin/electron" ]; then
+  ELECTRON="/app/bin/electron"
+else
+  echo "Electron binary not found in BaseApp (checked /app/bin/electron and /app/electron/electron)" >&2
   exit 1
 fi
 

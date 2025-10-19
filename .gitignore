@@ -6,6 +6,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+.flatpak-builder
+build-flathub
 
 node_modules
 dist
