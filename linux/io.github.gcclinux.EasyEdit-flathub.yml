@@ -40,8 +40,8 @@ modules:
       - install -D -m 0644 README.md /app/share/io.github.gcclinux.EasyEdit/README.md
 
     sources:
-      # TODO: Replace with a Git tag or source tarball for the release
-      - type: git
-        url: https://github.com/gcclinux/EasyEdit.git
-        tag: v1.4.2
+      # For CI validation, build from the current checkout so newly added linux/* files are available.
+      # For Flathub submission, replace with a source tarball or a git tag.
+      - type: dir
+        path: ..
       # TODO: Vendor node modules with flatpak-node-generator and include them here
