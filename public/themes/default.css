@@ -68,6 +68,7 @@
   --bg-modal: #1e1e1e;
   --bg-modal-overlay: rgba(0, 0, 0, 0.5);
   --color-text-primary: white;
+  --color-text-modal: #ffffff; /* keep modal text light for dark modal background */
   --color-text-muted: #bdbdbd;
   --color-text-muted-dark: #9a9a9a;
   --bg-card: rgba(255, 255, 255, 0.02);
@@ -137,5 +138,7 @@
     --bg-root: #ffffff;
     --btn-standard-hover: #f9f9f9;
     --link-hover: #747bff;
+      /* Do NOT darken modal text in light mode; modal bg remains dark */
+      --color-text-modal: #ffffff;
   }
 }

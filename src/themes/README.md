@@ -33,6 +33,7 @@ To switch themes, simply change the import to point to a different theme file.
 
 ### Text Colors
 - `--color-text-primary` - Main text color
+- `--color-text-modal` - Text color used inside modal dialogs (ensures high contrast on modal backgrounds)
 - `--color-text-secondary` - Secondary text color
 - `--color-text-muted` - Muted/disabled text
 - `--color-text-light` - Light text for descriptions

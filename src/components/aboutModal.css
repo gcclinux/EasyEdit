@@ -11,7 +11,7 @@
 
 .modal-content.about-modal {
   background-color: var(--bg-modal);
-  color: var(--color-text-primary);
+  color: var(--color-text-modal);
   padding: 20px;
   border-radius: 8px;
   width: 1500px;
@@ -22,6 +22,19 @@
   display: flex;
   gap: 16px;
   align-items: center;
+}
+
+/* Ensure all text inside the About modal stays readable */
+.about-modal, 
+.about-modal p,
+.about-modal li,
+.about-modal h1,
+.about-modal h2,
+.about-modal h3,
+.about-modal h4,
+.about-modal h5,
+.about-modal h6 {
+  color: var(--color-text-modal);
 }
 
 .about-hero-logo img {
@@ -46,12 +59,13 @@
 
 .badge {
   display: inline-block;
-  background: var(--color-primary-light);
-  color: var(--color-text-primary);
+  background: var(--bg-card);
+  color: var(--color-text-modal);
   padding: 4px 8px;
   margin-right: 6px;
   border-radius: 4px;
-  font-size: 12px
+  border: 1px solid var(--border-card);
+  font-size: 12px;
 }
 
 .about-grid {
@@ -98,7 +112,7 @@
 
 .btn.primary {
   background: var(--btn-primary-modal);
-  color: var(--color-text-primary);
+  color: var(--btn-primary-modal-text);
   padding: 8px 12px;
   border-radius: 6px;
   border: none;

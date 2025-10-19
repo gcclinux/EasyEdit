@@ -4,7 +4,7 @@
 .features-subtitle { color:var(--color-text-muted); margin-top:4px }
 .features-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:16px }
 .feature-card { background: var(--bg-card); padding:12px; border:2px solid var(--border-card-light); border-radius:8px }
-.features-modal { padding:20px; width:1500px; max-width:95vw }
+.features-modal { padding:20px; width:1500px; max-width:95vw; background-color: var(--bg-modal); color: var(--color-text-modal); border-radius: 8px }
 
 .modal-overlay {
 	position: fixed;
@@ -14,4 +14,23 @@
 	justify-content: center;
 	align-items: center;
 	z-index: 1000001; /* above dropdown portals */
+}
+
+/* Ensure all text inside the Features modal stays readable */
+.features-modal,
+.features-modal p,
+.features-modal li,
+.features-modal h1,
+.features-modal h2,
+.features-modal h3,
+.features-modal h4,
+.features-modal h5,
+.features-modal h6 {
+	color: var(--color-text-modal);
+}
+
+/* Buttons inside modal */
+.features-modal .btn.primary {
+  background: var(--btn-primary-modal);
+  color: var(--btn-primary-modal-text);
 }
