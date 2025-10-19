@@ -21,6 +21,7 @@
       "about/*",
       "release/*",
       "src/assets/*",
+      "src/themes/*",
       "src/components/*",
       "src/templates/*",
       "src/autoGenerator/*",

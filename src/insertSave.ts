@@ -129,7 +129,8 @@ export const handleOpenClick = (
   ): void => {
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = ".md";
+    // Accept common markdown extensions and mime types
+    input.accept = ".md,.markdown,text/markdown,application/markdown";
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
