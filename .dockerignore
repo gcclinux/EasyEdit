@@ -4,3 +4,6 @@ dist
 .git
 npm-debug.log
 .DS_Store
+.local
+.env
+docs-site
