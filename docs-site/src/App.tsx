@@ -11,6 +11,7 @@ import UMLExamples from './pages/docs/UMLExamples'
 import NomnomlGuide from './pages/docs/NomnomlGuide'
 import TemplatesGuide from './pages/docs/TemplatesGuide'
 import MermaidGuide from './pages/docs/MermaidGuide'
+import CustomThemes from './pages/docs/CustomThemes'
 
 function App() {
   const location = useLocation()
@@ -32,6 +33,7 @@ function App() {
         <Route path="docs/nomnoml-guide" element={<NomnomlGuide />} />
         <Route path="docs/templates-guide" element={<TemplatesGuide />} />
         <Route path="docs/mermaid-guide" element={<MermaidGuide />} />
+  <Route path="docs/custom-themes" element={<CustomThemes />} />
       </Route>
     </Routes>
   )
