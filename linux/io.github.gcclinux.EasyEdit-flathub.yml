@@ -14,30 +14,62 @@ finish-args:
   - --socket=wayland
   - --socket=pulseaudio
   - --device=dri
-  # Prefer portals; consider narrowing to xdg-documents instead of home
-  - --filesystem=home
+  # Prefer portals for file access; no broad home access
   - --talk-name=org.freedesktop.portal.*
 modules:
+  - name: electron
+    buildsystem: simple
+    build-options:
+      build-args:
+        - --share=network
+    build-commands:
+      - mkdir -p /app/electron
+      - bash -c 'curl -L https://github.com/electron/electron/releases/download/v38.1.2/electron-v38.1.2-linux-x64.zip | bsdtar -xf - -C /app/electron'
+      - chmod +x /app/electron/electron || true
+    sources:
+      - type: shell
+        commands:
+          - echo "Fetching Electron binary during build (development only). Replace with vendored source for Flathub."
   - name: easyedit
     buildsystem: simple
     build-options:
       env:
         # BaseApp provides Electron; avoid downloading vendor binaries
-        ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+        ELECTRON_SKIP_BINARY_DOWNLOAD: '0'
+        PATH: /usr/lib/sdk/node20/bin:/app/bin:/usr/bin
+      build-args:
+        # Allow network to fetch npm packages for local builds (Flathub will require vendoring)
+        - --share=network
     build-commands:
-      # TODO: Build from source and install app.asar and resources.
-      # Suggested approach:
-      # 1) npm ci && npm run build
-      # 2) Use electron-builder --dir or asar to produce app.asar
-      # 3) Install resources to /app/share/io.github.gcclinux.EasyEdit/
-      # 4) Install a launcher that runs zypak-wrapper with the system Electron
+      # 1) Install metadata, desktop, icon, license
       - install -D -m 0755 linux/easyedit.sh /app/bin/easyedit
       - install -D -m 0644 linux/io.github.gcclinux.EasyEdit.desktop /app/share/applications/io.github.gcclinux.EasyEdit.desktop
       - install -D -m 0644 linux/io.github.gcclinux.EasyEdit.metainfo.xml /app/share/metainfo/io.github.gcclinux.EasyEdit.metainfo.xml
       - install -D -m 0644 public/icon.png /app/share/icons/hicolor/256x256/apps/io.github.gcclinux.EasyEdit.png
       - install -D -m 0644 LICENSE /app/share/licenses/io.github.gcclinux.EasyEdit/LICENSE
-      # Placeholder app files (replace with real install)
-      - install -D -m 0644 README.md /app/share/io.github.gcclinux.EasyEdit/README.md
+      
+      # 2) Build from source with Node SDK extension
+      - npm ci
+      - npm run build
+      
+      # 3) Install the built app and runtime files into /app/share/io.github.gcclinux.EasyEdit
+      - install -d /app/share/io.github.gcclinux.EasyEdit
+      - cp -r dist /app/share/io.github.gcclinux.EasyEdit/
+      - install -m 0644 package.json /app/share/io.github.gcclinux.EasyEdit/package.json
+      - install -m 0644 main.cjs /app/share/io.github.gcclinux.EasyEdit/main.cjs
+      - install -m 0644 preload.js /app/share/io.github.gcclinux.EasyEdit/preload.js
+      - install -m 0644 vite.config.ts /app/share/io.github.gcclinux.EasyEdit/vite.config.ts
+      - install -m 0644 tsconfig.json /app/share/io.github.gcclinux.EasyEdit/tsconfig.json || true
+      - install -m 0644 tsconfig.app.json /app/share/io.github.gcclinux.EasyEdit/tsconfig.app.json || true
+      - install -m 0644 tsconfig.node.json /app/share/io.github.gcclinux.EasyEdit/tsconfig.node.json || true
+      - install -m 0644 index.html /app/share/io.github.gcclinux.EasyEdit/index.html
+      - install -m 0644 -D public/icon.png /app/share/io.github.gcclinux.EasyEdit/public/icon.png
+      - cp -r src /app/share/io.github.gcclinux.EasyEdit/
+      - cp -r public /app/share/io.github.gcclinux.EasyEdit/
+      - cp -r release /app/share/io.github.gcclinux.EasyEdit/ || true
+      
+      # 4) Keep node_modules (includes the Electron binary downloaded by npm)
+      - cp -r node_modules /app/share/io.github.gcclinux.EasyEdit/
 
     sources:
       # For CI validation, build from the current checkout so newly added linux/* files are available.
