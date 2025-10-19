@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.gcclinux.EasyEdit</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <name>EasyEdit</name>
+  <summary>Simple Markdown editor</summary>
+  <description>
+    <p>EasyEdit is an easy Markdown editor that lets you write and preview in real time, save/load .md files, and export to HTML & PDF.</p>
+  </description>
+  <launchable type="desktop-id">io.github.gcclinux.EasyEdit.desktop</launchable>
+  <url type="homepage">https://github.com/gcclinux/EasyEdit</url>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/screenshots/sample010.png</image>
+      <caption>Editor and preview side-by-side</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/screenshots/sample011.png</image>
+      <caption>Preview panel</caption>
+    </screenshot>
+  </screenshots>
+  <developer_name>Ricardo Wagemaker</developer_name>
+  <releases>
+    <release version="1.4.2" date="2025-10-19"/>
+  </releases>
+  <provides>
+    <id>io.github.gcclinux.EasyEdit.desktop</id>
+  </provides>
+</component>

@@ -1,0 +1,47 @@
+id: io.github.gcclinux.EasyEdit
+branch: stable
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.node20
+base: org.electronjs.Electron2.BaseApp
+base-version: '24.08'
+command: easyedit
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --socket=pulseaudio
+  - --device=dri
+  # Prefer portals; consider narrowing to xdg-documents instead of home
+  - --filesystem=home
+  - --talk-name=org.freedesktop.portal.*
+modules:
+  - name: easyedit
+    buildsystem: simple
+    build-options:
+      env:
+        # BaseApp provides Electron; avoid downloading vendor binaries
+        ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+    build-commands:
+      # TODO: Build from source and install app.asar and resources.
+      # Suggested approach:
+      # 1) npm ci && npm run build
+      # 2) Use electron-builder --dir or asar to produce app.asar
+      # 3) Install resources to /app/share/io.github.gcclinux.EasyEdit/
+      # 4) Install a launcher that runs zypak-wrapper with the system Electron
+      - install -D -m 0755 linux/easyedit.sh /app/bin/easyedit
+      - install -D -m 0644 linux/io.github.gcclinux.EasyEdit.desktop /app/share/applications/io.github.gcclinux.EasyEdit.desktop
+      - install -D -m 0644 linux/io.github.gcclinux.EasyEdit.metainfo.xml /app/share/metainfo/io.github.gcclinux.EasyEdit.metainfo.xml
+      - install -D -m 0644 public/icon.png /app/share/icons/hicolor/256x256/apps/io.github.gcclinux.EasyEdit.png
+      - install -D -m 0644 LICENSE /app/share/licenses/io.github.gcclinux.EasyEdit/LICENSE
+      # Placeholder app files (replace with real install)
+      - install -D -m 0644 README.md /app/share/io.github.gcclinux.EasyEdit/README.md
+
+    sources:
+      # TODO: Replace with a Git tag or source tarball for the release
+      - type: git
+        url: https://github.com/gcclinux/EasyEdit.git
+        tag: v1.4.2
+      # TODO: Vendor node modules with flatpak-node-generator and include them here
