@@ -53,6 +53,10 @@ $ docker run -d --name EASYEDIT -p 3024:3024 ghcr.io/gcclinux/easyedit:main
 
 <a><img src="screenshots/020.png" alt="Example" width="720" height="400"></a>
 
+## *Select or create your own Themes*
+
+<a><img src="screenshots/Themes_2025-10-24.png" alt="Example" width="720" height="400"></a>
+
 ## *Example Table displayed*
 
 | header1 | header2 | header3 |
