@@ -2,14 +2,9 @@ name: Deploy GitHub Pages
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - 'docs-site/**'
-      - 'src/**'
-      - 'vite.config.web.ts'
-      - 'package.json'
-      - '.github/workflows/gh-pages.yml'
+    tags:
+      - 'v*'
+      - '[0-9]+.[0-9]+.[0-9]+'
   workflow_dispatch:
 
 permissions:
