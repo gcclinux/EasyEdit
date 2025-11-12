@@ -125,16 +125,7 @@
         }
       ]
     },
-    "publish": {
-      "provider": "github",
-      "owner": "Ricardo Wagemaker",
-      "repo": "EasyEdit",
-      "channel": "latest",
-      "private": true,
-      "publishAutoUpdate": true,
-      "updaterCacheDirName": "easyedit-updater",
-      "vPrefixedTagName": false
-    },
+    "publish": null,
     "mac": {
       "target": [
         "dmg",
