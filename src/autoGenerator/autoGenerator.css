@@ -15,6 +15,12 @@
     display: flex;
     gap: 20px;
     margin-bottom: 20px;
+    color: #ffffff !important;
+  }
+
+  .input-group label,
+  .input-group div {
+    color: #ffffff !important;
   }
   
   .input-group input {
@@ -22,7 +28,7 @@
     margin-left: 10px;
     background-color: var(--bg-input);
     border: 1px solid var(--border-secondary);
-    color: var(--color-text-primary);
+    color: #ffffff !important;
     padding: 4px;
   }
   
@@ -32,7 +38,16 @@
     border-radius: 8px;
     min-width: 800px;
     max-width: 1024px;
-    color: var(--color-text-primary);
+    color: #ffffff !important;
+  }
+
+  .modal-content *,
+  .modal-content h2,
+  .modal-content h3,
+  .modal-content label,
+  .modal-content pre,
+  .modal-content div {
+    color: #ffffff !important;
   }
   
   .headers-section {
@@ -40,6 +55,7 @@
     flex-direction: column;
     gap: 10px;
     margin-bottom: 20px;
+    color: #ffffff !important;
   }
   
   .header-group {
@@ -51,7 +67,7 @@
   .header-group select {
     background-color: var(--bg-input);
     border: 1px solid var(--border-secondary);
-    color: var(--color-text-primary);
+    color: #ffffff !important;
     padding: 4px;
   }
   
@@ -60,6 +76,11 @@
     padding: 10px;
     border-radius: 4px;
     margin-bottom: 20px;
+    color: #ffffff !important;
+  }
+
+  .preview * {
+    color: #ffffff !important;
   }
   
   .button-group {
@@ -73,11 +94,18 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    background-color: var(--btn-primary);
+    color: #ffffff !important;
   }
   
   .button-group button:first-child {
     background-color: var(--btn-primary);
-    color: var(--color-text-primary);
+    color: #ffffff !important;
+  }
+
+  .modal-content button {
+    color: #ffffff !important;
+    background-color: var(--btn-primary);
   }
 
   .project-title {
@@ -112,7 +140,7 @@
     max-width: 200px;
     background-color: var(--bg-input);
     border: 1px solid var(--border-secondary);
-    color: var(--color-text-primary);
+    color: #ffffff !important;
     padding: 8px;
     border-radius: 4px;
   }
@@ -121,7 +149,7 @@
     flex: 0 0 130px;
     background-color: var(--bg-input);
     border: 1px solid var(--border-secondary);
-    color: var(--color-text-primary);
+    color: #ffffff !important;
     padding: 8px;
     border-radius: 4px;
   }
@@ -130,7 +158,7 @@
     flex: 0 0 80px;
     background-color: var(--bg-input);
     border: 1px solid var(--border-secondary);
-    color: var(--color-text-primary);
+    color: #ffffff !important;
     padding: 8px;
     border-radius: 4px;
   }
@@ -141,7 +169,7 @@
     max-width: 180px;
     background-color: var(--bg-input);
     border: 1px solid var(--border-secondary);
-    color: var(--color-text-primary);
+    color: #ffffff !important;
     padding: 8px;
     border-radius: 4px;
   }
@@ -153,26 +181,31 @@
   .task-title{
     width: 100%;
     margin-left: -55px;
+    color: #ffffff !important;
   }
 
   .task-date{
     width: 100%;
     margin-left: -1px;
+    color: #ffffff !important;
   }
 
   .task-select{
     width: 100%;
     margin-left: -30px;
+    color: #ffffff !important;
   }
 
   .task-duration {
     width: 100%;
     margin-left: -20px;
+    color: #ffffff !important;
   }
 
   .task-dep {
     width: 80%;
     margin-left: -50px;
+    color: #ffffff !important;
   }
 
   .time-headers-section {
@@ -192,7 +225,15 @@
     max-width: 1024px;
     max-height: 80vh;
     overflow-y: auto;
-    color: var(--color-text-primary);
+    color: #ffffff !important;
+}
+
+.time-modal-content *,
+.time-modal-content h2,
+.time-modal-content h3,
+.time-modal-content label,
+.time-modal-content div {
+    color: #ffffff !important;
 }
 
 .time-task-duration {
@@ -260,6 +301,11 @@
   z-index: 10;
 }
 
+.time-generator-buttons button {
+  color: #ffffff !important;
+  background-color: var(--btn-primary);
+}
+
 .time-input-container {
   display: flex;
   justify-content: space-between;
@@ -306,6 +352,8 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  color: #ffffff !important;
+  background-color: var(--btn-primary);
 }
 
 .time-input {
@@ -314,6 +362,8 @@
   padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 4px;
+  background-color: var(--bg-input);
+  color: #ffffff !important;
 }
 
 .time-input-section {
@@ -322,7 +372,8 @@
   padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 4px;
-  background-color: #c4c2c2;
+  background-color: var(--bg-input);
+  color: #ffffff !important;
 }
 
 .time-input-timeline {
@@ -331,6 +382,8 @@
   padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 4px;
+  background-color: var(--bg-input);
+  color: #ffffff !important;
 }
 
 
@@ -342,6 +395,8 @@
   border-radius: 4px;
   resize: none;
   font-family: inherit;
+  background-color: var(--bg-input);
+  color: #ffffff !important;
 }
 
 .time-input-stack {
@@ -358,6 +413,8 @@
   border-radius: 4px;
   cursor: pointer;
   width: 60%;
+  color: #ffffff !important;
+  background-color: var(--btn-primary);
 }
 
 .time-event-row {
