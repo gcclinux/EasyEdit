@@ -33,8 +33,6 @@ jobs:
 
       - name: Build Windows packages
         run: npm run electron:build
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: List built artifacts
         run: |
