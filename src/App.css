@@ -55,16 +55,20 @@ html,
 
 /* ASCII art blocks detected from paragraph content */
 .ascii-art {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "DejaVu Sans Mono", "Noto Sans Mono", "Courier New", monospace, "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  /* Try different fonts: "Courier New", Consolas, Monaco, "Lucida Console", "DejaVu Sans Mono", monospace */
+  font-family: "DejaVu Sans Mono";
   white-space: pre;
   margin: 4px 0;
   padding: 6px 8px;
   background: transparent;
   color: inherit;
   overflow-x: auto;
-  line-height: 1.2;
+  line-height: 1.1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-variant-emoji: text;
+  letter-spacing: 0px; /* Adjust this value: negative to compress, positive to expand */
+  word-spacing: 0;
 }
 
 .textarea-horizontal-full {
@@ -83,7 +87,8 @@ html,
   height: 75vh;
   overflow: auto;
   box-sizing: border-box;
-  font-family: monospace, "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: "DejaVu Sans Mono", monospace;
+  font-variant-emoji: text;
   
   /* Container styles */
   display: flex;
@@ -207,13 +212,14 @@ html,
   border: 1px solid var(--border-primary);
   padding: 10px;
   text-align: left;
-  font-family: monospace, "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: "DejaVu Sans Mono", monospace;
   font-size: 16px;
   background-color: var(--bg-editor);
   color: var(--color-text-editor);
   resize: none;
   overflow: auto; /* Enable scrolling */
   box-sizing: border-box;
+  font-variant-emoji: text;
 }
 
 /* Preview Parallel */
@@ -322,7 +328,8 @@ html,
   height: 37.5vh;
   overflow: auto; /* Enable scrolling */
   box-sizing: border-box;
-  font-family: monospace, "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: "DejaVu Sans Mono", monospace;
+  font-variant-emoji: text;
 }
 
 /* Horizontal Previewer */
@@ -496,17 +503,22 @@ html,
   min-width: 220px;
 }
 
-/* Compact two-column layout for symbols dropdown */
+/* Compact four-column layout for symbols dropdown */
 .symbols-dropdown {
-  width: 360px; /* wide enough to hold two columns */
+  width: 720px; /* wide enough to hold four columns */
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0;
   align-items: start;
 }
 
 .symbols-dropdown .dropdown-item {
   padding: 6px 10px; /* slightly smaller padding for denser layout */
+}
+
+.symbols-dropdown .hdr-title {
+  font-variant-emoji: text;
+  font-family: Arial, sans-serif;
 }
 
 /* Hide separators inside the compact symbols dropdown to reduce visual noise */

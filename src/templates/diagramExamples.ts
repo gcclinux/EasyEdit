@@ -1,13 +1,13 @@
 export function buildDiagramExamplesTemplate(): string {
   return `
-## Notes
+## Examples
 
 - **Mermaid** diagrams are rendered with full interactive capabilities
 - **PlantUML/Nomnoml** diagrams work offline and are lightweight
-- Both diagram types can be exported in various formats
-- Use the appropriate syntax based on your documentation needs
 
 **Use Case Diagram (Mermaid Flowchart Style)**
+
+<div align="center">   
 
 \`\`\`mermaid
 flowchart LR
@@ -38,6 +38,9 @@ flowchart LR
     E --> A
     end
 \`\`\`
+
+</div>
+
 ---
 **Use Case Diagram (PlantUML/Nomnoml Style)**
 
