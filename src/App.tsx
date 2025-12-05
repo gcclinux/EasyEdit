@@ -19,7 +19,8 @@ import {
   FaFileCode,
   FaFileAlt,
   FaLock,
-  FaPalette
+  FaPalette,
+  FaCodeBranch
 } from 'react-icons/fa';
 import { VscSymbolKeyword } from "react-icons/vsc";
 import { GoTasklist } from "react-icons/go";
@@ -105,6 +106,7 @@ import FooterDropdown from './components/FooterDropdown';
 import SymbolsDropdown from './components/SymbolsDropdown';
 import IconsDropdown from './components/IconsDropdown';
 import AutoDropdown from './components/AutoDropdown';
+import GitDropdown from './components/GitDropdown';
 import { buildDailyJournalTemplate } from './templates/dailyJournal';
 import { buildMeetingNotesTemplate } from './templates/meetingNotes';
 import { buildProjectPlanTemplate } from './templates/projectPlan';
@@ -121,8 +123,18 @@ import ImportThemeModal from './components/ImportThemeModal';
 import taskTemplates from './templates/tasks';
 import { encryptContent, decryptFile } from './cryptoHandler';
 import PasswordModal from './components/PasswordModal';
-import { loadTheme, getCurrentTheme, isCurrentThemeCustom } from './themeLoader';
+import { loadTheme, getCurrentTheme } from './themeLoader';
 import { saveCustomTheme } from './customThemeManager';
+import CloneModal from './components/CloneModal';
+import FileBrowserModal from './components/FileBrowserModal';
+import GitCredentialsModal from './components/GitCredentialsModal';
+import MasterPasswordModal from './components/MasterPasswordModal';
+import CommitModal from './components/CommitModal';
+import GitHistoryModal from './components/GitHistoryModal';
+import GitStatusIndicator from './components/GitStatusIndicator';
+import { gitManager } from './gitManager';
+import { gitCredentialManager } from './gitCredentialManager';
+import ToastContainer from './components/ToastContainer';
 
 const App = () => {
   const [documentHistory, setDocumentHistory] = useState<HistoryState[]>([]);
@@ -171,9 +183,12 @@ const App = () => {
   const [showTasksDropdown, setShowTasksDropdown] = useState(false);
   const tasksButtonRef = useRef<HTMLButtonElement | null>(null);
   const [tasksPos, setTasksPos] = useState<{ top: number; left: number; width: number } | null>(null);
+  const [showGitDropdown, setShowGitDropdown] = useState(false);
+  const gitButtonRef = useRef<HTMLButtonElement | null>(null);
+  const [gitPos, setGitPos] = useState<{ top: number; left: number; width: number } | null>(null);
   const [isEditFull, setIsEditFull] = useState<boolean>(false);
-  
   const [isPreviewFull, setIsPreviewFull] = useState<boolean>(false);
+  const lineHeightValue = useRef<number>(1);
   const [passwordModalConfig, setPasswordModalConfig] = useState<{
     open: boolean;
     title: string;
@@ -185,13 +200,89 @@ const App = () => {
     promptText: '',
     onSubmit: () => {},
   });
-  const lineHeightValue = useRef<number>(1);
+  const [cloneModalOpen, setCloneModalOpen] = useState(false);
+  const [fileBrowserModalOpen, setFileBrowserModalOpen] = useState(false);
+  const [repoFiles, setRepoFiles] = useState<string[]>([]);
+  const [currentRepoPath, setCurrentRepoPath] = useState<string | null>(null);
+  const [currentFilePath, setCurrentFilePath] = useState<string | null>(null);
+  const [isGitRepo, setIsGitRepo] = useState(false);
+  const [credentialsModalOpen, setCredentialsModalOpen] = useState(false);
+  const [masterPasswordModalOpen, setMasterPasswordModalOpen] = useState(false);
+  const [isMasterPasswordSetup, setIsMasterPasswordSetup] = useState(false);
+  const [hasStoredCredentials, setHasStoredCredentials] = useState(gitCredentialManager.hasCredentials());
+  const [pendingCredentialAction, setPendingCredentialAction] = useState<(() => void) | null>(null);
+  const [prefillCredentials, setPrefillCredentials] = useState<{ username: string; token: string } | null>(null);
+  const [, setCurrentDirHandle] = useState<any>(null); // For web File System Access API (reserved for future use)
+  const [confirmModalConfig, setConfirmModalConfig] = useState<{
+    open: boolean;
+    title: string;
+    message: string;
+    confirmLabel?: string;
+    cancelLabel?: string;
+    onConfirm: () => void;
+  }>({
+    open: false,
+    title: '',
+    message: '',
+    confirmLabel: 'Confirm',
+    cancelLabel: 'Cancel',
+    onConfirm: () => {},
+  });
+  
+  // Phase 4: Enhanced Git features
+  const [commitModalOpen, setCommitModalOpen] = useState(false);
+  const [gitHistoryModalOpen, setGitHistoryModalOpen] = useState(false);
+  const [gitStatus, setGitStatus] = useState<{ branch: string; modifiedCount: number; status: 'clean' | 'modified' | 'conflict' }>({
+    branch: '',
+    modifiedCount: 0,
+    status: 'clean'
+  });
+  const [commitHistory, setCommitHistory] = useState<any[]>([]);
+  const [modifiedFiles, setModifiedFiles] = useState<string[]>([]);
+  
+  // Toast notifications
+  const [toasts, setToasts] = useState<Array<{ id: number; message: string; type: 'success' | 'error' | 'info' | 'warning' }>>([]);
+  const toastIdCounter = useRef(0);
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info') => {
+    const id = toastIdCounter.current++;
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id: number) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
 
   // Detect Electron environment and add class to body for CSS targeting
   useEffect(() => {
     if (typeof window !== 'undefined' && (window as any).electronAPI) {
       document.body.classList.add('electron-app');
     }
+  }, []);
+
+  // Check for saved credentials on startup
+  useEffect(() => {
+    const checkCredentials = () => {
+      const hasCredentials = gitCredentialManager.hasCredentials();
+      const isUnlocked = gitCredentialManager.isUnlocked();
+      
+      if (hasCredentials && !isUnlocked) {
+        console.log('[App] Saved credentials found but locked. User will be prompted when needed.');
+      }
+    };
+    
+    // Check for saved repository directory
+    const checkRepo = () => {
+      const savedRepoDir = gitManager.getRepoDir();
+      if (savedRepoDir) {
+        console.log('[App] Restored repository from session:', savedRepoDir);
+        setIsGitRepo(true);
+        setCurrentRepoPath(savedRepoDir);
+      }
+    };
+    
+    checkCredentials();
+    checkRepo();
   }, []);
 
   // Selection state fixing the issue with the Headers selection
@@ -253,6 +344,8 @@ const App = () => {
     setHelpPos(null);
     setShowTasksDropdown(false);
     setTasksPos(null);
+    setShowGitDropdown(false);
+    setGitPos(null);
   };
 
   // Click-away listener to close dropdowns when clicking outside
@@ -330,6 +423,25 @@ const App = () => {
   useEffect(() => {
     initializeMermaid();
   }, [editorContent, initializeMermaid]);
+
+  // Add keyboard event handler for Ctrl+S
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Ctrl+S or Cmd+S
+      if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+        event.preventDefault();
+        if (isGitRepo && currentFilePath) {
+          handleGitSave();
+        } else {
+          // Fallback to regular save
+          showToast('Use File menu to save, or clone a Git repository to enable Ctrl+S', 'info');
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isGitRepo, currentFilePath, editorContent, currentRepoPath]);
 
   // Handle change function for the textarea
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -702,9 +814,492 @@ const App = () => {
     insertUMLStateDiagram(textareaRef, editorContent, setEditorContent, cursorPositionRef);
   };
 
-  
+  // Credential management handlers
+  const handleSetupCredentials = () => {
+    if (!gitCredentialManager.hasMasterPassword()) {
+      // Need to create master password first
+      setIsMasterPasswordSetup(true);
+      setMasterPasswordModalOpen(true);
+    } else if (!gitCredentialManager.isUnlocked()) {
+      // Need to unlock with master password
+      setIsMasterPasswordSetup(false);
+      setPendingCredentialAction(() => async () => {
+        try {
+          const creds = await gitCredentialManager.getCredentials();
+          if (creds) {
+            setPrefillCredentials({ username: creds.username, token: creds.token });
+          }
+        } catch (e) {
+          console.error('Failed to load credentials for prefill:', e);
+        }
+        setCredentialsModalOpen(true);
+      });
+      setMasterPasswordModalOpen(true);
+    } else {
+      // Already unlocked, show credentials modal
+      (async () => {
+        try {
+          const creds = await gitCredentialManager.getCredentials();
+          if (creds) {
+            setPrefillCredentials({ username: creds.username, token: creds.token });
+          }
+        } catch (e) {
+          console.error('Failed to load credentials for prefill:', e);
+        }
+        setCredentialsModalOpen(true);
+      })();
+    }
+  };
 
-  // SaveAsPDF function
+  const handleMasterPasswordSubmit = async (password: string) => {
+    setMasterPasswordModalOpen(false);
+    
+    try {
+      if (isMasterPasswordSetup) {
+        // Creating new master password
+        await gitCredentialManager.setMasterPassword(password);
+        showToast('Master password created successfully!', 'success');
+        setCredentialsModalOpen(true);
+      } else {
+        // Unlocking with existing master password
+        const unlocked = await gitCredentialManager.unlock(password);
+        if (unlocked) {
+          showToast('Credentials unlocked! Stored credentials will work until you close the browser.', 'success');
+          if (pendingCredentialAction) {
+            pendingCredentialAction();
+            setPendingCredentialAction(null);
+          }
+        } else {
+          showToast('Invalid password. Please try again.', 'error');
+        }
+      }
+    } catch (error) {
+      showToast(`Error: ${(error as Error).message}`, 'error');
+    }
+  };
+
+  const handleCredentialsSubmit = async (username: string, token: string, rememberMe: boolean) => {
+    setCredentialsModalOpen(false);
+    setPrefillCredentials(null);
+    
+    try {
+      const credentials = { username, token };
+      
+      // Set credentials in gitManager for immediate use
+      gitManager.setCredentials(credentials);
+      
+      if (rememberMe) {
+        // Save encrypted credentials
+        await gitCredentialManager.saveCredentials(credentials, true);
+        setHasStoredCredentials(true);
+        showToast('Credentials saved securely!', 'success');
+      } else {
+        showToast('Credentials set for this session only.', 'info');
+      }
+    } catch (error) {
+      showToast(`Failed to save credentials: ${(error as Error).message}`, 'error');
+    }
+  };
+
+  const handleClearCredentials = async () => {
+    setConfirmModalConfig({
+      open: true,
+      title: 'Clear Saved Credentials',
+      message: 'Are you sure you want to clear saved credentials? You will need to enter them again.',
+      confirmLabel: 'Clear Credentials',
+      cancelLabel: 'Cancel',
+      onConfirm: async () => {
+        try {
+          await gitCredentialManager.clearCredentials();
+          gitManager.clearCredentials();
+          setHasStoredCredentials(false);
+          showToast('Credentials cleared successfully.', 'success');
+        } catch (error) {
+          showToast(`Failed to clear credentials: ${(error as Error).message}`, 'error');
+        }
+      },
+    });
+  };
+
+  const ensureCredentials = async (action: () => Promise<void>) => {
+    // Check if we have stored credentials
+    if (!gitCredentialManager.hasCredentials()) {
+      // No stored credentials, prompt user to set them up
+      setPendingCredentialAction(() => action);
+      handleSetupCredentials();
+      return false;
+    }
+    
+    // Check if credential manager is unlocked
+    if (!gitCredentialManager.isUnlocked()) {
+      // Credentials exist but need to unlock with master password via modal
+      setPendingCredentialAction(() => action);
+      setIsMasterPasswordSetup(false);
+      setMasterPasswordModalOpen(true);
+      return false;
+    }
+    
+    // Try to load stored credentials
+    const loaded = await gitManager.loadStoredCredentials();
+    
+    if (!loaded) {
+      showToast('Failed to load credentials. Please set up credentials again.', 'error');
+      setPendingCredentialAction(() => action);
+      handleSetupCredentials();
+      return false;
+    }
+    
+    return true;
+  };
+
+  // Git operation handlers
+  const handleGitClone = () => {
+    setCloneModalOpen(true);
+  };
+
+  const handleCloneSubmit = async (url: string, targetDir: string, branch?: string) => {
+    setCloneModalOpen(false);
+    
+    console.log('=== Clone Submit Handler ===');
+    console.log('URL:', url);
+    console.log('Target Dir:', targetDir);
+    console.log('Branch:', branch);
+    
+    try {
+      // Show loading state
+      showToast('Cloning repository... This may take a moment.', 'info');
+      
+      // Check if we're using web File System Access API
+      const dirHandle = (window as any).selectedDirHandle;
+      console.log('Dir handle available:', !!dirHandle);
+      
+      if (dirHandle) {
+        setCurrentDirHandle(dirHandle);
+        gitManager.setDirHandle(dirHandle);
+        console.log('Dir handle set in gitManager');
+      }
+      
+      // Perform clone operation
+      console.log('Calling gitManager.clone()...');
+      await gitManager.clone(url, targetDir, {
+        singleBranch: true,
+        depth: 1,
+        ref: branch,
+      });
+      console.log('gitManager.clone() returned successfully');
+      
+      setCurrentRepoPath(targetDir);
+      setIsGitRepo(true);
+      
+      // Get list of markdown files
+      console.log('Getting repo files...');
+      const files = await gitManager.getRepoFiles();
+      console.log('Found', files.length, 'markdown files:', files);
+      setRepoFiles(files);
+      
+      // Open file browser
+      setFileBrowserModalOpen(true);
+      
+      showToast('Repository cloned successfully!', 'success');
+      console.log('=== Clone Completed Successfully ===');
+    } catch (error) {
+      console.error('=== Clone Failed in Handler ===');
+      console.error('Error:', error);
+      showToast(`Failed to clone repository: ${(error as Error).message}`,'error');
+    }
+  };
+
+  const handleFileSelect = async (filePath: string) => {
+    setFileBrowserModalOpen(false);
+    
+    if (!currentRepoPath) return;
+    
+    try {
+      let content: string;
+      let fullPath: string;
+      
+      console.log('[App] Opening file:', filePath);
+      console.log('[App] Current repo path:', currentRepoPath);
+      console.log('[App] Is Electron:', !!(window as any).electronAPI);
+      
+      // Check if running in Electron or web
+      if ((window as any).electronAPI) {
+        // Electron: use Node.js fs module
+        const fs = await import('fs');
+        const path = await import('path');
+        fullPath = path.join(currentRepoPath, filePath);
+        console.log('[App] Reading from disk:', fullPath);
+        content = await fs.promises.readFile(fullPath, 'utf-8');
+      } else {
+        // Web: use gitManager which reads from LightningFS
+        console.log('[App] Reading from LightningFS via gitManager');
+        content = await gitManager.readFile(filePath);
+        fullPath = filePath;
+      }
+      
+      console.log('[App] File content loaded, length:', content.length);
+      setEditorContent(content);
+      setCurrentFilePath(fullPath);
+      
+      showToast(`Opened: ${filePath}`,'success');
+    } catch (error) {
+      showToast(`Failed to open file: ${(error as Error).message}`,'error');
+      console.error('File open error:', error);
+    }
+  };
+
+  const handleGitPull = async () => {
+    if (!isGitRepo) {
+      showToast('No active Git repository. Please clone a repository first.', 'info');
+      return;
+    }
+    
+    try {
+      await gitManager.pull();
+      showToast('Successfully pulled latest changes!', 'success');
+    } catch (error) {
+      showToast(`Failed to pull changes: ${(error as Error).message}`,'error');
+      console.error('Pull error:', error);
+    }
+  };
+
+  const handleGitPush = async () => {
+    if (!isGitRepo) {
+      showToast('No active Git repository. Please clone a repository first.', 'info');
+      return;
+    }
+    
+    const hasCredentials = await ensureCredentials(async () => {
+      try {
+        await gitManager.push();
+        showToast('Successfully pushed changes!', 'success');
+      } catch (error) {
+        showToast(`Failed to push changes: ${(error as Error).message}`,'error');
+        console.error('Push error:', error);
+      }
+    });
+    
+    if (hasCredentials) {
+      try {
+        await gitManager.push();
+        showToast('Successfully pushed changes!', 'success');
+      } catch (error) {
+        showToast(`Failed to push changes: ${(error as Error).message}`,'error');
+        console.error('Push error:', error);
+      }
+    }
+  };
+
+  const handleGitFetch = async () => {
+    if (!isGitRepo) {
+      showToast('No active Git repository. Please clone a repository first.', 'info');
+      return;
+    }
+    
+    try {
+      await gitManager.fetch();
+      showToast('Successfully fetched updates!', 'success');
+    } catch (error) {
+      showToast(`Failed to fetch updates: ${(error as Error).message}`,'error');
+      console.error('Fetch error:', error);
+    }
+  };
+
+  const handleGitCommit = async () => {
+    if (!isGitRepo) {
+      showToast('No active Git repository. Please clone a repository first.', 'info');
+      return;
+    }
+    
+    try {
+      // Get modified files
+      const status = await gitManager.status();
+      const modified = [...status.modified, ...status.staged, ...status.untracked];
+      setModifiedFiles(modified);
+      setCommitModalOpen(true);
+    } catch (error) {
+      showToast(`Failed to get repository status: ${(error as Error).message}`,'error');
+      console.error('Status error:', error);
+    }
+  };
+
+  const handleCommitSubmit = async (message: string, description?: string) => {
+    try {
+      const fullMessage = description ? `${message}\n\n${description}` : message;
+      await gitManager.commit(fullMessage);
+      showToast('Successfully committed changes!','success');
+      setCommitModalOpen(false);
+      // If credentials are configured, automatically push after a successful commit
+      try {
+        await handleGitPush();
+      } catch (pushError) {
+        // handleGitPush already shows toasts; just log here
+        console.error('Auto-push after commit failed:', pushError);
+      }
+      await updateGitStatus(); // Refresh status after commit
+    } catch (error) {
+      showToast(`Failed to commit: ${(error as Error).message}`,'error');
+      console.error('Commit error:', error);
+    }
+  };
+
+  const handleGitSave = async () => {
+    if (!currentFilePath) {
+      showToast('No file is currently open from a Git repository.', 'warning');
+      return;
+    }
+    
+    try {
+      let relativePath: string;
+      
+      console.log('[App] Saving file:', currentFilePath);
+      console.log('[App] Current repo path:', currentRepoPath);
+      console.log('[App] Is Electron:', !!(window as any).electronAPI);
+      
+      // Check if running in Electron or web
+      if ((window as any).electronAPI) {
+        // Electron: use Node.js fs module
+        const fs = await import('fs');
+        const path = await import('path');
+        
+        // Write file to disk
+        console.log('[App] Writing to disk:', currentFilePath);
+        await fs.promises.writeFile(currentFilePath, editorContent, 'utf-8');
+        
+        // Get relative path for git add
+        relativePath = path.relative(currentRepoPath!, currentFilePath);
+      } else {
+        // Web: use gitManager which writes to LightningFS and syncs to File System
+        console.log('[App] Writing via gitManager');
+        relativePath = currentFilePath;
+        await gitManager.writeFile(relativePath, editorContent);
+      }
+      
+      console.log('[App] File saved, staging:', relativePath);
+      
+      // Stage the file
+      await gitManager.add(relativePath);
+      
+      console.log('[App] File staged successfully');
+      showToast(`Saved and staged: ${relativePath}`,'success');
+      await updateGitStatus(); // Refresh status after save
+    } catch (error) {
+      showToast(`Failed to save and stage file: ${(error as Error).message}`,'error');
+      console.error('Save error:', error);
+    }
+  };
+
+  const handleSaveStageCommitPush = async () => {
+    if (!isGitRepo) {
+      showToast('No active Git repository. Please clone a repository first.', 'info');
+      return;
+    }
+
+    if (!currentFilePath) {
+      showToast('No file is currently open from a Git repository.', 'warning');
+      return;
+    }
+
+    try {
+      // First save and stage the current file
+      await handleGitSave();
+
+      // Open the commit modal so the user can enter a message
+      await handleGitCommit();
+
+      // Note: the actual push will be triggered from the commit handler
+      // once a commit is successfully created.
+    } catch (error) {
+      console.error('Save/Commit/Push error:', error);
+      showToast(`Failed to save and prepare commit: ${(error as Error).message}`,'error');
+    }
+  };
+
+  // Phase 4: Git status update
+  const updateGitStatus = async () => {
+    if (!isGitRepo || !currentRepoPath) {
+      setGitStatus({ branch: '', modifiedCount: 0, status: 'clean' });
+      return;
+    }
+
+    try {
+      const branch = await gitManager.getCurrentBranch();
+      const status = await gitManager.status();
+      const modifiedCount = status.modified.length + status.staged.length + status.untracked.length;
+      
+      setGitStatus({
+        branch: branch || 'main',
+        modifiedCount,
+        status: modifiedCount > 0 ? 'modified' : 'clean'
+      });
+    } catch (error) {
+      console.error('Failed to update git status:', error);
+    }
+  };
+
+  // Phase 4: View commit history
+  const handleViewHistory = async () => {
+    if (!isGitRepo) {
+      showToast('No active Git repository. Please clone a repository first.', 'info');
+      return;
+    }
+
+    try {
+      const commits = await gitManager.log(20); // Get last 20 commits
+      setCommitHistory(commits);
+      setGitHistoryModalOpen(true);
+    } catch (error) {
+      showToast(`Failed to retrieve commit history: ${(error as Error).message}`,'error');
+      console.error('History error:', error);
+    }
+  };
+
+  // Phase 4: Initialize new repository
+  const handleInitRepo = async () => {
+    try {
+      const dirPath = await (window as any).electronAPI.selectDirectory();
+      if (!dirPath) return;
+      setConfirmModalConfig({
+        open: true,
+        title: 'Initialize Git Repository',
+        message: `Initialize a new Git repository in:\n${dirPath}\n\nThis will create a .git directory and an initial commit with README.md.`,
+        confirmLabel: 'Initialize Repo',
+        cancelLabel: 'Cancel',
+        onConfirm: async () => {
+          try {
+            await gitManager.init(dirPath, true);
+            setCurrentRepoPath(dirPath);
+            setIsGitRepo(true);
+            showToast('Repository initialized successfully!','success');
+            await updateGitStatus();
+          } catch (error) {
+            showToast(`Failed to initialize repository: ${(error as Error).message}`,'error');
+            console.error('Init error:', error);
+          }
+        },
+      });
+    } catch (error) {
+      showToast(`Failed to initialize repository: ${(error as Error).message}`,'error');
+      console.error('Init error:', error);
+    }
+  };
+
+  // Phase 4: Create .gitignore file
+  const handleCreateGitignore = async () => {
+    if (!currentRepoPath) {
+      showToast('No active Git repository. Please clone or initialize a repository first.','info');
+      return;
+    }
+    try {
+      await gitManager.createGitignore(currentRepoPath, 'general');
+      showToast('.gitignore created (or updated) for this repository.','success');
+      await updateGitStatus();
+    } catch (error) {
+      showToast(`Failed to create .gitignore: ${(error as Error).message}`,'error');
+      console.error('Gitignore error:', error);
+    }
+  };
+
   const handleSaveAsPDF = () => {
     saveAsPDF(editorContent);
   };
@@ -758,6 +1353,43 @@ const App = () => {
     }
   }, [editorContent, historyIndex]);
 
+  // Phase 4: Update Git status when repo changes
+  useEffect(() => {
+    if (isGitRepo && currentRepoPath) {
+      updateGitStatus();
+    }
+  }, [isGitRepo, currentRepoPath]);
+
+  // Helper (Electron-only): detect git repo root by walking up from a file path
+  const detectRepoFromFilePath = (filePath: string) => {
+    try {
+      if (!(window as any).electronAPI) return;
+      // Use Node path/fs via require which are only available in Electron
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const path = require('path');
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const fs = require('fs');
+
+      let currentDir = path.dirname(path.resolve(filePath));
+      const root = path.parse(currentDir).root;
+
+      while (true) {
+        const gitDir = path.join(currentDir, '.git');
+        if (fs.existsSync(gitDir)) {
+          setCurrentRepoPath(currentDir);
+          setIsGitRepo(true);
+          gitManager.setRepoDir(currentDir);
+          updateGitStatus();
+          return;
+        }
+        if (currentDir === root) break;
+        currentDir = path.dirname(currentDir);
+      }
+    } catch (e) {
+      console.error('Failed to auto-detect git repo from file path:', e);
+    }
+  };
+
   // Add this function near other utility functions
   const getEditorPreviewContainerClass = () => {
     if (isEditFull) {
@@ -803,7 +1435,29 @@ const App = () => {
                 <button
                   className="dropdown-item"
                   onClick={() => {
-                    handleOpenClick(setEditorContent);
+                    handleOpenClick((content: string, filePath?: string | null) => {
+                      setEditorContent(content);
+                      if (filePath && (window as any).electronAPI) {
+                        // If we already know the repo root, only attach file if under that repo.
+                        if (currentRepoPath) {
+                          // eslint-disable-next-line @typescript-eslint/no-var-requires
+                          const path = require('path');
+                          const normalizedRepo = path.resolve(currentRepoPath);
+                          const normalizedFile = path.resolve(filePath);
+                          if (normalizedFile.startsWith(normalizedRepo + path.sep)) {
+                            setCurrentFilePath(filePath);
+                            if (!isGitRepo) {
+                              setIsGitRepo(true);
+                            }
+                            updateGitStatus();
+                          }
+                        } else {
+                          // No repo known yet: try to auto-detect by walking up to find .git
+                          setCurrentFilePath(filePath);
+                          detectRepoFromFilePath(filePath);
+                        }
+                      }
+                    });
                     setShowHelpDropdown(false);
                   }}
                 >
@@ -860,10 +1514,10 @@ const App = () => {
                       // Try to copy to clipboard as a last-resort fallback and inform the user
                       try {
                         await navigator.clipboard.writeText(url);
-                        alert('Unable to open link automatically. The URL has been copied to your clipboard:\n' + url);
+                        showToast('Unable to open link automatically. The URL has been copied to your clipboard.','warning');
                       } catch (e) {
-                        // If clipboard isn't available, just show the URL to the user
-                        alert('Unable to open or copy link automatically. Please open this URL manually:\n' + url);
+                        // If clipboard isn't available, just show a message to the user
+                        showToast('Unable to open or copy link automatically. Please open the URL manually from the address bar.','error');
                       }
                     }
 
@@ -893,10 +1547,10 @@ const App = () => {
                       // Try to copy to clipboard as a last-resort fallback and inform the user
                       try {
                         await navigator.clipboard.writeText(url);
-                        alert('Unable to open link automatically. The URL has been copied to your clipboard:\n' + url);
+                        showToast('Unable to open link automatically. The URL has been copied to your clipboard.','warning');
                       } catch (e) {
-                        // If clipboard isn't available, just show the URL to the user
-                        alert('Unable to open or copy link automatically. Please open this URL manually:\n' + url);
+                        // If clipboard isn't available, just show a message to the user
+                        showToast('Unable to open or copy link automatically. Please open the URL manually from the address bar.','error');
                       }
                     }
 
@@ -918,6 +1572,64 @@ const App = () => {
               </div>, document.body
             )}
           </div>
+          <div className="dropdown-container">
+            <button
+              className="help-menubar-btn"
+              ref={el => { gitButtonRef.current = el; }}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                closeAllDropdowns();
+                setShowGitDropdown(true);
+                if (gitButtonRef.current) {
+                  const rect = gitButtonRef.current.getBoundingClientRect();
+                  const scrollX = window.scrollX || window.pageXOffset || 0;
+                  const scrollY = window.scrollY || window.pageYOffset || 0;
+                  const dropdownMin = 140;
+                  const dropdownWidth = Math.max(rect.width, dropdownMin);
+                  let leftPos = rect.left + scrollX + (rect.width - dropdownWidth) / 2;
+                  leftPos = Math.max(0, leftPos);
+                  setGitPos({ top: rect.bottom + scrollY, left: leftPos, width: dropdownWidth });
+                } else {
+                  setGitPos(null);
+                }
+              }}
+              title="Git Operations"
+            >
+              <FaCodeBranch /> &nbsp; Git ▾
+            </button>
+            {showGitDropdown && gitPos && createPortal(
+              <div className="header-dropdown format-dropdown" style={{ position: 'absolute', top: gitPos.top + 'px', left: gitPos.left + 'px', zIndex: 999999, minWidth: gitPos.width + 'px' }}>
+                <GitDropdown
+                  onClone={handleGitClone}
+                  onPull={handleGitPull}
+                  onPush={handleGitPush}
+                  onFetch={handleGitFetch}
+                  onCommit={handleGitCommit}
+                  onSave={handleGitSave}
+                  onSaveCommitPush={handleSaveStageCommitPush}
+                  onSetupCredentials={handleSetupCredentials}
+                  onClearCredentials={handleClearCredentials}
+                  onViewHistory={handleViewHistory}
+                  onInitRepo={handleInitRepo}
+                  onCreateGitignore={handleCreateGitignore}
+                  hasCredentials={hasStoredCredentials}
+                  onClose={() => {
+                    setShowGitDropdown(false);
+                    setGitPos(null);
+                  }}
+                />
+              </div>,
+              document.body
+            )}
+          </div>
+          {isGitRepo && (
+            <GitStatusIndicator
+              isActive={isGitRepo}
+              branchName={gitStatus.branch}
+              modifiedCount={gitStatus.modifiedCount}
+              status={gitStatus.status}
+            />
+          )}
         <button className="menu-item fixed-menubar-btn" onClick={toggleEdit}>
           <FaExchangeAlt /> &nbsp; Toggle Edit
         </button>
@@ -933,7 +1645,11 @@ const App = () => {
           </button>
           <button
             className="menu-item fixed-menubar-btn"
-            onClick={() => handleClear(setEditorContent)}
+            onClick={() => {
+              handleClear(setEditorContent);
+              setCurrentFilePath(null);
+              setGitStatus({ branch: '', modifiedCount: 0, status: 'clean' });
+            }}
           >
             <FaTrash /> &nbsp; Clear
           </button>
@@ -1099,6 +1815,44 @@ const App = () => {
             onSubmit={passwordModalConfig.onSubmit}
             title={passwordModalConfig.title}
             promptText={passwordModalConfig.promptText}
+          />
+          <CloneModal
+            open={cloneModalOpen}
+            onClose={() => setCloneModalOpen(false)}
+            onSubmit={handleCloneSubmit}
+          />
+          <FileBrowserModal
+            open={fileBrowserModalOpen}
+            onClose={() => setFileBrowserModalOpen(false)}
+            onSelectFile={handleFileSelect}
+            files={repoFiles}
+            repoPath={currentRepoPath || ''}
+          />
+          <GitCredentialsModal
+            open={credentialsModalOpen}
+            onClose={() => setCredentialsModalOpen(false)}
+            onSubmit={handleCredentialsSubmit}
+            isSetup={!hasStoredCredentials}
+            initialUsername={prefillCredentials?.username}
+            initialToken={prefillCredentials?.token}
+          />
+          <MasterPasswordModal
+            open={masterPasswordModalOpen}
+            onClose={() => setMasterPasswordModalOpen(false)}
+            onSubmit={handleMasterPasswordSubmit}
+            isSetup={isMasterPasswordSetup}
+          />
+          <CommitModal
+            open={commitModalOpen}
+            onClose={() => setCommitModalOpen(false)}
+            onSubmit={handleCommitSubmit}
+            modifiedFiles={modifiedFiles}
+          />
+          <GitHistoryModal
+            open={gitHistoryModalOpen}
+            onClose={() => setGitHistoryModalOpen(false)}
+            commits={commitHistory}
+            repoPath={currentRepoPath || ''}
           />
 
           <div className="menubar-bottom">
@@ -1565,6 +2319,39 @@ const App = () => {
             setSelectionEnd={setSelectionEnd}
             cachedSelection={cachedSelection}
           />
+        )}
+
+        {/* Toast Notifications */}
+        <ToastContainer toasts={toasts} onRemove={removeToast} />
+
+        {/* Confirmation Modal */}
+        {confirmModalConfig.open && (
+          <div className="modal-overlay">
+            <div className="modal-dialog">
+              <h2>{confirmModalConfig.title}</h2>
+              <p style={{ whiteSpace: 'pre-wrap' }}>{confirmModalConfig.message}</p>
+              <div className="modal-actions">
+                <button
+                  className="modal-button cancel"
+                  onClick={() => setConfirmModalConfig(prev => ({ ...prev, open: false }))}
+                >
+                  {confirmModalConfig.cancelLabel || 'Cancel'}
+                </button>
+                <button
+                  className="modal-button primary"
+                  onClick={async () => {
+                    const action = confirmModalConfig.onConfirm;
+                    setConfirmModalConfig(prev => ({ ...prev, open: false }));
+                    if (action) {
+                      await action();
+                    }
+                  }}
+                >
+                  {confirmModalConfig.confirmLabel || 'Confirm'}
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
       </div>

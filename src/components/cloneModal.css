@@ -1,0 +1,129 @@
+.clone-modal {
+  text-align: left;
+  min-width: 500px;
+  max-width: 600px;
+}
+
+.clone-modal h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.clone-modal p {
+  margin-bottom: 20px;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.clone-input-group {
+  margin-bottom: 20px;
+}
+
+.clone-input-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: var(--color-text-primary);
+}
+
+.clone-input-group input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border-input);
+  background-color: var(--bg-input);
+  color: var(--color-text-primary);
+  box-sizing: border-box;
+}
+
+.directory-input-container {
+  display: flex;
+  gap: 8px;
+}
+
+.directory-input-container input {
+  flex: 1;
+}
+
+.directory-select-btn {
+  padding: 10px 20px;
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  background-color: var(--bg-button-secondary);
+  color: var(--color-text-button);
+  cursor: pointer;
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+.directory-select-btn:hover {
+  background-color: var(--bg-button-hover);
+}
+
+.advanced-toggle {
+  margin-bottom: 15px;
+}
+
+.toggle-button {
+  background: transparent;
+  border: none;
+  color: var(--color-text-link);
+  cursor: pointer;
+  padding: 5px;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+.toggle-button:hover {
+  color: var(--color-text-primary);
+}
+
+.advanced-options {
+  padding: 15px;
+  background-color: var(--bg-code-block);
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.cancel-button {
+  background-color: var(--bg-button-secondary);
+  color: var(--color-text-button);
+}
+
+.cancel-button:hover {
+  background-color: var(--bg-button-hover);
+}
+
+.submit-button {
+  background: linear-gradient(135deg, var(--btn-menu-gradient-start) 0%, var(--btn-menu-gradient-end) 100%);
+  color: var(--color-text-button);
+}
+
+.submit-button:hover {
+  opacity: 0.9;
+}
+
+.submit-button.submit-button-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(40%);
+}
+
+.submit-button.submit-button-active {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+}

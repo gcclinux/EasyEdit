@@ -1,0 +1,228 @@
+.git-history-modal {
+  text-align: left;
+  min-width: 700px;
+  max-width: 800px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.git-history-modal h2 {
+  margin-top: 0;
+  text-align: center;
+  color: var(--color-text-primary);
+}
+
+.repo-path {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 0.9em;
+  margin-bottom: 20px;
+  word-break: break-all;
+}
+
+.history-container {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  background-color: var(--bg-input);
+  max-height: 500px;
+  min-height: 300px;
+}
+
+.commits-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.commit-item {
+  padding: 15px;
+  border-bottom: 1px solid var(--border-secondary);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.commit-item:hover {
+  background-color: var(--bg-hover);
+}
+
+.commit-item.selected {
+  background-color: var(--bg-selected);
+  border-left: 3px solid var(--color-text-link);
+}
+
+.commit-item:last-child {
+  border-bottom: none;
+}
+
+.commit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.commit-hash {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: monospace;
+  color: var(--color-text-link);
+  font-weight: 600;
+}
+
+.commit-icon {
+  font-size: 0.9em;
+}
+
+.commit-hash code {
+  background-color: var(--bg-code-block);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.95em;
+}
+
+.commit-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85em;
+  color: var(--color-text-secondary);
+}
+
+.time-icon {
+  font-size: 0.9em;
+}
+
+.commit-message {
+  margin: 8px 0;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.commit-author {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9em;
+  color: var(--color-text-secondary);
+}
+
+.author-icon {
+  font-size: 0.85em;
+}
+
+.author-email {
+  font-family: monospace;
+  font-size: 0.95em;
+}
+
+.commit-details {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-secondary);
+}
+
+.detail-row {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.detail-row strong {
+  color: var(--color-text-primary);
+  font-size: 0.9em;
+}
+
+.full-hash {
+  font-family: monospace;
+  font-size: 0.85em;
+  background-color: var(--bg-code-block);
+  padding: 4px 8px;
+  border-radius: 3px;
+  word-break: break-all;
+  color: var(--color-text-primary);
+}
+
+.full-message {
+  font-family: monospace;
+  font-size: 0.9em;
+  background-color: var(--bg-code-block);
+  padding: 10px;
+  border-radius: 3px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.no-commits {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.no-commits p {
+  font-style: italic;
+  font-size: 1.1em;
+}
+
+.history-footer {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-secondary);
+  text-align: right;
+}
+
+.commit-count {
+  font-size: 0.9em;
+  color: var(--color-text-secondary);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.modal-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.close-button {
+  background: linear-gradient(135deg, var(--btn-menu-gradient-start) 0%, var(--btn-menu-gradient-end) 100%);
+  color: var(--color-text-button);
+}
+
+.close-button:hover {
+  opacity: 0.9;
+}
+
+/* Scrollbar styling */
+.history-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.history-container::-webkit-scrollbar-track {
+  background: var(--bg-code-block);
+}
+
+.history-container::-webkit-scrollbar-thumb {
+  background: var(--border-input);
+  border-radius: 4px;
+}
+
+.history-container::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}

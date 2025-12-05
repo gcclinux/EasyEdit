@@ -1,0 +1,203 @@
+.commit-modal {
+  text-align: left;
+  min-width: 600px;
+  max-width: 700px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.commit-modal h2 {
+  margin-top: 0;
+  text-align: center;
+  color: var(--color-text-primary);
+}
+
+.modal-description {
+  text-align: center;
+  color: var(--color-text-secondary);
+  margin-bottom: 20px;
+  font-size: 0.95em;
+}
+
+.modified-files-section {
+  background-color: var(--bg-input);
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.modified-files-section h3 {
+  margin: 0 0 10px 0;
+  font-size: 0.9em;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.modified-files-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.modified-files-list li {
+  padding: 5px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9em;
+  color: var(--color-text-primary);
+}
+
+.file-icon {
+  font-size: 1em;
+  flex-shrink: 0;
+}
+
+.file-path {
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.commit-input-group {
+  margin-bottom: 20px;
+}
+
+.commit-input-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: var(--color-text-primary);
+}
+
+.required {
+  color: #dc3545;
+}
+
+.optional {
+  color: var(--color-text-secondary);
+  font-weight: normal;
+  font-size: 0.9em;
+}
+
+.commit-input-group input[type="text"],
+.commit-input-group textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border-input);
+  background-color: var(--bg-input);
+  color: var(--color-text-primary);
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.commit-input-group textarea {
+  resize: vertical;
+  font-family: monospace;
+  line-height: 1.5;
+}
+
+.char-counter {
+  text-align: right;
+  font-size: 0.85em;
+  margin-top: 5px;
+  color: var(--color-text-secondary);
+}
+
+.char-counter .warning {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.error-message {
+  padding: 12px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  color: #721c24;
+  margin-bottom: 15px;
+  font-size: 0.9em;
+}
+
+.commit-tips {
+  padding: 15px;
+  background-color: var(--bg-input);
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-size: 0.9em;
+}
+
+.commit-tips strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--color-text-primary);
+}
+
+.commit-tips ul {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--color-text-primary);
+}
+
+.commit-tips li {
+  margin-bottom: 4px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.modal-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cancel-button {
+  background-color: var(--bg-button-secondary);
+  color: var(--color-text-button);
+}
+
+.cancel-button:hover:not(:disabled) {
+  background-color: var(--bg-button-hover);
+}
+
+.submit-button {
+  background: linear-gradient(135deg, var(--btn-menu-gradient-start) 0%, var(--btn-menu-gradient-end) 100%);
+  color: var(--color-text-button);
+}
+
+.submit-button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+/* Scrollbar styling for modified files */
+.modified-files-section::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modified-files-section::-webkit-scrollbar-track {
+  background: var(--bg-input);
+}
+
+.modified-files-section::-webkit-scrollbar-thumb {
+  background: var(--border-input);
+  border-radius: 3px;
+}
+
+.modified-files-section::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
