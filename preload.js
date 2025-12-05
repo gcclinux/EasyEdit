@@ -3,6 +3,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('electronAPI', {
   openFile: () => ipcRenderer.invoke('dialog:openFile'),
   saveFile: (content) => ipcRenderer.invoke('dialog:saveFile', content),
+  selectDirectory: () => ipcRenderer.invoke('dialog:selectDirectory'),
   handleFileOpened: (callback) => ipcRenderer.on('file-opened', callback),
   handlePreviewSpacing: (callback) => {
     if (callback) {

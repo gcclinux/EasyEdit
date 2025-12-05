@@ -1,0 +1,73 @@
+.git-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 8px 15px;
+  background: linear-gradient(135deg, var(--bg-code-block) 0%, var(--bg-input) 100%);
+  border-radius: 6px;
+  border: 1px solid var(--border-secondary);
+  font-size: 0.9em;
+  margin: 5px 10px;
+}
+
+.git-branch-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.branch-icon {
+  font-size: 1em;
+  color: var(--color-text-link);
+}
+
+.branch-name {
+  font-family: monospace;
+  font-weight: 600;
+}
+
+.git-status-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-secondary);
+  border-left: 1px solid var(--border-secondary);
+  padding-left: 15px;
+}
+
+.status-dot {
+  font-size: 0.6em;
+  animation: pulse 2s infinite;
+}
+
+.status-text {
+  font-size: 0.95em;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .git-status-indicator {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .git-status-info {
+    border-left: none;
+    border-top: 1px solid var(--border-secondary);
+    padding-left: 0;
+    padding-top: 8px;
+    width: 100%;
+  }
+}

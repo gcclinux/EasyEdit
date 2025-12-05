@@ -274,6 +274,17 @@ function setupIPCHandlers() {
       return filePath;
     }
   });
+
+  ipcMain.handle('dialog:selectDirectory', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      properties: ['openDirectory', 'createDirectory']
+    });
+
+    if (!canceled && filePaths.length > 0) {
+      return filePaths[0];
+    }
+    return null;
+  });
 }
 
 // Support opening external links from renderer safely when running inside Electron

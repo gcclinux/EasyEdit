@@ -125,7 +125,7 @@ export const saveToHTML = async (editorContent: string): Promise<void> => {
   };
 
 export const handleOpenClick = (
-    setEditorContent: (content: string) => void
+    setEditorContent: (content: string, filePath?: string | null) => void
   ): void => {
     const input = document.createElement("input");
     input.type = "file";
@@ -138,7 +138,8 @@ export const handleOpenClick = (
         reader.onload = (e) => {
           const contents = e.target?.result;
           if (typeof contents === "string") {
-            setEditorContent(contents);
+            // In the browser we don't have a real path; pass name only
+            setEditorContent(contents, (file as any).path || file.name || null);
           }
         };
         reader.readAsText(file);
