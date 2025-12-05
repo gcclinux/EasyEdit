@@ -113,6 +113,7 @@ import { buildTravelLogsTemplate } from './templates/travelLogs';
 import { buildWorkoutLogTemplate } from './templates/workoutLog';
 import { buildBugReportTemplate } from './templates/bugReport';
 import { buildDiagramExamplesTemplate } from './templates/diagramExamples';
+import { buildDiagramASCIITemplate } from './templates/diagramASCII';
 import AboutModal from './components/AboutModal';
 import FeaturesModal from './components/FeaturesModal';
 import ThemeModal from './components/ThemeModal';
@@ -461,26 +462,46 @@ const App = () => {
 
 
 // insertSymbol function inserts a symbol into the textarea
-  const insertSymbol3 = () => insertSymbol("&#8710;");
-  const insertSymbol4 = () => insertSymbol("&#8711;");
-  const insertSymbol5 = () => insertSymbol("&#8721;");
-  const insertSymbol6 = () => insertSymbol("&#8730;");
-  const insertSymbol7 = () => insertSymbol("&#8734;");
-  const insertSymbol8 = () => insertSymbol("&#8470;");
-  const insertSymbol9 = () => insertSymbol("&#8736;");
-  const insertSymbol11 = () => insertSymbol("&#8743;");
-  const insertSymbol12 = () => insertSymbol("&#8744;");
-  const insertSymbol17 = () => insertSymbol("&#8756;");
-  const insertSymbol18 = () => insertSymbol("&#8757;");
-  const insertSymbol19 = () => insertSymbol("&#8758;");
-  const insertSymbol20 = () => insertSymbol("&#8759;");
-  const insertSymbol21 = () => insertSymbol("&#8760;");
-  const insertSymbol22 = () => insertSymbol("&#8761;");
-  const insertSymbol23 = () => insertSymbol("&#8866;");
-  const insertSymbol24 = () => insertSymbol("&#8867;");
-  const insertSymbol25 = () => insertSymbol("&#8868;");
-  const insertSymbol26 = () => insertSymbol("&#8869;");
-  const insertSymbol27 = () => insertSymbol("&#8482;");
+  const insertSymbol3 = () => insertSymbol("∆");
+  const insertSymbol4 = () => insertSymbol("∇");
+  const insertSymbol5 = () => insertSymbol("∑");
+  const insertSymbol6 = () => insertSymbol("√");
+  const insertSymbol7 = () => insertSymbol("∞");
+  const insertSymbol8 = () => insertSymbol("№");
+  const insertSymbol9 = () => insertSymbol("∠");
+  const insertSymbol11 = () => insertSymbol("∧");
+  const insertSymbol12 = () => insertSymbol("∨");
+  const insertSymbol17 = () => insertSymbol("∴");
+  const insertSymbol18 = () => insertSymbol("∵");
+  const insertSymbol19 = () => insertSymbol("∶");
+  const insertSymbol20 = () => insertSymbol("∷");
+  const insertSymbol21 = () => insertSymbol("∸");
+  const insertSymbol22 = () => insertSymbol("∹");
+  const insertSymbol23 = () => insertSymbol("⊢");
+  const insertSymbol24 = () => insertSymbol("⊣");
+  const insertSymbol25 = () => insertSymbol("⊤");
+  const insertSymbol26 = () => insertSymbol("⊥");
+  const insertSymbol27 = () => insertSymbol("™");
+  const insertSymbol28 = () => insertSymbol("←");
+  const insertSymbol29 = () => insertSymbol("↑");
+  const insertSymbol30 = () => insertSymbol("→");
+  const insertSymbol31 = () => insertSymbol("↓");
+  const insertSymbol32 = () => insertSymbol("↔");
+  const insertSymbol33 = () => insertSymbol("↕");
+  const insertSymbol34 = () => insertSymbol("↖");
+  const insertSymbol35 = () => insertSymbol("↗");
+  const insertSymbol36 = () => insertSymbol("↘");
+  const insertSymbol37 = () => insertSymbol("↙");
+  const insertSymbol38 = () => insertSymbol("⇄");
+  const insertSymbol39 = () => insertSymbol("⇅");
+  const insertSymbol40 = () => insertSymbol("⇇");
+  const insertSymbol41 = () => insertSymbol("⇈");
+  const insertSymbol42 = () => insertSymbol("⇉");
+  const insertSymbol43 = () => insertSymbol("⇊");
+  const insertSymbol44 = () => insertSymbol("⇐");
+  const insertSymbol45 = () => insertSymbol("⇑");
+  const insertSymbol46 = () => insertSymbol("⇒");
+  const insertSymbol47 = () => insertSymbol("⇓");
   // insertIcon inserts an emoji/icon into the editor
   const insertIcon = (icon: string) => insertSymbol(icon);
 
@@ -971,139 +992,6 @@ const App = () => {
           <div className="dropdown-container">
             <button
               className="menu-item fixed-menubar-btn"
-              ref={el => { templatesButtonRef.current = el; }}
-              onMouseDown={(e) => {
-                e.preventDefault();
-                cacheSelection();
-                closeAllDropdowns();
-                setShowTemplatesDropdown(true);
-                if (templatesButtonRef.current) {
-                  const rect = templatesButtonRef.current.getBoundingClientRect();
-                  setTemplatesPos({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX, width: rect.width });
-                } else {
-                  setTemplatesPos(null);
-                }
-              }}
-              title="Templates"
-            >
-              <GrDocumentText /> &nbsp; Templates ▾
-            </button>
-            {showTemplatesDropdown && templatesPos && createPortal(
-              <div
-                className="header-dropdown format-dropdown"
-                style={{ position: 'absolute', top: templatesPos.top + 'px', left: templatesPos.left + 'px', zIndex: 999999, minWidth: templatesPos.width + 'px' }}
-              >
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildDailyJournalTemplate(new Date());
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><BsJournalBookmarkFill />  Daily Journal</div>
-                    <div className="hdr-desc">Start a daily journal</div>
-                  </button>
-                  <div className="hdr-sep" />
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildMeetingNotesTemplate(new Date());
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><BsKanban /> Meeting Notes</div>
-                    <div className="hdr-desc">Structured meeting notes</div>
-                  </button>
-                  <div className="hdr-sep" />
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildProjectPlanTemplate(new Date());
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><BsClipboard2Check /> Project Plan</div>
-                    <div className="hdr-desc">High-level project plan</div>
-                  </button>
-                  <div className="hdr-sep" />
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildStudyNotesTemplate(new Date());
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><BsPersonWorkspace /> Study Notes</div>
-                    <div className="hdr-desc">Organized study template</div>
-                  </button>
-                  <div className="hdr-sep" />
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildTravelLogsTemplate(new Date());
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><GiJourney /> Travel Log</div>
-                    <div className="hdr-desc">Capture trip itineraries</div>
-                  </button>
-                  <div className="hdr-sep" />
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildWorkoutLogTemplate(new Date());
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><BsTropicalStorm /> Workout Log</div>
-                    <div className="hdr-desc">Log workouts notes</div>
-                  </button>
-                  <div className="hdr-sep" />
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildBugReportTemplate(new Date());
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><BsFillBugFill /> Bug Report</div>
-                    <div className="hdr-desc">Report issues tracker</div>
-                  </button>
-                  <div className="hdr-sep" />
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildDiagramExamplesTemplate();
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><BsDiagram3 /> Diagram Example</div>
-                    <div className="hdr-desc">UML & Mermaid diagram</div>
-                  </button>
-                  <div className="hdr-sep" />
-              </div>,
-              document.body
-            )}
-          </div>
-          <div className="dropdown-container">
-            <button
-              className="menu-item fixed-menubar-btn"
               ref={exportsButtonRef}
               onMouseDown={(e) => {
                 e.preventDefault();
@@ -1325,6 +1213,153 @@ const App = () => {
           <div className="dropdown-container">
             <button
               className="button-mermaid"
+              ref={el => { templatesButtonRef.current = el; }}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                cacheSelection();
+                closeAllDropdowns();
+                setShowTemplatesDropdown(true);
+                if (templatesButtonRef.current) {
+                  const rect = templatesButtonRef.current.getBoundingClientRect();
+                  setTemplatesPos({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX, width: rect.width });
+                } else {
+                  setTemplatesPos(null);
+                }
+              }}
+              title="Templates"
+            >
+              <GrDocumentText /> &nbsp; Templates ▾
+            </button>
+            {showTemplatesDropdown && templatesPos && createPortal(
+              <div
+                className="header-dropdown format-dropdown"
+                style={{ position: 'absolute', top: templatesPos.top + 'px', left: templatesPos.left + 'px', zIndex: 999999, minWidth: templatesPos.width + 'px' }}
+              >
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildDailyJournalTemplate(new Date());
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title"><BsJournalBookmarkFill />  Daily Journal</div>
+                    <div className="hdr-desc">Start a daily journal</div>
+                  </button>
+                  <div className="hdr-sep" />
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildMeetingNotesTemplate(new Date());
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title"><BsKanban /> Meeting Notes</div>
+                    <div className="hdr-desc">Structured meeting notes</div>
+                  </button>
+                  <div className="hdr-sep" />
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildProjectPlanTemplate(new Date());
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title"><BsClipboard2Check /> Project Plan</div>
+                    <div className="hdr-desc">High-level project plan</div>
+                  </button>
+                  <div className="hdr-sep" />
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildStudyNotesTemplate(new Date());
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title"><BsPersonWorkspace /> Study Notes</div>
+                    <div className="hdr-desc">Organized study template</div>
+                  </button>
+                  <div className="hdr-sep" />
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildTravelLogsTemplate(new Date());
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title"><GiJourney /> Travel Log</div>
+                    <div className="hdr-desc">Capture trip itineraries</div>
+                  </button>
+                  <div className="hdr-sep" />
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildWorkoutLogTemplate(new Date());
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title"><BsTropicalStorm /> Workout Log</div>
+                    <div className="hdr-desc">Log workouts notes</div>
+                  </button>
+                  <div className="hdr-sep" />
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildBugReportTemplate(new Date());
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title"><BsFillBugFill /> Bug Report</div>
+                    <div className="hdr-desc">Report issues tracker</div>
+                  </button>
+                  <div className="hdr-sep" />
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildDiagramExamplesTemplate();
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title"><BsDiagram3 /> Diagram Example</div>
+                    <div className="hdr-desc">UML & Mermaid diagram</div>
+                  </button>
+                  <div className="hdr-sep" />
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      const tpl = buildDiagramASCIITemplate();
+                      handleInsertImageTemplate(tpl + '\n\n');
+                      setShowTemplatesDropdown(false);
+                      setTemplatesPos(null);
+                    }}
+                  >
+                    <div className="hdr-title"><BsDiagram3 /> ASCII Diagram</div>
+                    <div className="hdr-desc">Markdown ASCII art diagram</div>
+                  </button>
+                  <div className="hdr-sep" />
+              </div>,
+              document.body
+            )}
+          </div>
+          &#8741;
+          <div className="dropdown-container">
+            <button
+              className="button-mermaid"
               onMouseDown={(e) => {
                 e.preventDefault();
                 cacheSelection();
@@ -1412,6 +1447,26 @@ const App = () => {
                 onSymbol25={insertSymbol25}
                 onSymbol26={insertSymbol26}
                 onSymbol27={insertSymbol27}
+                onSymbol28={insertSymbol28}
+                onSymbol29={insertSymbol29}
+                onSymbol30={insertSymbol30}
+                onSymbol31={insertSymbol31}
+                onSymbol32={insertSymbol32}
+                onSymbol33={insertSymbol33}
+                onSymbol34={insertSymbol34}
+                onSymbol35={insertSymbol35}
+                onSymbol36={insertSymbol36}
+                onSymbol37={insertSymbol37}
+                onSymbol38={insertSymbol38}
+                onSymbol39={insertSymbol39}
+                onSymbol40={insertSymbol40}
+                onSymbol41={insertSymbol41}
+                onSymbol42={insertSymbol42}
+                onSymbol43={insertSymbol43}
+                onSymbol44={insertSymbol44}
+                onSymbol45={insertSymbol45}
+                onSymbol46={insertSymbol46}
+                onSymbol47={insertSymbol47}
                 onClose={() => setShowSymbolsDropdown(false)}
               />
             )}

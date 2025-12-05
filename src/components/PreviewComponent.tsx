@@ -152,15 +152,14 @@ const PreviewComponent: React.FC<PreviewComponentProps> = React.memo(({
               </code>
             );
           },
-          p({ children }) {
-            // Detect box-drawing characters so ASCII UI blocks render with fixed width
+          p({ children, node }) {
+            // Check if paragraph contains box-drawing characters
             const flatten = (nodes: any): string => {
               if (!nodes) return '';
               const arr = Array.isArray(nodes) ? nodes : [nodes];
               return arr
                 .map((n) => {
                   if (typeof n === 'string') return n;
-                  // Treat <br/> as newline
                   // @ts-ignore
                   if (n && n.type === 'br') return '\n';
                   // @ts-ignore
@@ -172,12 +171,19 @@ const PreviewComponent: React.FC<PreviewComponentProps> = React.memo(({
 
             const text = flatten(children);
             const hasBoxChars = /[\u2500-\u257F]/.test(text);
-            const looksLikeAsciiArt = hasBoxChars && /\n/.test(text);
-
-            if (looksLikeAsciiArt) {
-              return (
-                <pre className="ascii-art">{text}</pre>
+            
+            // If it has box-drawing chars, get the original text from the node to preserve whitespace
+            if (hasBoxChars && node && node.position) {
+              // Extract original text from markdown source
+              let originalText = editorContent.substring(
+                node.position.start.offset || 0,
+                node.position.end.offset || editorContent.length
               );
+              // Decode HTML entities to render symbols
+              const textarea = document.createElement('textarea');
+              textarea.innerHTML = originalText;
+              originalText = textarea.value;
+              return <pre className="ascii-art">{originalText}</pre>;
             }
 
             return <p>{children}</p>;

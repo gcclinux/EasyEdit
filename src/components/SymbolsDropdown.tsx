@@ -21,6 +21,26 @@ type Props = {
   onSymbol25: () => void;
   onSymbol26: () => void;
   onSymbol27: () => void;
+  onSymbol28: () => void;
+  onSymbol29: () => void;
+  onSymbol30: () => void;
+  onSymbol31: () => void;
+  onSymbol32: () => void;
+  onSymbol33: () => void;
+  onSymbol34: () => void;
+  onSymbol35: () => void;
+  onSymbol36: () => void;
+  onSymbol37: () => void;
+  onSymbol38: () => void;
+  onSymbol39: () => void;
+  onSymbol40: () => void;
+  onSymbol41: () => void;
+  onSymbol42: () => void;
+  onSymbol43: () => void;
+  onSymbol44: () => void;
+  onSymbol45: () => void;
+  onSymbol46: () => void;
+  onSymbol47: () => void;
   onClose: () => void;
 };
 
@@ -45,6 +65,26 @@ export default function SymbolsDropdown({
   onSymbol25,
   onSymbol26,
   onSymbol27,
+  onSymbol28,
+  onSymbol29,
+  onSymbol30,
+  onSymbol31,
+  onSymbol32,
+  onSymbol33,
+  onSymbol34,
+  onSymbol35,
+  onSymbol36,
+  onSymbol37,
+  onSymbol38,
+  onSymbol39,
+  onSymbol40,
+  onSymbol41,
+  onSymbol42,
+  onSymbol43,
+  onSymbol44,
+  onSymbol45,
+  onSymbol46,
+  onSymbol47,
   onClose
 }: Props) {
   return (
@@ -127,6 +167,86 @@ export default function SymbolsDropdown({
       </button>
       <button className="dropdown-item" onClick={() => { onSymbol27(); onClose(); }}>
         <div className="hdr-title">&#169;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol28(); onClose(); }}>
+        <div className="hdr-title">&#8592;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol29(); onClose(); }}>
+        <div className="hdr-title">&#8593;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol30(); onClose(); }}>
+        <div className="hdr-title">&#8594;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol31(); onClose(); }}>
+        <div className="hdr-title">&#8595;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol32(); onClose(); }}>
+        <div className="hdr-title">&#8596;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol33(); onClose(); }}>
+        <div className="hdr-title">&#8597;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol34(); onClose(); }}>
+        <div className="hdr-title">&#8598;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol35(); onClose(); }}>
+        <div className="hdr-title">&#8599;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol36(); onClose(); }}>
+        <div className="hdr-title">&#8600;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol37(); onClose(); }}>
+        <div className="hdr-title">&#8601;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol38(); onClose(); }}>
+        <div className="hdr-title">&#8644;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol39(); onClose(); }}>
+        <div className="hdr-title">&#8645;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol40(); onClose(); }}>
+        <div className="hdr-title">&#8647;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol41(); onClose(); }}>
+        <div className="hdr-title">&#8648;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol42(); onClose(); }}>
+        <div className="hdr-title">&#8649;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol43(); onClose(); }}>
+        <div className="hdr-title">&#8650;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol44(); onClose(); }}>
+        <div className="hdr-title">&#8656;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol45(); onClose(); }}>
+        <div className="hdr-title">&#8657;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol46(); onClose(); }}>
+        <div className="hdr-title">&#8658;</div>
+        <div className="hdr-sep" />
+      </button>
+      <button className="dropdown-item" onClick={() => { onSymbol47(); onClose(); }}>
+        <div className="hdr-title">&#8659;</div>
         <div className="hdr-sep" />
       </button>
     </div>
