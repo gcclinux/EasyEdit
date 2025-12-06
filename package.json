@@ -7,6 +7,7 @@
     "dev": "vite",
     "server": "vite --host --port 3024",
     "setup-https": "./setup-https.sh",
+    "setup-https-windows": "powershell -ExecutionPolicy Bypass -File ./setup-https.ps1",
     "app": "concurrently \"vite\" \"wait-on http://localhost:3024 && electron .\"",
     "build": "tsc && vite build",
     "build:web": "tsc && vite build --config vite.config.web.ts",

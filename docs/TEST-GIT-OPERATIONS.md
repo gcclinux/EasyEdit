@@ -245,16 +245,17 @@
 
 ## Test Results Summary
 
-| Test | Web (Clone) | Web (Open) | Electron | Status |
-|------|-------------|------------|----------|--------|
-| 1. Clone Repository | ⬜ | N/A | ⬜ | Pending |
-| 2. Open Repository | N/A | ⬜ | ⬜ | Pending |
-| 3. Subdirectory Files | ⬜ | ⬜ | ⬜ | Pending |
-| 4. Git Status | ⬜ | ⬜ | ⬜ | Pending |
-| 5. Save & Stage | ⬜ | ⬜ | ⬜ | Pending |
-| 6. Commit | ⬜ | ⬜ | ⬜ | Pending |
-| 7. Push | ⬜ | ⬜ | ⬜ | Pending |
-| 8. Error Handling | ⬜ | ⬜ | ⬜ | Pending |
+| Test | Web (Clone) | Web (Open) | Electron (Clone) | Electron (Open) | Status |
+|------|-------------|------------|----------------|---------------|--------|
+| 1. Clone Repository | ⬜ | ⬜ | ✅ | ✅ | Pending |
+| 2. Open Clone File | ⬜ | ⬜ | ✅ | ✅ | Pending |
+| 3. Open Repository | ⬜ | ⬜ | ✅ | ✅ | Pending |
+| 4. Subdirectory Files | ⬜ | ⬜ | ✅ | ✅ | Pending |
+| 5. Git Status | ⬜ | ⬜ | ✅ | ✅ | Pending |
+| 6. Save & Stage | ⬜ | ⬜ | ✅ | ✅ | Pending |
+| 7. Commit | ⬜ | ⬜ | ✅ | ✅ | Pending |
+| 8. Push | ⬜ | ⬜ | ✅ | ✅ | Pending |
+| 9. Error Handling | ⬜ | ⬜ | ✅ | ✅ | Pending |
 
 Legend:
 - ⬜ Pending
@@ -262,6 +263,10 @@ Legend:
 - ❌ Fail
 - ⚠️ Warning
 
+Notes:
+- Even knowing that it requested Git credential to unlock the repository, it failed to push.
+- I needed to unlock Menu --> Git --> Authenticate --> Authenticate before push worked
+- Recommend Push, Fetch, Save & Stage, Stage, Commit & Push buttons disabled / grayed out until authenticated
 ---
 
 ## Quick Smoke Test
