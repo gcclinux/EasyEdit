@@ -61,11 +61,11 @@ import { TableGenerator } from './autoGenerator/TableGenerator.tsx';
 import { GanttGenerator } from './autoGenerator/GanttGenerator.tsx';
 import { TimelineGenerator } from './autoGenerator/TimelineGenerator.tsx';
 import ContextMenu from './autoGenerator/ContextMenu.tsx';
-import { 
-  HistoryState, 
-  addToHistory, 
-  handleUndo, 
-  handleClear, 
+import {
+  HistoryState,
+  addToHistory,
+  handleUndo,
+  handleClear,
   handleRedo,
   handleOpenClick,
   handleOpenTxtClick,
@@ -73,7 +73,7 @@ import {
   saveToFile,
   saveToTxT
 } from './insertSave.ts';
-import { 
+import {
   insertBoldSyntax,
   inserth1Syntax,
   inserth2Syntax,
@@ -198,7 +198,7 @@ const App = () => {
     open: false,
     title: '',
     promptText: '',
-    onSubmit: () => {},
+    onSubmit: () => { },
   });
   const [cloneModalOpen, setCloneModalOpen] = useState(false);
   const [fileBrowserModalOpen, setFileBrowserModalOpen] = useState(false);
@@ -226,9 +226,9 @@ const App = () => {
     message: '',
     confirmLabel: 'Confirm',
     cancelLabel: 'Cancel',
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
-  
+
   // Phase 4: Enhanced Git features
   const [commitModalOpen, setCommitModalOpen] = useState(false);
   const [gitHistoryModalOpen, setGitHistoryModalOpen] = useState(false);
@@ -239,7 +239,7 @@ const App = () => {
   });
   const [commitHistory, setCommitHistory] = useState<any[]>([]);
   const [modifiedFiles, setModifiedFiles] = useState<string[]>([]);
-  
+
   // Toast notifications
   const [toasts, setToasts] = useState<Array<{ id: number; message: string; type: 'success' | 'error' | 'info' | 'warning' }>>([]);
   const toastIdCounter = useRef(0);
@@ -265,12 +265,12 @@ const App = () => {
     const checkCredentials = () => {
       const hasCredentials = gitCredentialManager.hasCredentials();
       const isUnlocked = gitCredentialManager.isUnlocked();
-      
+
       if (hasCredentials && !isUnlocked) {
         console.log('[App] Saved credentials found but locked. User will be prompted when needed.');
       }
     };
-    
+
     // Check for saved repository directory
     const checkRepo = () => {
       const savedRepoDir = gitManager.getRepoDir();
@@ -280,7 +280,7 @@ const App = () => {
         setCurrentRepoPath(savedRepoDir);
       }
     };
-    
+
     checkCredentials();
     checkRepo();
   }, []);
@@ -303,7 +303,7 @@ const App = () => {
   });
 
   // Add state for cached selection
-  const [cachedSelection, setCachedSelection] = useState<{start: number, end: number} | null>(null);
+  const [cachedSelection, setCachedSelection] = useState<{ start: number, end: number } | null>(null);
 
   // Add this handler function
   const handleContextMenu = (event: React.MouseEvent) => {
@@ -352,11 +352,11 @@ const App = () => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      
+
       // Check if click is outside dropdown containers and dropdown content
       const isDropdownButton = target.closest('.dropdown-container, .menu-item, .fixed-menubar-btn, .button-mermaid');
       const isDropdownContent = target.closest('.header-dropdown, .format-dropdown');
-      
+
       // If clicking outside both the button and dropdown content, close all
       if (!isDropdownButton && !isDropdownContent) {
         closeAllDropdowns();
@@ -400,7 +400,7 @@ const App = () => {
     });
   };
 
-  
+
 
   // Initialize Mermaid diagrams
   const initializeMermaid = useCallback(
@@ -468,8 +468,45 @@ const App = () => {
       return;
     }
 
-    const fileOpenedHandler = (_event: any, content: string) => {
+    const fileOpenedHandler = async (_event: any, payload: string | { content: string; filePath?: string | null }) => {
+      // Handle both old (string) and new ({ content, filePath }) formats for backwards compatibility
+      let content: string;
+      let filePath: string | null = null;
+
+      if (typeof payload === 'string') {
+        content = payload;
+      } else if (payload && typeof payload.content === 'string') {
+        content = payload.content;
+        filePath = payload.filePath || null;
+      } else {
+        return;
+      }
+
       setEditorContent(content);
+
+      // If we have a filePath, set it and try to detect the git repo
+      if (filePath) {
+        setCurrentFilePath(filePath);
+        // If we already know a repo, check if file is within it
+        if (currentRepoPath) {
+          try {
+            const pathModule = await import('path');
+            const normalizedRepo = pathModule.resolve(currentRepoPath);
+            const normalizedFile = pathModule.resolve(filePath);
+            if (normalizedFile.startsWith(normalizedRepo + pathModule.sep)) {
+              if (!isGitRepo) {
+                setIsGitRepo(true);
+              }
+              updateGitStatus();
+            }
+          } catch (e) {
+            console.error('Error checking file path against repo:', e);
+          }
+        } else {
+          // No repo known yet: try to auto-detect by walking up to find .git
+          await detectRepoFromFilePath(filePath);
+        }
+      }
     };
 
     const previewSpacingHandler = (_event: any, { action }: { action: string }) => {
@@ -524,7 +561,7 @@ const App = () => {
       textareaRef.current.focus();
     }
   }, [editorContent]);
-  
+
   // toggleEdit function
   const toggleEdit = () => {
     setIsEditFull(!isEditFull);
@@ -559,10 +596,10 @@ const App = () => {
         editorContent.substring(0, start) +
         symbol +
         editorContent.substring(end);
-  
+
       setEditorContent(newText);
       cursorPositionRef.current = start + symbol.length; // Update cursor position ref
-  
+
       setTimeout(() => {
         textarea.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
         textarea.focus();
@@ -573,7 +610,7 @@ const App = () => {
   // Templates moved to src/templates/*.ts
 
 
-// insertSymbol function inserts a symbol into the textarea
+  // insertSymbol function inserts a symbol into the textarea
   const insertSymbol3 = () => insertSymbol("∆");
   const insertSymbol4 = () => insertSymbol("∇");
   const insertSymbol5 = () => insertSymbol("∑");
@@ -617,7 +654,7 @@ const App = () => {
   // insertIcon inserts an emoji/icon into the editor
   const insertIcon = (icon: string) => insertSymbol(icon);
 
-//TODO
+  //TODO
   // insertBoldSyntax function inserts a bold syntax for Markdown
   const handleBoldSyntax = () => {
     insertBoldSyntax(textareaRef, editorContent, setEditorContent, cursorPositionRef);
@@ -641,9 +678,9 @@ const App = () => {
   //TODO
   // inserth1Syntax function inserts a h1 syntax for Markdown
   const handlerinserth1Syntax = () => {
-      if (selectionStart !== null && selectionEnd !== null) {
-        inserth1Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef, selectionStart, selectionEnd);
-      }
+    if (selectionStart !== null && selectionEnd !== null) {
+      inserth1Syntax(textareaRef, editorContent, setEditorContent, cursorPositionRef, selectionStart, selectionEnd);
+    }
   };
 
   // inserth2Syntax function inserts a h2 syntax for Markdown
@@ -717,7 +754,7 @@ const App = () => {
   };
 
   // insertImageSyntax function inserts a default and extended image syntax for Markdown
-  
+
 
   // Insert an arbitrary image/link markdown template into the editor
   const handleInsertImageTemplate = (markdownTemplate: string) => {
@@ -737,12 +774,12 @@ const App = () => {
 
 
 
-  
 
-  
+
+
 
   // insertFootSyntax function inserts a default and extended foot syntax for Markdown
-  
+
 
   // Insert Mermaid classDiagram Syntax
   const handleInsertClass = () => {
@@ -853,7 +890,7 @@ const App = () => {
 
   const handleMasterPasswordSubmit = async (password: string) => {
     setMasterPasswordModalOpen(false);
-    
+
     try {
       if (isMasterPasswordSetup) {
         // Creating new master password
@@ -881,13 +918,13 @@ const App = () => {
   const handleCredentialsSubmit = async (username: string, token: string, rememberMe: boolean) => {
     setCredentialsModalOpen(false);
     setPrefillCredentials(null);
-    
+
     try {
       const credentials = { username, token };
-      
+
       // Set credentials in gitManager for immediate use
       gitManager.setCredentials(credentials);
-      
+
       if (rememberMe) {
         // Save encrypted credentials
         await gitCredentialManager.saveCredentials(credentials, true);
@@ -929,7 +966,7 @@ const App = () => {
       handleSetupCredentials();
       return false;
     }
-    
+
     // Check if credential manager is unlocked
     if (!gitCredentialManager.isUnlocked()) {
       // Credentials exist but need to unlock with master password via modal
@@ -938,17 +975,17 @@ const App = () => {
       setMasterPasswordModalOpen(true);
       return false;
     }
-    
+
     // Try to load stored credentials
     const loaded = await gitManager.loadStoredCredentials();
-    
+
     if (!loaded) {
       showToast('Failed to load credentials. Please set up credentials again.', 'error');
       setPendingCredentialAction(() => action);
       handleSetupCredentials();
       return false;
     }
-    
+
     return true;
   };
 
@@ -959,26 +996,26 @@ const App = () => {
 
   const handleCloneSubmit = async (url: string, targetDir: string, branch?: string) => {
     setCloneModalOpen(false);
-    
+
     console.log('=== Clone Submit Handler ===');
     console.log('URL:', url);
     console.log('Target Dir:', targetDir);
     console.log('Branch:', branch);
-    
+
     try {
       // Show loading state
       showToast('Cloning repository... This may take a moment.', 'info');
-      
+
       // Check if we're using web File System Access API
       const dirHandle = (window as any).selectedDirHandle;
       console.log('Dir handle available:', !!dirHandle);
-      
+
       if (dirHandle) {
         setCurrentDirHandle(dirHandle);
         gitManager.setDirHandle(dirHandle);
         console.log('Dir handle set in gitManager');
       }
-      
+
       // Perform clone operation
       console.log('Calling gitManager.clone()...');
       await gitManager.clone(url, targetDir, {
@@ -987,63 +1024,53 @@ const App = () => {
         ref: branch,
       });
       console.log('gitManager.clone() returned successfully');
-      
+
       setCurrentRepoPath(targetDir);
       setIsGitRepo(true);
-      
+
       // Get list of markdown files
       console.log('Getting repo files...');
       const files = await gitManager.getRepoFiles();
       console.log('Found', files.length, 'markdown files:', files);
       setRepoFiles(files);
-      
+
       // Open file browser
       setFileBrowserModalOpen(true);
-      
+
       showToast('Repository cloned successfully!', 'success');
       console.log('=== Clone Completed Successfully ===');
     } catch (error) {
       console.error('=== Clone Failed in Handler ===');
       console.error('Error:', error);
-      showToast(`Failed to clone repository: ${(error as Error).message}`,'error');
+      showToast(`Failed to clone repository: ${(error as Error).message}`, 'error');
     }
   };
 
   const handleFileSelect = async (filePath: string) => {
     setFileBrowserModalOpen(false);
-    
+
     if (!currentRepoPath) return;
-    
+
     try {
       let content: string;
       let fullPath: string;
-      
+
       console.log('[App] Opening file:', filePath);
       console.log('[App] Current repo path:', currentRepoPath);
       console.log('[App] Is Electron:', !!(window as any).electronAPI);
-      
-      // Check if running in Electron or web
-      if ((window as any).electronAPI) {
-        // Electron: use Node.js fs module
-        const fs = await import('fs');
-        const path = await import('path');
-        fullPath = path.join(currentRepoPath, filePath);
-        console.log('[App] Reading from disk:', fullPath);
-        content = await fs.promises.readFile(fullPath, 'utf-8');
-      } else {
-        // Web: use gitManager which reads from LightningFS
-        console.log('[App] Reading from LightningFS via gitManager');
-        content = await gitManager.readFile(filePath);
-        fullPath = filePath;
-      }
-      
+
+      // Use gitManager for both Electron and Web
+      console.log('[App] Reading file via gitManager:', filePath);
+      content = await gitManager.readFile(filePath);
+      fullPath = filePath; // gitManager handles the full path internally
+
       console.log('[App] File content loaded, length:', content.length);
       setEditorContent(content);
       setCurrentFilePath(fullPath);
-      
-      showToast(`Opened: ${filePath}`,'success');
+
+      showToast(`Opened: ${filePath}`, 'success');
     } catch (error) {
-      showToast(`Failed to open file: ${(error as Error).message}`,'error');
+      showToast(`Failed to open file: ${(error as Error).message}`, 'error');
       console.error('File open error:', error);
     }
   };
@@ -1053,12 +1080,12 @@ const App = () => {
       showToast('No active Git repository. Please clone a repository first.', 'info');
       return;
     }
-    
+
     try {
       await gitManager.pull();
       showToast('Successfully pulled latest changes!', 'success');
     } catch (error) {
-      showToast(`Failed to pull changes: ${(error as Error).message}`,'error');
+      showToast(`Failed to pull changes: ${(error as Error).message}`, 'error');
       console.error('Pull error:', error);
     }
   };
@@ -1068,23 +1095,23 @@ const App = () => {
       showToast('No active Git repository. Please clone a repository first.', 'info');
       return;
     }
-    
+
     const hasCredentials = await ensureCredentials(async () => {
       try {
         await gitManager.push();
         showToast('Successfully pushed changes!', 'success');
       } catch (error) {
-        showToast(`Failed to push changes: ${(error as Error).message}`,'error');
+        showToast(`Failed to push changes: ${(error as Error).message}`, 'error');
         console.error('Push error:', error);
       }
     });
-    
+
     if (hasCredentials) {
       try {
         await gitManager.push();
         showToast('Successfully pushed changes!', 'success');
       } catch (error) {
-        showToast(`Failed to push changes: ${(error as Error).message}`,'error');
+        showToast(`Failed to push changes: ${(error as Error).message}`, 'error');
         console.error('Push error:', error);
       }
     }
@@ -1095,12 +1122,12 @@ const App = () => {
       showToast('No active Git repository. Please clone a repository first.', 'info');
       return;
     }
-    
+
     try {
       await gitManager.fetch();
       showToast('Successfully fetched updates!', 'success');
     } catch (error) {
-      showToast(`Failed to fetch updates: ${(error as Error).message}`,'error');
+      showToast(`Failed to fetch updates: ${(error as Error).message}`, 'error');
       console.error('Fetch error:', error);
     }
   };
@@ -1110,7 +1137,7 @@ const App = () => {
       showToast('No active Git repository. Please clone a repository first.', 'info');
       return;
     }
-    
+
     try {
       // Get modified files
       const status = await gitManager.status();
@@ -1118,7 +1145,7 @@ const App = () => {
       setModifiedFiles(modified);
       setCommitModalOpen(true);
     } catch (error) {
-      showToast(`Failed to get repository status: ${(error as Error).message}`,'error');
+      showToast(`Failed to get repository status: ${(error as Error).message}`, 'error');
       console.error('Status error:', error);
     }
   };
@@ -1127,7 +1154,7 @@ const App = () => {
     try {
       const fullMessage = description ? `${message}\n\n${description}` : message;
       await gitManager.commit(fullMessage);
-      showToast('Successfully committed changes!','success');
+      showToast('Successfully committed changes!', 'success');
       setCommitModalOpen(false);
       // If credentials are configured, automatically push after a successful commit
       try {
@@ -1138,7 +1165,7 @@ const App = () => {
       }
       await updateGitStatus(); // Refresh status after commit
     } catch (error) {
-      showToast(`Failed to commit: ${(error as Error).message}`,'error');
+      showToast(`Failed to commit: ${(error as Error).message}`, 'error');
       console.error('Commit error:', error);
     }
   };
@@ -1148,49 +1175,54 @@ const App = () => {
       showToast('No file is currently open from a Git repository.', 'warning');
       return;
     }
-    
+
     try {
       let relativePath: string;
-      
-      console.log('[App] Saving file:', currentFilePath);
-      console.log('[App] Current repo path:', currentRepoPath);
-      console.log('[App] Is Electron:', !!(window as any).electronAPI);
-      
-      // Check if running in Electron or web
-      if ((window as any).electronAPI) {
-        // Electron: use Node.js fs module
-        const fs = await import('fs');
-        const path = await import('path');
-        
-        // Write file to disk
-        console.log('[App] Writing to disk:', currentFilePath);
-        await fs.promises.writeFile(currentFilePath, editorContent, 'utf-8');
-        
-        // Get relative path for git add
-        relativePath = path.relative(currentRepoPath!, currentFilePath);
-      } else {
-        // Web: use gitManager which writes to LightningFS and syncs to File System
-        console.log('[App] Writing via gitManager');
-        relativePath = currentFilePath;
-        await gitManager.writeFile(relativePath, editorContent);
+      // Use gitManager's repo path as fallback if state hasn't updated yet
+      const repoPath = currentRepoPath || gitManager.getRepoDir();
+
+      if (!repoPath) {
+        showToast('No active Git repository. Please clone a repository first.', 'info');
+        return;
       }
-      
+
+      console.log('[App] Saving file:', currentFilePath);
+      console.log('[App] Current repo path:', repoPath);
+      console.log('[App] Is Electron:', !!(window as any).electronAPI);
+
+      // Calculate relative path
+      relativePath = currentFilePath;
+      if (repoPath && currentFilePath.startsWith(repoPath)) {
+        relativePath = currentFilePath.substring(repoPath.length);
+        if (relativePath.startsWith('\\') || relativePath.startsWith('/')) {
+          relativePath = relativePath.substring(1);
+        }
+        // Normalize slashes
+        relativePath = relativePath.replace(/\\/g, '/');
+      }
+
+      console.log('[App] Writing via gitManager:', relativePath);
+      await gitManager.writeFile(relativePath, editorContent);
+
       console.log('[App] File saved, staging:', relativePath);
-      
+
       // Stage the file
       await gitManager.add(relativePath);
-      
+
       console.log('[App] File staged successfully');
-      showToast(`Saved and staged: ${relativePath}`,'success');
+      showToast(`Saved and staged: ${relativePath}`, 'success');
       await updateGitStatus(); // Refresh status after save
     } catch (error) {
-      showToast(`Failed to save and stage file: ${(error as Error).message}`,'error');
+      showToast(`Failed to save and stage file: ${(error as Error).message}`, 'error');
       console.error('Save error:', error);
     }
   };
 
   const handleSaveStageCommitPush = async () => {
-    if (!isGitRepo) {
+    // Use gitManager's repo path as fallback if state hasn't updated yet
+    const repoPath = currentRepoPath || gitManager.getRepoDir();
+
+    if (!repoPath && !isGitRepo) {
       showToast('No active Git repository. Please clone a repository first.', 'info');
       return;
     }
@@ -1211,7 +1243,7 @@ const App = () => {
       // once a commit is successfully created.
     } catch (error) {
       console.error('Save/Commit/Push error:', error);
-      showToast(`Failed to save and prepare commit: ${(error as Error).message}`,'error');
+      showToast(`Failed to save and prepare commit: ${(error as Error).message}`, 'error');
     }
   };
 
@@ -1226,7 +1258,7 @@ const App = () => {
       const branch = await gitManager.getCurrentBranch();
       const status = await gitManager.status();
       const modifiedCount = status.modified.length + status.staged.length + status.untracked.length;
-      
+
       setGitStatus({
         branch: branch || 'main',
         modifiedCount,
@@ -1249,7 +1281,7 @@ const App = () => {
       setCommitHistory(commits);
       setGitHistoryModalOpen(true);
     } catch (error) {
-      showToast(`Failed to retrieve commit history: ${(error as Error).message}`,'error');
+      showToast(`Failed to retrieve commit history: ${(error as Error).message}`, 'error');
       console.error('History error:', error);
     }
   };
@@ -1270,16 +1302,16 @@ const App = () => {
             await gitManager.init(dirPath, true);
             setCurrentRepoPath(dirPath);
             setIsGitRepo(true);
-            showToast('Repository initialized successfully!','success');
+            showToast('Repository initialized successfully!', 'success');
             await updateGitStatus();
           } catch (error) {
-            showToast(`Failed to initialize repository: ${(error as Error).message}`,'error');
+            showToast(`Failed to initialize repository: ${(error as Error).message}`, 'error');
             console.error('Init error:', error);
           }
         },
       });
     } catch (error) {
-      showToast(`Failed to initialize repository: ${(error as Error).message}`,'error');
+      showToast(`Failed to initialize repository: ${(error as Error).message}`, 'error');
       console.error('Init error:', error);
     }
   };
@@ -1287,15 +1319,15 @@ const App = () => {
   // Phase 4: Create .gitignore file
   const handleCreateGitignore = async () => {
     if (!currentRepoPath) {
-      showToast('No active Git repository. Please clone or initialize a repository first.','info');
+      showToast('No active Git repository. Please clone or initialize a repository first.', 'info');
       return;
     }
     try {
       await gitManager.createGitignore(currentRepoPath, 'general');
-      showToast('.gitignore created (or updated) for this repository.','success');
+      showToast('.gitignore created (or updated) for this repository.', 'success');
       await updateGitStatus();
     } catch (error) {
-      showToast(`Failed to create .gitignore: ${(error as Error).message}`,'error');
+      showToast(`Failed to create .gitignore: ${(error as Error).message}`, 'error');
       console.error('Gitignore error:', error);
     }
   };
@@ -1334,7 +1366,7 @@ const App = () => {
   useEffect(() => {
     if (editorContent !== documentHistory[historyIndex]?.content) {
       addToHistory(
-        editorContent, 
+        editorContent,
         cursorPositionRef.current,
         documentHistory,
         historyIndex,
@@ -1361,29 +1393,22 @@ const App = () => {
   }, [isGitRepo, currentRepoPath]);
 
   // Helper (Electron-only): detect git repo root by walking up from a file path
-  const detectRepoFromFilePath = (filePath: string) => {
+  const detectRepoFromFilePath = async (filePath: string) => {
     try {
       if (!(window as any).electronAPI) return;
-      // Use Node path/fs via require which are only available in Electron
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const path = require('path');
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const fs = require('fs');
 
-      let currentDir = path.dirname(path.resolve(filePath));
-      const root = path.parse(currentDir).root;
+      const repoRoot = await (window as any).electronAPI.git.findRepoRoot({ filepath: filePath });
 
-      while (true) {
-        const gitDir = path.join(currentDir, '.git');
-        if (fs.existsSync(gitDir)) {
-          setCurrentRepoPath(currentDir);
-          setIsGitRepo(true);
-          gitManager.setRepoDir(currentDir);
-          updateGitStatus();
-          return;
-        }
-        if (currentDir === root) break;
-        currentDir = path.dirname(currentDir);
+      if (repoRoot) {
+        console.log('[App] Detected Git repo at:', repoRoot);
+        // Set in gitManager first (synchronous)
+        gitManager.setRepoDir(repoRoot);
+        // Then update state (asynchronous)
+        setCurrentRepoPath(repoRoot);
+        setIsGitRepo(true);
+        await updateGitStatus();
+      } else {
+        console.log('[App] No Git repo found for file:', filePath);
       }
     } catch (e) {
       console.error('Failed to auto-detect git repo from file path:', e);
@@ -1395,7 +1420,7 @@ const App = () => {
     if (isEditFull) {
       return "editor-preview-container-horizontal"; // Always use horizontal container in full mode
     }
-    return isHorizontal 
+    return isHorizontal
       ? "editor-preview-container-horizontal"
       : "editor-preview-container-parallel";
   };
@@ -1404,458 +1429,457 @@ const App = () => {
     <div className="container">
       <div className="menubar">
         <div className="dropdown-container">
-            <button
-              className="help-menubar-btn"
-              ref={el => { helpButtonRef.current = el; }}
-              onMouseDown={(e) => {
-                e.preventDefault();
-                closeAllDropdowns();
-                setShowHelpDropdown(true);
-                if (helpButtonRef.current) {
-                  const rect = helpButtonRef.current.getBoundingClientRect();
-                  const scrollX = window.scrollX || window.pageXOffset || 0;
-                  const scrollY = window.scrollY || window.pageYOffset || 0;
-                  const dropdownMin = 140; // same minWidth used in portal
-                  const dropdownWidth = Math.max(rect.width, dropdownMin);
-                  // Center the dropdown under the button
-                  let leftPos = rect.left + scrollX + (rect.width - dropdownWidth) / 2;
-                  // Clamp to keep on-screen
-                  leftPos = Math.max(0, leftPos);
-                  setHelpPos({ top: rect.bottom + scrollY, left: leftPos, width: dropdownWidth });
-                } else {
-                  setHelpPos(null);
-                }
-              }}
-              title="Help"
-            >
-              <FaFileImport /> &nbsp; File ▾
-            </button>
-            {showHelpDropdown && helpPos && createPortal(
-              <div className="header-dropdown format-dropdown" style={{ position: 'absolute', top: helpPos.top + 'px', left: helpPos.left + 'px', zIndex: 999999, minWidth: helpPos.width + 'px' }}>
-                <button
-                  className="dropdown-item"
-                  onClick={() => {
-                    handleOpenClick((content: string, filePath?: string | null) => {
-                      setEditorContent(content);
-                      if (filePath && (window as any).electronAPI) {
-                        // If we already know the repo root, only attach file if under that repo.
-                        if (currentRepoPath) {
-                          // eslint-disable-next-line @typescript-eslint/no-var-requires
-                          const path = require('path');
-                          const normalizedRepo = path.resolve(currentRepoPath);
-                          const normalizedFile = path.resolve(filePath);
-                          if (normalizedFile.startsWith(normalizedRepo + path.sep)) {
-                            setCurrentFilePath(filePath);
-                            if (!isGitRepo) {
-                              setIsGitRepo(true);
-                            }
-                            updateGitStatus();
-                          }
-                        } else {
-                          // No repo known yet: try to auto-detect by walking up to find .git
+          <button
+            className="help-menubar-btn"
+            ref={el => { helpButtonRef.current = el; }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              closeAllDropdowns();
+              setShowHelpDropdown(true);
+              if (helpButtonRef.current) {
+                const rect = helpButtonRef.current.getBoundingClientRect();
+                const scrollX = window.scrollX || window.pageXOffset || 0;
+                const scrollY = window.scrollY || window.pageYOffset || 0;
+                const dropdownMin = 140; // same minWidth used in portal
+                const dropdownWidth = Math.max(rect.width, dropdownMin);
+                // Center the dropdown under the button
+                let leftPos = rect.left + scrollX + (rect.width - dropdownWidth) / 2;
+                // Clamp to keep on-screen
+                leftPos = Math.max(0, leftPos);
+                setHelpPos({ top: rect.bottom + scrollY, left: leftPos, width: dropdownWidth });
+              } else {
+                setHelpPos(null);
+              }
+            }}
+            title="Help"
+          >
+            <FaFileImport /> &nbsp; File ▾
+          </button>
+          {showHelpDropdown && helpPos && createPortal(
+            <div className="header-dropdown format-dropdown" style={{ position: 'absolute', top: helpPos.top + 'px', left: helpPos.left + 'px', zIndex: 999999, minWidth: helpPos.width + 'px' }}>
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  handleOpenClick(async (content: string, filePath?: string | null) => {
+                    setEditorContent(content);
+                    if (filePath && (window as any).electronAPI) {
+                      // If we already know the repo root, only attach file if under that repo.
+                      if (currentRepoPath) {
+                        const path = await import('path');
+                        const normalizedRepo = path.resolve(currentRepoPath);
+                        const normalizedFile = path.resolve(filePath);
+                        if (normalizedFile.startsWith(normalizedRepo + path.sep)) {
                           setCurrentFilePath(filePath);
-                          detectRepoFromFilePath(filePath);
+                          if (!isGitRepo) {
+                            setIsGitRepo(true);
+                          }
+                          updateGitStatus();
                         }
-                      }
-                    });
-                    setShowHelpDropdown(false);
-                  }}
-                >
-                  <div className="hdr-title"><FaFileImport /> Open MarkDown</div>
-                  <div className="hdr-desc">Open markdown .md file</div>
-                </button>
-                <div className="hdr-sep" />
-                <button
-                  className="dropdown-item"
-                  onClick={() => {
-                    handleOpenTxtClick(setEditorContent);
-                    setShowHelpDropdown(false);
-                  }}
-                >
-                  <div className="hdr-title"><FaFileImport /> Open TXT</div>
-                  <div className="hdr-desc">Open plain text .txt file</div>
-                </button>
-                <div className="hdr-sep" />
-                <button
-                  className="dropdown-item"
-                  onClick={() => {
-                    const showPrompt = (onSubmit: (password: string) => void) => 
-                      showPasswordPrompt('Decrypt File', 'Enter the password for the .sstp file.', onSubmit);
-                    decryptFile(setEditorContent, showPrompt);
-                    setShowHelpDropdown(false);
-                  }}
-                >
-                  <div className="hdr-title"><BsFileEarmarkLockFill /> Open Encrypted</div>
-                  <div className="hdr-desc">Open encrypted .sstp file</div>
-                </button>
-                <div className="hdr-sep" />
-                <button className="dropdown-item" onClick={() => { setFeaturesOpen(true); setShowHelpDropdown(false); }}>
-                  <div className="hdr-title"><FaStar /> Features</div>
-                  <div className="hdr-desc">View latest features</div>
-                </button>
-                <div className="hdr-sep" />
-                  <button className="dropdown-item" onClick={async () => {
-                    const url = 'https://github.com/gcclinux/EasyEdit/discussions';
-                    let opened = false;
-                    try {
-                      if (electronAPI && electronAPI.openExternal) {
-                        const res = await electronAPI.openExternal(url);
-                        if (res && res.success) opened = true;
-                        else console.warn('openExternal returned failure:', res);
                       } else {
-                        const w = window.open(url, '_blank', 'noopener');
-                        if (w) opened = true;
-                      }
-                    } catch (e) {
-                      console.warn('openExternal/window.open threw:', e);
-                    }
-
-                    if (!opened) {
-                      // Try to copy to clipboard as a last-resort fallback and inform the user
-                      try {
-                        await navigator.clipboard.writeText(url);
-                        showToast('Unable to open link automatically. The URL has been copied to your clipboard.','warning');
-                      } catch (e) {
-                        // If clipboard isn't available, just show a message to the user
-                        showToast('Unable to open or copy link automatically. Please open the URL manually from the address bar.','error');
+                        // No repo known yet: try to auto-detect by walking up to find .git
+                        setCurrentFilePath(filePath);
+                        await detectRepoFromFilePath(filePath);
                       }
                     }
-
-                    setShowHelpDropdown(false);
-                  }}>
-                    <div className="hdr-title"><FaGithub /> Support</div>
-                    <div className="hdr-desc">Support & Discussion</div>
-                  </button>
-                <div className="hdr-sep" />
-                <button className="dropdown-item" onClick={async () => {
-                    const url = 'https://buymeacoffee.com/gcclinux';
-                    let opened = false;
-                    try {
-                      if (electronAPI && electronAPI.openExternal) {
-                        const res = await electronAPI.openExternal(url);
-                        if (res && res.success) opened = true;
-                        else console.warn('openExternal returned failure:', res);
-                      } else {
-                        const w = window.open(url, '_blank', 'noopener');
-                        if (w) opened = true;
-                      }
-                    } catch (e) {
-                      console.warn('openExternal/window.open threw:', e);
-                    }
-
-                    if (!opened) {
-                      // Try to copy to clipboard as a last-resort fallback and inform the user
-                      try {
-                        await navigator.clipboard.writeText(url);
-                        showToast('Unable to open link automatically. The URL has been copied to your clipboard.','warning');
-                      } catch (e) {
-                        // If clipboard isn't available, just show a message to the user
-                        showToast('Unable to open or copy link automatically. Please open the URL manually from the address bar.','error');
-                      }
-                    }
-
-                    setShowHelpDropdown(false);
-                  }}>
-                    <div className="hdr-title"><FaHeart /> Buy me a coffee</div>
-                    <div className="hdr-desc">Sponsor the project</div>
-                  </button>
-                <div className="hdr-sep" />
-                <button className="dropdown-item" onClick={() => { setThemeOpen(true); setShowHelpDropdown(false); }}>
-                  <div className="hdr-title"><FaPalette /> Select Theme</div>
-                  <div className="hdr-desc">Choose color scheme</div>
-                </button>
-                <div className="hdr-sep" />
-                <button className="dropdown-item" onClick={() => { setAboutOpen(true); setShowHelpDropdown(false); }}>
-                  <div className="hdr-title"><FaInfoCircle /> About</div>
-                  <div className="hdr-desc">EasyEdit version and info</div>
-                </button>
-              </div>, document.body
-            )}
-          </div>
-          <div className="dropdown-container">
-            <button
-              className="help-menubar-btn"
-              ref={el => { gitButtonRef.current = el; }}
-              onMouseDown={(e) => {
-                e.preventDefault();
-                closeAllDropdowns();
-                setShowGitDropdown(true);
-                if (gitButtonRef.current) {
-                  const rect = gitButtonRef.current.getBoundingClientRect();
-                  const scrollX = window.scrollX || window.pageXOffset || 0;
-                  const scrollY = window.scrollY || window.pageYOffset || 0;
-                  const dropdownMin = 140;
-                  const dropdownWidth = Math.max(rect.width, dropdownMin);
-                  let leftPos = rect.left + scrollX + (rect.width - dropdownWidth) / 2;
-                  leftPos = Math.max(0, leftPos);
-                  setGitPos({ top: rect.bottom + scrollY, left: leftPos, width: dropdownWidth });
-                } else {
-                  setGitPos(null);
+                  });
+                  setShowHelpDropdown(false);
+                }}
+              >
+                <div className="hdr-title"><FaFileImport /> Open MarkDown</div>
+                <div className="hdr-desc">Open markdown .md file</div>
+              </button>
+              <div className="hdr-sep" />
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  handleOpenTxtClick(setEditorContent);
+                  setShowHelpDropdown(false);
+                }}
+              >
+                <div className="hdr-title"><FaFileImport /> Open TXT</div>
+                <div className="hdr-desc">Open plain text .txt file</div>
+              </button>
+              <div className="hdr-sep" />
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  const showPrompt = (onSubmit: (password: string) => void) =>
+                    showPasswordPrompt('Decrypt File', 'Enter the password for the .sstp file.', onSubmit);
+                  decryptFile(setEditorContent, showPrompt);
+                  setShowHelpDropdown(false);
+                }}
+              >
+                <div className="hdr-title"><BsFileEarmarkLockFill /> Open Encrypted</div>
+                <div className="hdr-desc">Open encrypted .sstp file</div>
+              </button>
+              <div className="hdr-sep" />
+              <button className="dropdown-item" onClick={() => { setFeaturesOpen(true); setShowHelpDropdown(false); }}>
+                <div className="hdr-title"><FaStar /> Features</div>
+                <div className="hdr-desc">View latest features</div>
+              </button>
+              <div className="hdr-sep" />
+              <button className="dropdown-item" onClick={async () => {
+                const url = 'https://github.com/gcclinux/EasyEdit/discussions';
+                let opened = false;
+                try {
+                  if (electronAPI && electronAPI.openExternal) {
+                    const res = await electronAPI.openExternal(url);
+                    if (res && res.success) opened = true;
+                    else console.warn('openExternal returned failure:', res);
+                  } else {
+                    const w = window.open(url, '_blank', 'noopener');
+                    if (w) opened = true;
+                  }
+                } catch (e) {
+                  console.warn('openExternal/window.open threw:', e);
                 }
-              }}
-              title="Git Operations"
-            >
-              <FaCodeBranch /> &nbsp; Git ▾
-            </button>
-            {showGitDropdown && gitPos && createPortal(
-              <div className="header-dropdown format-dropdown" style={{ position: 'absolute', top: gitPos.top + 'px', left: gitPos.left + 'px', zIndex: 999999, minWidth: gitPos.width + 'px' }}>
-                <GitDropdown
-                  onClone={handleGitClone}
-                  onPull={handleGitPull}
-                  onPush={handleGitPush}
-                  onFetch={handleGitFetch}
-                  onCommit={handleGitCommit}
-                  onSave={handleGitSave}
-                  onSaveCommitPush={handleSaveStageCommitPush}
-                  onSetupCredentials={handleSetupCredentials}
-                  onClearCredentials={handleClearCredentials}
-                  onViewHistory={handleViewHistory}
-                  onInitRepo={handleInitRepo}
-                  onCreateGitignore={handleCreateGitignore}
-                  hasCredentials={hasStoredCredentials}
-                  onClose={() => {
-                    setShowGitDropdown(false);
-                    setGitPos(null);
-                  }}
-                />
-              </div>,
-              document.body
-            )}
-          </div>
-          {isGitRepo && (
-            <GitStatusIndicator
-              isActive={isGitRepo}
-              branchName={gitStatus.branch}
-              modifiedCount={gitStatus.modifiedCount}
-              status={gitStatus.status}
-            />
+
+                if (!opened) {
+                  // Try to copy to clipboard as a last-resort fallback and inform the user
+                  try {
+                    await navigator.clipboard.writeText(url);
+                    showToast('Unable to open link automatically. The URL has been copied to your clipboard.', 'warning');
+                  } catch (e) {
+                    // If clipboard isn't available, just show a message to the user
+                    showToast('Unable to open or copy link automatically. Please open the URL manually from the address bar.', 'error');
+                  }
+                }
+
+                setShowHelpDropdown(false);
+              }}>
+                <div className="hdr-title"><FaGithub /> Support</div>
+                <div className="hdr-desc">Support & Discussion</div>
+              </button>
+              <div className="hdr-sep" />
+              <button className="dropdown-item" onClick={async () => {
+                const url = 'https://buymeacoffee.com/gcclinux';
+                let opened = false;
+                try {
+                  if (electronAPI && electronAPI.openExternal) {
+                    const res = await electronAPI.openExternal(url);
+                    if (res && res.success) opened = true;
+                    else console.warn('openExternal returned failure:', res);
+                  } else {
+                    const w = window.open(url, '_blank', 'noopener');
+                    if (w) opened = true;
+                  }
+                } catch (e) {
+                  console.warn('openExternal/window.open threw:', e);
+                }
+
+                if (!opened) {
+                  // Try to copy to clipboard as a last-resort fallback and inform the user
+                  try {
+                    await navigator.clipboard.writeText(url);
+                    showToast('Unable to open link automatically. The URL has been copied to your clipboard.', 'warning');
+                  } catch (e) {
+                    // If clipboard isn't available, just show a message to the user
+                    showToast('Unable to open or copy link automatically. Please open the URL manually from the address bar.', 'error');
+                  }
+                }
+
+                setShowHelpDropdown(false);
+              }}>
+                <div className="hdr-title"><FaHeart /> Buy me a coffee</div>
+                <div className="hdr-desc">Sponsor the project</div>
+              </button>
+              <div className="hdr-sep" />
+              <button className="dropdown-item" onClick={() => { setThemeOpen(true); setShowHelpDropdown(false); }}>
+                <div className="hdr-title"><FaPalette /> Select Theme</div>
+                <div className="hdr-desc">Choose color scheme</div>
+              </button>
+              <div className="hdr-sep" />
+              <button className="dropdown-item" onClick={() => { setAboutOpen(true); setShowHelpDropdown(false); }}>
+                <div className="hdr-title"><FaInfoCircle /> About</div>
+                <div className="hdr-desc">EasyEdit version and info</div>
+              </button>
+            </div>, document.body
           )}
+        </div>
+        <div className="dropdown-container">
+          <button
+            className="help-menubar-btn"
+            ref={el => { gitButtonRef.current = el; }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              closeAllDropdowns();
+              setShowGitDropdown(true);
+              if (gitButtonRef.current) {
+                const rect = gitButtonRef.current.getBoundingClientRect();
+                const scrollX = window.scrollX || window.pageXOffset || 0;
+                const scrollY = window.scrollY || window.pageYOffset || 0;
+                const dropdownMin = 140;
+                const dropdownWidth = Math.max(rect.width, dropdownMin);
+                let leftPos = rect.left + scrollX + (rect.width - dropdownWidth) / 2;
+                leftPos = Math.max(0, leftPos);
+                setGitPos({ top: rect.bottom + scrollY, left: leftPos, width: dropdownWidth });
+              } else {
+                setGitPos(null);
+              }
+            }}
+            title="Git Operations"
+          >
+            <FaCodeBranch /> &nbsp; Git ▾
+          </button>
+          {showGitDropdown && gitPos && createPortal(
+            <div className="header-dropdown format-dropdown" style={{ position: 'absolute', top: gitPos.top + 'px', left: gitPos.left + 'px', zIndex: 999999, minWidth: gitPos.width + 'px' }}>
+              <GitDropdown
+                onClone={handleGitClone}
+                onPull={handleGitPull}
+                onPush={handleGitPush}
+                onFetch={handleGitFetch}
+                onCommit={handleGitCommit}
+                onSave={handleGitSave}
+                onSaveCommitPush={handleSaveStageCommitPush}
+                onSetupCredentials={handleSetupCredentials}
+                onClearCredentials={handleClearCredentials}
+                onViewHistory={handleViewHistory}
+                onInitRepo={handleInitRepo}
+                onCreateGitignore={handleCreateGitignore}
+                hasCredentials={hasStoredCredentials}
+                onClose={() => {
+                  setShowGitDropdown(false);
+                  setGitPos(null);
+                }}
+              />
+            </div>,
+            document.body
+          )}
+        </div>
+        {isGitRepo && (
+          <GitStatusIndicator
+            isActive={isGitRepo}
+            branchName={gitStatus.branch}
+            modifiedCount={gitStatus.modifiedCount}
+            status={gitStatus.status}
+          />
+        )}
         <button className="menu-item fixed-menubar-btn" onClick={toggleEdit}>
           <FaExchangeAlt /> &nbsp; Toggle Edit
         </button>
         <button className="menu-item fixed-menubar-btn" onClick={togglePreview}>
           <FaExchangeAlt /> &nbsp; Toggle Preview
         </button>
-          <button 
-            className="menu-item fixed-menubar-btn" 
-            onClick={() => handleUndo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
-            disabled={historyIndex <= 0}
-          >
-            <FaUndo /> &nbsp; Undo
-          </button>
+        <button
+          className="menu-item fixed-menubar-btn"
+          onClick={() => handleUndo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
+          disabled={historyIndex <= 0}
+        >
+          <FaUndo /> &nbsp; Undo
+        </button>
+        <button
+          className="menu-item fixed-menubar-btn"
+          onClick={() => {
+            handleClear(setEditorContent);
+            setCurrentFilePath(null);
+            setGitStatus({ branch: '', modifiedCount: 0, status: 'clean' });
+          }}
+        >
+          <FaTrash /> &nbsp; Clear
+        </button>
+        <button
+          className="menu-item fixed-menubar-btn"
+          onClick={() => handleRedo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
+          disabled={historyIndex >= documentHistory.length - 1}
+        >
+          <FaRedo /> &nbsp; Redo
+        </button>
+        <div className="dropdown-container">
           <button
             className="menu-item fixed-menubar-btn"
-            onClick={() => {
-              handleClear(setEditorContent);
-              setCurrentFilePath(null);
-              setGitStatus({ branch: '', modifiedCount: 0, status: 'clean' });
+            ref={el => { tasksButtonRef.current = el; }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              cacheSelection();
+              closeAllDropdowns();
+              setShowTasksDropdown(true);
+              if (tasksButtonRef.current) {
+                const rect = tasksButtonRef.current.getBoundingClientRect();
+                setTasksPos({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX, width: rect.width });
+              } else {
+                setTasksPos(null);
+              }
             }}
+            title="Tasks"
           >
-            <FaTrash /> &nbsp; Clear
+            <GoTasklist /> &nbsp; Tasks ▾
           </button>
-          <button 
-            className="menu-item fixed-menubar-btn" 
-            onClick={() => handleRedo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
-            disabled={historyIndex >= documentHistory.length - 1}
-          >
-            <FaRedo /> &nbsp; Redo
-          </button>
-          <div className="dropdown-container">
-            <button
-              className="menu-item fixed-menubar-btn"
-              ref={el => { tasksButtonRef.current = el; }}
-              onMouseDown={(e) => {
-                e.preventDefault();
-                cacheSelection();
-                closeAllDropdowns();
-                setShowTasksDropdown(true);
-                if (tasksButtonRef.current) {
-                  const rect = tasksButtonRef.current.getBoundingClientRect();
-                  setTasksPos({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX, width: rect.width });
-                } else {
-                  setTasksPos(null);
-                }
-              }}
-              title="Tasks"
+          {showTasksDropdown && tasksPos && createPortal(
+            <div
+              className="header-dropdown format-dropdown"
+              style={{ position: 'absolute', top: tasksPos.top + 'px', left: tasksPos.left + 'px', zIndex: 999999, minWidth: tasksPos.width + 'px' }}
             >
-              <GoTasklist /> &nbsp; Tasks ▾
-            </button>
-            {showTasksDropdown && tasksPos && createPortal(
-              <div
-                className="header-dropdown format-dropdown"
-                style={{ position: 'absolute', top: tasksPos.top + 'px', left: tasksPos.left + 'px', zIndex: 999999, minWidth: tasksPos.width + 'px' }}
-              >
-                {taskTemplates.map((t, idx) => (
-                  <div key={idx}>
-                    <button
-                      className="dropdown-item"
-                      onClick={() => {
-                        handleInsertImageTemplate(t.markdown + '\n\n');
-                        setShowTasksDropdown(false);
-                        setTasksPos(null);
-                      }}
-                    >
-                      <div className="hdr-title"><GoTasklist /> {t.label}</div>
-                      <div className="hdr-desc">{t.description}</div>
-                    </button>
-                    <div className="hdr-sep" />
-                  </div>
-                ))}
-              </div>,
-              document.body
-            )}
-          </div>
-          <div className="dropdown-container">
-            <button
-              className="menu-item fixed-menubar-btn"
-              ref={exportsButtonRef}
-              onMouseDown={(e) => {
-                e.preventDefault();
-                cacheSelection();
-                closeAllDropdowns();
-                setShowExportsDropdown(true);
-                if (exportsButtonRef.current) {
-                  const rect = exportsButtonRef.current.getBoundingClientRect();
-                  setExportsPos({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX, width: rect.width });
-                } else {
+              {taskTemplates.map((t, idx) => (
+                <div key={idx}>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      handleInsertImageTemplate(t.markdown + '\n\n');
+                      setShowTasksDropdown(false);
+                      setTasksPos(null);
+                    }}
+                  >
+                    <div className="hdr-title"><GoTasklist /> {t.label}</div>
+                    <div className="hdr-desc">{t.description}</div>
+                  </button>
+                  <div className="hdr-sep" />
+                </div>
+              ))}
+            </div>,
+            document.body
+          )}
+        </div>
+        <div className="dropdown-container">
+          <button
+            className="menu-item fixed-menubar-btn"
+            ref={exportsButtonRef}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              cacheSelection();
+              closeAllDropdowns();
+              setShowExportsDropdown(true);
+              if (exportsButtonRef.current) {
+                const rect = exportsButtonRef.current.getBoundingClientRect();
+                setExportsPos({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX, width: rect.width });
+              } else {
+                setExportsPos(null);
+              }
+            }}
+            title="Exports"
+          >
+            <FaDownload /> &nbsp; Exports ▾
+          </button>
+          {showExportsDropdown && exportsPos && createPortal(
+            <div
+              className="header-dropdown format-dropdown"
+              style={{ position: 'absolute', top: exportsPos.top + 'px', left: exportsPos.left + 'px', zIndex: 999999, minWidth: exportsPos.width + 'px' }}
+            >
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  handleSaveAsPDF();
+                  setShowExportsDropdown(false);
                   setExportsPos(null);
-                }
-              }}
-              title="Exports"
-            >
-              <FaDownload /> &nbsp; Exports ▾
-            </button>
-            {showExportsDropdown && exportsPos && createPortal(
-              <div
-                className="header-dropdown format-dropdown"
-                style={{ position: 'absolute', top: exportsPos.top + 'px', left: exportsPos.left + 'px', zIndex: 999999, minWidth: exportsPos.width + 'px' }}
+                }}
               >
-                <button
-                  className="dropdown-item"
-                  onClick={() => {
-                    handleSaveAsPDF();
-                    setShowExportsDropdown(false);
-                    setExportsPos(null);
-                  }}
-                >
-                  <div className="hdr-title"><FaFilePdf /> Export to PDF</div>
-                  <div className="hdr-desc">Save as a PDF file</div>
-                </button>
-                <div className="hdr-sep" />
-                <button
-                  className="dropdown-item"
-                  onClick={() => {
-                    handleSaveToHTML();
-                    setShowExportsDropdown(false);
-                    setExportsPos(null);
-                  }}
-                >
-                  <div className="hdr-title"><FaFileCode /> Export to HTML</div>
-                  <div className="hdr-desc">Save as an HTML file</div>
-                </button>
-                <div className="hdr-sep" />
-                <button
-                  className="dropdown-item"
-                  onClick={() => {
-                    handleSaveToMarkdown();
-                    setShowExportsDropdown(false);
-                    setExportsPos(null);
-                  }}
-                >
-                  <div className="hdr-title"><FaFileAlt /> Export to Markdown</div>
-                  <div className="hdr-desc">Save as a Markdown (.md) file</div>
-                </button>
-                <div className="hdr-sep" />
-                <button
-                  className="dropdown-item"
-                  onClick={() => {
-                    handleSaveToTXT();
-                    setShowExportsDropdown(false);
-                    setExportsPos(null);
-                  }}
-                >
-                  <div className="hdr-title"><FaFileAlt /> Export to TXT</div>
-                  <div className="hdr-desc">Save as a plain text (.txt) file</div>
-                </button>
-                <div className="hdr-sep" />
-                <button
-                  className="dropdown-item"
-                  onClick={() => {
-                    handleSaveEncrypted();
-                    setShowExportsDropdown(false);
-                    setExportsPos(null);
-                  }}
-                >
-                  <div className="hdr-title"><FaLock /> Export Encrypted</div>
-                  <div className="hdr-desc">Save as encrypted (.sstp) file</div>
-                </button>
-              </div>,
-              document.body
-            )}
-          </div>
+                <div className="hdr-title"><FaFilePdf /> Export to PDF</div>
+                <div className="hdr-desc">Save as a PDF file</div>
+              </button>
+              <div className="hdr-sep" />
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  handleSaveToHTML();
+                  setShowExportsDropdown(false);
+                  setExportsPos(null);
+                }}
+              >
+                <div className="hdr-title"><FaFileCode /> Export to HTML</div>
+                <div className="hdr-desc">Save as an HTML file</div>
+              </button>
+              <div className="hdr-sep" />
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  handleSaveToMarkdown();
+                  setShowExportsDropdown(false);
+                  setExportsPos(null);
+                }}
+              >
+                <div className="hdr-title"><FaFileAlt /> Export to Markdown</div>
+                <div className="hdr-desc">Save as a Markdown (.md) file</div>
+              </button>
+              <div className="hdr-sep" />
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  handleSaveToTXT();
+                  setShowExportsDropdown(false);
+                  setExportsPos(null);
+                }}
+              >
+                <div className="hdr-title"><FaFileAlt /> Export to TXT</div>
+                <div className="hdr-desc">Save as a plain text (.txt) file</div>
+              </button>
+              <div className="hdr-sep" />
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  handleSaveEncrypted();
+                  setShowExportsDropdown(false);
+                  setExportsPos(null);
+                }}
+              >
+                <div className="hdr-title"><FaLock /> Export Encrypted</div>
+                <div className="hdr-desc">Save as encrypted (.sstp) file</div>
+              </button>
+            </div>,
+            document.body
+          )}
+        </div>
 
-          {/* About & Features Modals */}
-          <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
-          <FeaturesModal open={featuresOpen} onClose={() => setFeaturesOpen(false)} />
-          <ThemeModal 
-            open={themeOpen} 
-            onClose={() => setThemeOpen(false)} 
-            onSelectTheme={(theme, isCustom) => { loadTheme(theme, isCustom); setCurrentTheme(theme); }}
-            currentTheme={currentTheme}
-            onOpenImport={() => setImportThemeOpen(true)}
-          />
-          <ImportThemeModal
-            open={importThemeOpen}
-            onClose={() => setImportThemeOpen(false)}
-            onImport={handleImportTheme}
-          />
-          <PasswordModal
-            open={passwordModalConfig.open}
-            onClose={handleClosePasswordModal}
-            onSubmit={passwordModalConfig.onSubmit}
-            title={passwordModalConfig.title}
-            promptText={passwordModalConfig.promptText}
-          />
-          <CloneModal
-            open={cloneModalOpen}
-            onClose={() => setCloneModalOpen(false)}
-            onSubmit={handleCloneSubmit}
-          />
-          <FileBrowserModal
-            open={fileBrowserModalOpen}
-            onClose={() => setFileBrowserModalOpen(false)}
-            onSelectFile={handleFileSelect}
-            files={repoFiles}
-            repoPath={currentRepoPath || ''}
-          />
-          <GitCredentialsModal
-            open={credentialsModalOpen}
-            onClose={() => setCredentialsModalOpen(false)}
-            onSubmit={handleCredentialsSubmit}
-            isSetup={!hasStoredCredentials}
-            initialUsername={prefillCredentials?.username}
-            initialToken={prefillCredentials?.token}
-          />
-          <MasterPasswordModal
-            open={masterPasswordModalOpen}
-            onClose={() => setMasterPasswordModalOpen(false)}
-            onSubmit={handleMasterPasswordSubmit}
-            isSetup={isMasterPasswordSetup}
-          />
-          <CommitModal
-            open={commitModalOpen}
-            onClose={() => setCommitModalOpen(false)}
-            onSubmit={handleCommitSubmit}
-            modifiedFiles={modifiedFiles}
-          />
-          <GitHistoryModal
-            open={gitHistoryModalOpen}
-            onClose={() => setGitHistoryModalOpen(false)}
-            commits={commitHistory}
-            repoPath={currentRepoPath || ''}
-          />
+        {/* About & Features Modals */}
+        <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
+        <FeaturesModal open={featuresOpen} onClose={() => setFeaturesOpen(false)} />
+        <ThemeModal
+          open={themeOpen}
+          onClose={() => setThemeOpen(false)}
+          onSelectTheme={(theme, isCustom) => { loadTheme(theme, isCustom); setCurrentTheme(theme); }}
+          currentTheme={currentTheme}
+          onOpenImport={() => setImportThemeOpen(true)}
+        />
+        <ImportThemeModal
+          open={importThemeOpen}
+          onClose={() => setImportThemeOpen(false)}
+          onImport={handleImportTheme}
+        />
+        <PasswordModal
+          open={passwordModalConfig.open}
+          onClose={handleClosePasswordModal}
+          onSubmit={passwordModalConfig.onSubmit}
+          title={passwordModalConfig.title}
+          promptText={passwordModalConfig.promptText}
+        />
+        <CloneModal
+          open={cloneModalOpen}
+          onClose={() => setCloneModalOpen(false)}
+          onSubmit={handleCloneSubmit}
+        />
+        <FileBrowserModal
+          open={fileBrowserModalOpen}
+          onClose={() => setFileBrowserModalOpen(false)}
+          onSelectFile={handleFileSelect}
+          files={repoFiles}
+          repoPath={currentRepoPath || ''}
+        />
+        <GitCredentialsModal
+          open={credentialsModalOpen}
+          onClose={() => setCredentialsModalOpen(false)}
+          onSubmit={handleCredentialsSubmit}
+          isSetup={!hasStoredCredentials}
+          initialUsername={prefillCredentials?.username}
+          initialToken={prefillCredentials?.token}
+        />
+        <MasterPasswordModal
+          open={masterPasswordModalOpen}
+          onClose={() => setMasterPasswordModalOpen(false)}
+          onSubmit={handleMasterPasswordSubmit}
+          isSetup={isMasterPasswordSetup}
+        />
+        <CommitModal
+          open={commitModalOpen}
+          onClose={() => setCommitModalOpen(false)}
+          onSubmit={handleCommitSubmit}
+          modifiedFiles={modifiedFiles}
+        />
+        <GitHistoryModal
+          open={gitHistoryModalOpen}
+          onClose={() => setGitHistoryModalOpen(false)}
+          commits={commitHistory}
+          repoPath={currentRepoPath || ''}
+        />
 
-          <div className="menubar-bottom">
+        <div className="menubar-bottom">
           <div className="dropdown-container">
             <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowHeaderDropdown(true); }} title="Headers"><CgFormatHeading />Headers</button>
             {showHeaderDropdown && (
@@ -1989,123 +2013,123 @@ const App = () => {
                 className="header-dropdown format-dropdown"
                 style={{ position: 'absolute', top: templatesPos.top + 'px', left: templatesPos.left + 'px', zIndex: 999999, minWidth: templatesPos.width + 'px' }}
               >
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildDailyJournalTemplate(new Date());
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><BsJournalBookmarkFill />  Daily Journal</div>
-                    <div className="hdr-desc">Start a daily journal</div>
-                  </button>
-                  <div className="hdr-sep" />
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildMeetingNotesTemplate(new Date());
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><BsKanban /> Meeting Notes</div>
-                    <div className="hdr-desc">Structured meeting notes</div>
-                  </button>
-                  <div className="hdr-sep" />
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildProjectPlanTemplate(new Date());
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><BsClipboard2Check /> Project Plan</div>
-                    <div className="hdr-desc">High-level project plan</div>
-                  </button>
-                  <div className="hdr-sep" />
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildStudyNotesTemplate(new Date());
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><BsPersonWorkspace /> Study Notes</div>
-                    <div className="hdr-desc">Organized study template</div>
-                  </button>
-                  <div className="hdr-sep" />
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildTravelLogsTemplate(new Date());
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><GiJourney /> Travel Log</div>
-                    <div className="hdr-desc">Capture trip itineraries</div>
-                  </button>
-                  <div className="hdr-sep" />
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildWorkoutLogTemplate(new Date());
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><BsTropicalStorm /> Workout Log</div>
-                    <div className="hdr-desc">Log workouts notes</div>
-                  </button>
-                  <div className="hdr-sep" />
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildBugReportTemplate(new Date());
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><BsFillBugFill /> Bug Report</div>
-                    <div className="hdr-desc">Report issues tracker</div>
-                  </button>
-                  <div className="hdr-sep" />
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildDiagramExamplesTemplate();
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><BsDiagram3 /> Diagram Example</div>
-                    <div className="hdr-desc">UML & Mermaid diagram</div>
-                  </button>
-                  <div className="hdr-sep" />
-                  <button
-                    className="dropdown-item"
-                    onClick={() => {
-                      const tpl = buildDiagramASCIITemplate();
-                      handleInsertImageTemplate(tpl + '\n\n');
-                      setShowTemplatesDropdown(false);
-                      setTemplatesPos(null);
-                    }}
-                  >
-                    <div className="hdr-title"><BsDiagram3 /> ASCII Diagram</div>
-                    <div className="hdr-desc">Markdown ASCII art diagram</div>
-                  </button>
-                  <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    const tpl = buildDailyJournalTemplate(new Date());
+                    handleInsertImageTemplate(tpl + '\n\n');
+                    setShowTemplatesDropdown(false);
+                    setTemplatesPos(null);
+                  }}
+                >
+                  <div className="hdr-title"><BsJournalBookmarkFill />  Daily Journal</div>
+                  <div className="hdr-desc">Start a daily journal</div>
+                </button>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    const tpl = buildMeetingNotesTemplate(new Date());
+                    handleInsertImageTemplate(tpl + '\n\n');
+                    setShowTemplatesDropdown(false);
+                    setTemplatesPos(null);
+                  }}
+                >
+                  <div className="hdr-title"><BsKanban /> Meeting Notes</div>
+                  <div className="hdr-desc">Structured meeting notes</div>
+                </button>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    const tpl = buildProjectPlanTemplate(new Date());
+                    handleInsertImageTemplate(tpl + '\n\n');
+                    setShowTemplatesDropdown(false);
+                    setTemplatesPos(null);
+                  }}
+                >
+                  <div className="hdr-title"><BsClipboard2Check /> Project Plan</div>
+                  <div className="hdr-desc">High-level project plan</div>
+                </button>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    const tpl = buildStudyNotesTemplate(new Date());
+                    handleInsertImageTemplate(tpl + '\n\n');
+                    setShowTemplatesDropdown(false);
+                    setTemplatesPos(null);
+                  }}
+                >
+                  <div className="hdr-title"><BsPersonWorkspace /> Study Notes</div>
+                  <div className="hdr-desc">Organized study template</div>
+                </button>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    const tpl = buildTravelLogsTemplate(new Date());
+                    handleInsertImageTemplate(tpl + '\n\n');
+                    setShowTemplatesDropdown(false);
+                    setTemplatesPos(null);
+                  }}
+                >
+                  <div className="hdr-title"><GiJourney /> Travel Log</div>
+                  <div className="hdr-desc">Capture trip itineraries</div>
+                </button>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    const tpl = buildWorkoutLogTemplate(new Date());
+                    handleInsertImageTemplate(tpl + '\n\n');
+                    setShowTemplatesDropdown(false);
+                    setTemplatesPos(null);
+                  }}
+                >
+                  <div className="hdr-title"><BsTropicalStorm /> Workout Log</div>
+                  <div className="hdr-desc">Log workouts notes</div>
+                </button>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    const tpl = buildBugReportTemplate(new Date());
+                    handleInsertImageTemplate(tpl + '\n\n');
+                    setShowTemplatesDropdown(false);
+                    setTemplatesPos(null);
+                  }}
+                >
+                  <div className="hdr-title"><BsFillBugFill /> Bug Report</div>
+                  <div className="hdr-desc">Report issues tracker</div>
+                </button>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    const tpl = buildDiagramExamplesTemplate();
+                    handleInsertImageTemplate(tpl + '\n\n');
+                    setShowTemplatesDropdown(false);
+                    setTemplatesPos(null);
+                  }}
+                >
+                  <div className="hdr-title"><BsDiagram3 /> Diagram Example</div>
+                  <div className="hdr-desc">UML & Mermaid diagram</div>
+                </button>
+                <div className="hdr-sep" />
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    const tpl = buildDiagramASCIITemplate();
+                    handleInsertImageTemplate(tpl + '\n\n');
+                    setShowTemplatesDropdown(false);
+                    setTemplatesPos(null);
+                  }}
+                >
+                  <div className="hdr-title"><BsDiagram3 /> ASCII Diagram</div>
+                  <div className="hdr-desc">Markdown ASCII art diagram</div>
+                </button>
+                <div className="hdr-sep" />
               </div>,
               document.body
             )}
@@ -2274,35 +2298,35 @@ const App = () => {
           }}
         />
 
-        
+
         <p></p>
-        
+
         <div
           className={getEditorPreviewContainerClass()}
         >
-        {/* TextareaComponent is a memoized component that renders the textarea for Markdown editing */}
-        {!isPreviewFull && (
-          <TextareaComponent
-            textareaRef={textareaRef}
-            editorContent={editorContent}
-            handleChange={handleChange}
-            handleContextMenu={handleContextMenu}
-            isEditFull={isEditFull}
-            isHorizontal={isHorizontal}
-            setEditorContent={setEditorContent}
-            cursorPositionRef={cursorPositionRef}
-          />
-        )}
-        
-        {/* PreviewComponent is a memoized component that renders the preview for Markdown editing */}
-        {!isEditFull && (
-          <PreviewComponent
-            previewRef={previewRef}
-            editorContent={editorContent}
-            isPreviewFull={isPreviewFull}
-            isHorizontal={isHorizontal}
-            initializeMermaid={initializeMermaid}
-          />
+          {/* TextareaComponent is a memoized component that renders the textarea for Markdown editing */}
+          {!isPreviewFull && (
+            <TextareaComponent
+              textareaRef={textareaRef}
+              editorContent={editorContent}
+              handleChange={handleChange}
+              handleContextMenu={handleContextMenu}
+              isEditFull={isEditFull}
+              isHorizontal={isHorizontal}
+              setEditorContent={setEditorContent}
+              cursorPositionRef={cursorPositionRef}
+            />
+          )}
+
+          {/* PreviewComponent is a memoized component that renders the preview for Markdown editing */}
+          {!isEditFull && (
+            <PreviewComponent
+              previewRef={previewRef}
+              editorContent={editorContent}
+              isPreviewFull={isPreviewFull}
+              isHorizontal={isHorizontal}
+              initializeMermaid={initializeMermaid}
+            />
           )}
         </div>
 

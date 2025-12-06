@@ -39,20 +39,20 @@ function saveConfig(window) {
 
 async function setupServer(isDev) {
   const port = await detect(defaultPort);
-  
+
   if (isDev) {
     return port;
   } else {
     const app = express();
     app.use(express.static(path.join(__dirname, 'dist')));
-    
+
     // Fallback middleware: serve index.html for any request not handled by static files.
     // Use a simple middleware instead of a route pattern to avoid path-to-regexp
     // parsing differences between the dev environment and the packaged app.
     app.use((req, res) => {
       res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     });
-    
+
     server = app.listen(port);
     return port;
   }
@@ -69,7 +69,7 @@ const openLinkInNewWindow = (url) => {
       contextIsolation: true
     }
   });
-  
+
   newWindow.setMenuBarVisibility(false);
   newWindow.loadURL(url);
 };
@@ -156,8 +156,8 @@ async function createMainWindow() {
   });
 
   const port = await setupServer(isDev);
-  const startUrl = isDev 
-    ? `http://localhost:${viteDevPort}` 
+  const startUrl = isDev
+    ? `http://localhost:${viteDevPort}`
     : `http://localhost:${port}`;
 
   try {
@@ -195,49 +195,33 @@ async function createMainWindow() {
   return mainWindow;
 }
 
-async function handleFileOpen(filePath) {
+async function handleFileOpen(filePath, sendToRenderer = true) {
   try {
     // First check if path exists and is not a directory
     const stats = fs.statSync(filePath);
     if (stats.isDirectory()) {
       //console.log('Path is a directory, skipping:', filePath);
-      return;
+      return null;
     }
 
     const content = await fsPromises.readFile(filePath, 'utf-8');
     //console.log('File content loaded successfully');
 
+    // If sendToRenderer is false, just return the data (used by dialog:openFile)
+    if (!sendToRenderer) {
+      return { content, filePath };
+    }
+
+    // Otherwise send to renderer via IPC (used for OS-level file open)
     return new Promise((resolve) => {
       if (mainWindow.webContents.isLoading()) {
         mainWindow.webContents.once('did-finish-load', () => {
-          mainWindow.webContents.send('file-opened', content);
-          resolve();
+          mainWindow.webContents.send('file-opened', { content, filePath });
+          resolve({ content, filePath });
         });
       } else {
-        // Detect WSL (Windows Subsystem for Linux). In WSL, Linux openers like xdg-open
-        // are often unavailable; prefer calling the Windows host to open the URL.
-        let isWSL = false;
-        try {
-          if (fs.existsSync('/proc/version')) {
-            const ver = fs.readFileSync('/proc/version', 'utf8').toLowerCase();
-            if (ver.indexOf('microsoft') !== -1 || ver.indexOf('wsl') !== -1) isWSL = true;
-          }
-        } catch (wslErr) {
-          // ignore
-        }
-
-        if (isWSL) {
-          try {
-            // Prefer cmd.exe start which opens the default Windows browser from WSL.
-            exec(`cmd.exe /C start "" "${url.replace(/"/g, '\\"')}"`, (e) => { if (e) console.error('Fallback cmd.exe start failed:', e); });
-            return { success: true, fallback: true, wsl: true };
-          } catch (we) {
-            console.error('WSL fallback failed:', we);
-            // continue to general Linux attempts below
-          }
-        }
-        mainWindow.webContents.send('file-opened', content);
-        resolve();
+        mainWindow.webContents.send('file-opened', { content, filePath });
+        resolve({ content, filePath });
       }
     });
   } catch (err) {
@@ -248,6 +232,7 @@ async function handleFileOpen(filePath) {
     } else {
       console.error('Error reading file:', err);
     }
+    return null;
   }
 }
 
@@ -261,9 +246,11 @@ function setupIPCHandlers() {
       ]
     });
 
-    if (!canceled) {
-      return await handleFileOpen(filePaths[0]);
+    if (!canceled && filePaths.length > 0) {
+      // Pass false to get { content, filePath } returned instead of sending via IPC
+      return await handleFileOpen(filePaths[0], false);
     }
+    return null;
   });
 
   ipcMain.handle('dialog:saveFile', async (event, content) => {
@@ -445,6 +432,10 @@ app.whenReady().then(async () => {
   // call to setupMenu() below.
   // setupMenu();
   setupIPCHandlers();
+
+  // Setup Git handlers
+  const { setupGitHandlers } = require('./gitHandler.cjs');
+  setupGitHandlers();
 
   // Handle command line file opening
   if (process.argv.length > 1) {
