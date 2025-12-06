@@ -676,6 +676,9 @@ html,
 
 .hdr-title {
   font-weight: 550;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hdr-desc {
@@ -685,6 +688,9 @@ html,
   font-style: italic;
   color: var(--color-text-light);
   margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hdr-sep {
