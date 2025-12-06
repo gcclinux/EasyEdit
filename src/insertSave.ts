@@ -312,24 +312,35 @@ export const readFileFromDirectory = async (
   filePath: string
 ): Promise<{ content: string; fileHandle: any } | null> => {
   try {
-    const pathParts = filePath.split('/');
+    console.log('[ReadFile] Reading file:', filePath);
+    console.log('[ReadFile] Directory handle:', dirHandle?.name);
+    
+    // Normalize path separators
+    const normalizedPath = filePath.replace(/\\/g, '/');
+    const pathParts = normalizedPath.split('/').filter(part => part.length > 0);
+    
+    console.log('[ReadFile] Path parts:', pathParts);
+    
     let currentHandle = dirHandle;
 
-    // Navigate to the file
+    // Navigate to the file through subdirectories
     for (let i = 0; i < pathParts.length - 1; i++) {
-      currentHandle = await currentHandle.getDirectoryHandle(pathParts[i]);
+      console.log('[ReadFile] Navigating to directory:', pathParts[i]);
+      currentHandle = await currentHandle.getDirectoryHandle(pathParts[i], { create: false });
     }
 
     // Get the file
     const fileName = pathParts[pathParts.length - 1];
-    const fileHandle = await currentHandle.getFileHandle(fileName);
+    console.log('[ReadFile] Getting file:', fileName);
+    const fileHandle = await currentHandle.getFileHandle(fileName, { create: false });
     const file = await fileHandle.getFile();
     const content = await file.text();
 
-    console.log('[ReadFile] Successfully read:', filePath);
+    console.log('[ReadFile] Successfully read:', filePath, '- Length:', content.length);
     return { content, fileHandle };
   } catch (error) {
     console.error('[ReadFile] Error reading file:', filePath, error);
+    console.error('[ReadFile] Error details:', (error as Error).message);
     return null;
   }
 };
