@@ -1066,6 +1066,54 @@ const App = () => {
     }
   };
 
+  // Open an existing repository (Electron)
+  const handleOpenRepositoryElectron = async () => {
+    try {
+      // Use Electron's directory picker
+      const dirPath = await (window as any).electronAPI.selectDirectory();
+      
+      if (!dirPath) {
+        console.log('[App] No directory selected');
+        return;
+      }
+
+      console.log('[App] Selected directory:', dirPath);
+
+      // Check if it's a Git repository using Electron API
+      const isGit = await (window as any).electronAPI.isGitRepository(dirPath);
+      const basename = await (window as any).electronAPI.getBasename(dirPath);
+      
+      if (isGit) {
+        console.log('[App] Git repository detected');
+        gitManager.setRepoDir(dirPath);
+        setCurrentRepoPath(dirPath);
+        setIsGitRepo(true);
+        showToast(`Git repository opened: ${basename}`, 'success');
+      } else {
+        console.log('[App] Not a Git repository');
+        setCurrentRepoPath(dirPath);
+        setIsGitRepo(false);
+        showToast(`Folder opened: ${basename}`, 'info');
+      }
+
+      // Get list of markdown files
+      console.log('[App] Getting markdown files...');
+      const files = await gitManager.getRepoFiles();
+      console.log('[App] Found', files.length, 'markdown files');
+      setRepoFiles(files);
+
+      // Open file browser
+      if (files.length > 0) {
+        setFileBrowserModalOpen(true);
+      } else {
+        showToast('No markdown files found in this directory', 'warning');
+      }
+    } catch (error) {
+      console.error('[App] Error opening repository:', error);
+      showToast(`Failed to open repository: ${(error as Error).message}`, 'error');
+    }
+  };
+
   const handleFileSelect = async (filePath: string) => {
     setFileBrowserModalOpen(false);
 
@@ -1582,13 +1630,21 @@ const App = () => {
                 <div className="hdr-desc">Open markdown .md file</div>
               </button>
               <div className="hdr-sep" />
-              {/* Web-only: Open Repository with Directory Picker */}
-              {!(window as any).electronAPI && 'showDirectoryPicker' in window && (
+              {/* Open Repository - Available for both Electron and Web */}
+              {((window as any).electronAPI || 'showDirectoryPicker' in window) && (
                 <>
                   <button
                     className="dropdown-item"
                     onClick={async () => {
-                      const { handleOpenRepository, readFileFromDirectory } = await import('./insertSave');
+                      // Electron: Use native directory picker
+                      if ((window as any).electronAPI) {
+                        await handleOpenRepositoryElectron();
+                        setShowHelpDropdown(false);
+                        return;
+                      }
+                      
+                      // Web: Use File System Access API
+                      const { handleOpenRepository } = await import('./insertSave');
                       handleOpenRepository(
                         setEditorContent,
                         // onGitRepoDetected
