@@ -1022,48 +1022,157 @@ const App = () => {
     console.log('Target Dir:', targetDir);
     console.log('Branch:', branch);
 
-    try {
-      // Show loading state
-      showToast('Cloning repository... This may take a moment.', 'info');
+    // Helper function to perform the actual clone
+    const performClone = async () => {
+      try {
+        // Show loading state
+        showToast('Cloning repository... This may take a moment.', 'info');
 
-      // Check if we're using web File System Access API
-      const dirHandle = (window as any).selectedDirHandle;
-      console.log('Dir handle available:', !!dirHandle);
+        // Check if we're using web File System Access API
+        const dirHandle = (window as any).selectedDirHandle;
+        console.log('Dir handle available:', !!dirHandle);
 
-      if (dirHandle) {
-        setCurrentDirHandle(dirHandle);
-        gitManager.setDirHandle(dirHandle);
-        console.log('Dir handle set in gitManager');
+        if (dirHandle) {
+          setCurrentDirHandle(dirHandle);
+          gitManager.setDirHandle(dirHandle);
+          console.log('Dir handle set in gitManager');
+        }
+
+        // Perform clone operation
+        console.log('Calling gitManager.clone()...');
+        await gitManager.clone(url, targetDir, {
+          singleBranch: true,
+          depth: 1,
+          ref: branch,
+        });
+        console.log('gitManager.clone() returned successfully');
+
+        setCurrentRepoPath(targetDir);
+        setIsGitRepo(true);
+
+        // Get list of markdown files
+        console.log('Getting repo files...');
+        const files = await gitManager.getRepoFiles();
+        console.log('Found', files.length, 'markdown files:', files);
+        setRepoFiles(files);
+
+        // Open file browser
+        setFileBrowserModalOpen(true);
+
+        showToast('Repository cloned successfully!', 'success');
+        console.log('=== Clone Completed Successfully ===');
+      } catch (error) {
+        console.error('=== Clone Failed in Handler ===');
+        console.error('Error:', error);
+        
+        const errorMessage = (error as Error).message;
+        
+        // Check if it's an authentication error
+        if (errorMessage.includes('401') || errorMessage.includes('authentication') || errorMessage.includes('Authentication failed')) {
+          showToast('Authentication required. Please set up Git credentials first.', 'error');
+          // Prompt user to set up credentials
+          showToast('Opening credentials setup...', 'info');
+          setTimeout(() => {
+            handleSetupCredentials();
+          }, 1000);
+        } else {
+          showToast(`Failed to clone repository: ${errorMessage}`, 'error');
+        }
       }
+    };
 
-      // Perform clone operation
-      console.log('Calling gitManager.clone()...');
-      await gitManager.clone(url, targetDir, {
-        singleBranch: true,
-        depth: 1,
-        ref: branch,
+    // Check if credentials are available and unlocked
+    if (!gitCredentialManager.hasCredentials()) {
+      // No credentials stored - ask user if they want to set them up
+      const needsAuth = await new Promise<boolean>((resolve) => {
+        setConfirmModalConfig({
+          open: true,
+          title: 'Authentication Required?',
+          message: 'This repository may require authentication. Would you like to set up Git credentials before cloning?',
+          confirmLabel: 'Setup Credentials',
+          cancelLabel: 'Try Without Auth',
+          onConfirm: () => {
+            setConfirmModalConfig({ ...confirmModalConfig, open: false });
+            resolve(true);
+          },
+        });
+        
+        // Also handle cancel
+        setTimeout(() => {
+          const cancelBtn = document.querySelector('.confirm-modal button:last-child');
+          if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+              setConfirmModalConfig({ ...confirmModalConfig, open: false });
+              resolve(false);
+            }, { once: true });
+          }
+        }, 100);
       });
-      console.log('gitManager.clone() returned successfully');
 
-      setCurrentRepoPath(targetDir);
-      setIsGitRepo(true);
-
-      // Get list of markdown files
-      console.log('Getting repo files...');
-      const files = await gitManager.getRepoFiles();
-      console.log('Found', files.length, 'markdown files:', files);
-      setRepoFiles(files);
-
-      // Open file browser
-      setFileBrowserModalOpen(true);
-
-      showToast('Repository cloned successfully!', 'success');
-      console.log('=== Clone Completed Successfully ===');
-    } catch (error) {
-      console.error('=== Clone Failed in Handler ===');
-      console.error('Error:', error);
-      showToast(`Failed to clone repository: ${(error as Error).message}`, 'error');
+      if (needsAuth) {
+        // Setup credentials first, then clone
+        setPendingCredentialAction(() => performClone);
+        handleSetupCredentials();
+        return;
+      }
+    } else if (!gitCredentialManager.isUnlocked()) {
+      // Credentials exist but locked - unlock first
+      showToast('Please unlock your credentials first', 'info');
+      setPendingCredentialAction(() => performClone);
+      setIsMasterPasswordSetup(false);
+      setMasterPasswordModalOpen(true);
+      return;
     }
+
+    // Credentials are ready or user chose to try without auth
+    await performClone();
+  };
+
+  // Open an existing repository (Unified handler for both Electron and Web)
+  const handleOpenRepositoryClick = async () => {
+    // Electron: Use native directory picker
+    if ((window as any).electronAPI) {
+      await handleOpenRepositoryElectron();
+      return;
+    }
+    
+    // Web: Use File System Access API
+    const { handleOpenRepository } = await import('./insertSave');
+    handleOpenRepository(
+      setEditorContent,
+      // onGitRepoDetected
+      async (repoPath: string, dirHandle: any) => {
+        console.log('[App] Repository opened:', repoPath);
+        setCurrentDirHandle(dirHandle);
+        setCurrentRepoPath(repoPath);
+        setIsGitRepo(true);
+        
+        // Set repo directory in gitManager for web mode
+        // Use LightningFS path format: /repoName
+        const lightningFSPath = `/${repoPath}`;
+        gitManager.setRepoDir(lightningFSPath);
+        gitManager.setDirHandle(dirHandle);
+        console.log('[App] Set gitManager repo dir:', lightningFSPath);
+        
+        showToast(`Git repository opened: ${repoPath}`, 'success');
+        
+        // Update Git status
+        await updateGitStatus();
+      },
+      // onFileListReady
+      async (files: string[], dirHandle: any) => {
+        console.log('[App] Files found:', files.length);
+        setRepoFiles(files);
+        setCurrentDirHandle(dirHandle);
+        
+        // If files found, show file browser
+        if (files.length > 0) {
+          setFileBrowserModalOpen(true);
+        } else {
+          showToast('No markdown files found in this directory', 'warning');
+        }
+      }
+    );
   };
 
   // Open an existing repository (Electron)
@@ -1411,22 +1520,6 @@ const App = () => {
     }
   };
 
-  // Phase 4: Create .gitignore file
-  const handleCreateGitignore = async () => {
-    if (!currentRepoPath) {
-      showToast('No active Git repository. Please clone or initialize a repository first.', 'info');
-      return;
-    }
-    try {
-      await gitManager.createGitignore(currentRepoPath, 'general');
-      showToast('.gitignore created (or updated) for this repository.', 'success');
-      await updateGitStatus();
-    } catch (error) {
-      showToast(`Failed to create .gitignore: ${(error as Error).message}`, 'error');
-      console.error('Gitignore error:', error);
-    }
-  };
-
   const handleSaveAsPDF = () => {
     saveAsPDF(editorContent);
   };
@@ -1606,81 +1699,6 @@ const App = () => {
                 <div className="hdr-desc">Open markdown .md file</div>
               </button>
               <div className="hdr-sep" />
-              {/* Open Repository - Available for both Electron and Web */}
-              {((window as any).electronAPI || 'showDirectoryPicker' in window) && (
-                <>
-                  <button
-                    className="dropdown-item"
-                    onClick={async () => {
-                      // Electron: Use native directory picker
-                      if ((window as any).electronAPI) {
-                        await handleOpenRepositoryElectron();
-                        setShowHelpDropdown(false);
-                        return;
-                      }
-                      
-                      // Web: Use File System Access API
-                      const { handleOpenRepository } = await import('./insertSave');
-                      handleOpenRepository(
-                        setEditorContent,
-                        // onGitRepoDetected
-                        async (repoPath: string, dirHandle: any) => {
-                          console.log('[App] Repository opened:', repoPath);
-                          setCurrentDirHandle(dirHandle);
-                          setCurrentRepoPath(repoPath);
-                          setIsGitRepo(true);
-                          showToast(`Git repository opened: ${repoPath}`, 'success');
-                        },
-                        // onFileListReady
-                        async (files: string[], dirHandle: any) => {
-                          console.log('[App] Files found:', files.length);
-                          setRepoFiles(files);
-                          setCurrentDirHandle(dirHandle);
-                          
-                          // If files found, show file browser
-                          if (files.length > 0) {
-                            setFileBrowserModalOpen(true);
-                          } else {
-                            showToast('No markdown files found in this directory', 'warning');
-                          }
-                        }
-                      );
-                      setShowHelpDropdown(false);
-                    }}
-                  >
-                    <div className="hdr-title"><FaCodeBranch /> Open Repository</div>
-                    <div className="hdr-desc">Open folder with Git support</div>
-                  </button>
-                  <div className="hdr-sep" />
-                </>
-              )}
-              {/* Show message when Directory Picker not available (non-secure context) */}
-              {!(window as any).electronAPI && !('showDirectoryPicker' in window) && (
-                <>
-                  <div 
-                    className="dropdown-item" 
-                    style={{ 
-                      opacity: 0.7, 
-                      cursor: 'help',
-                      backgroundColor: '#fff3e0',
-                      borderLeft: '3px solid #f57c00',
-                      pointerEvents: 'none'
-                    }}
-                    title="This feature requires HTTPS or localhost access"
-                  >
-                    <div className="hdr-title">
-                      <FaCodeBranch /> Open Repository
-                      <span style={{ fontSize: '0.7em', marginLeft: '8px', color: '#f57c00' }}>
-                        ⚠️ HTTPS Required
-                      </span>
-                    </div>
-                    <div className="hdr-desc" style={{ fontSize: '0.85em', color: '#666' }}>
-                      Use https:// or http://localhost for this feature
-                    </div>
-                  </div>
-                  <div className="hdr-sep" />
-                </>
-              )}
               <button
                 className="dropdown-item"
                 onClick={() => {
@@ -1825,9 +1843,10 @@ const App = () => {
             <FaCodeBranch /> &nbsp; Git ▾
           </button>
           {showGitDropdown && gitPos && createPortal(
-            <div className="header-dropdown format-dropdown" style={{ position: 'absolute', top: gitPos.top + 'px', left: gitPos.left + 'px', zIndex: 999999, minWidth: gitPos.width + 'px' }}>
+            <div className="header-dropdown format-dropdown" style={{ position: 'absolute', top: gitPos.top + 'px', left: gitPos.left + 'px', zIndex: 999999, width: '380px' }}>
               <GitDropdown
                 onClone={handleGitClone}
+                onOpenRepository={handleOpenRepositoryClick}
                 onPull={handleGitPull}
                 onPush={handleGitPush}
                 onFetch={handleGitFetch}
@@ -1838,8 +1857,8 @@ const App = () => {
                 onClearCredentials={handleClearCredentials}
                 onViewHistory={handleViewHistory}
                 onInitRepo={handleInitRepo}
-                onCreateGitignore={handleCreateGitignore}
                 hasCredentials={hasStoredCredentials}
+                isAuthenticated={gitCredentialManager.isUnlocked()}
                 onClose={() => {
                   setShowGitDropdown(false);
                   setGitPos(null);

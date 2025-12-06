@@ -3,17 +3,50 @@
 
 ## Test Results Summary
 
-| Test | Web (Clone) | Web (Open) | Electron (Clone) | Electron (Open) | Status |
-|------|-------------|------------|----------------|---------------|--------|
-| 1. Clone Repository | ❌ | ✅ | ✅ | ✅ | Pending |
-| 2. Open Clone File | ⬜ | ⬜ | ✅ | ✅ | Pending |
-| 3. Open Repository | ✅ | ✅ | ✅ | ✅ | Pending |
-| 4. Subdirectory Files | ⬜ | ✅ | ✅ | ✅ | Pending |
-| 5. Git Status | ⬜ | ⬜ | ✅ | ✅ | Pending |
-| 6. Save & Stage | ⬜ | ❌ | ✅ | ✅ | Pending |
-| 7. Commit | ⬜ | ⬜ | ✅ | ✅ | Pending |
-| 8. Push | ⬜ | ⬜ | ✅ | ✅ | Pending |
-| 9. Error Handling | ⬜ | ⬜ | ✅ | ✅ | Pending |
+# EasyOffice
+Simple and clean All in one lite weight office tools with many functions from Calculator to Notes, Spreadsheet and Markdown
+#   
+   
+- - -
+   
+✅ ❌ 🚀 🎯 🎉 ⏰ ✨   
+   
+Test single click save, stage, commit, push, clone   
+---
+
+## Test Results Summary
+
+| Test | Web Remote (Clone) | Web Remote (Open) | Electron (Clone) | Electron (Open) | Web localhost (Clone) | Web localhost (Open) |Status |
+|------|-------------|------------|----------------|---------------|---------------|---------------|--------|
+| 1. Clone Repository | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Pending |
+| 2. Open Clone File | ✅  | ✅ | ✅ | ✅ | ✅ | ✅ |  Pending |
+| 3. Open Repository | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Pending |
+| 4. Sub-directory Files | ✅  | ✅ | ✅ | ✅ | ✅ | ✅ | Pending |
+| 5. Git Status | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Pending |
+| 6. Save & Stage | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Pending |
+| 7. Commit | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Pending |
+| 8. Push | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Pending |
+| 9. Error Handling | ⬜ | ⬜ | ✅ | ✅ | ⬜ | ⬜ | Pending |
+
+Legend:
+- ⬜ Pending
+- ✅ Pass
+- ❌ Fail
+- ⚠️ Warning
+
+---
+   
+Fixed with [Google Antigravity](https://antigravity.google "Google Antigravity")
+
+
+[^research2025]: Smith, J. (2025). *Academic Paper Title*. Journal Name, 17(2), 123-140.   
+   
+new test - Sat Dec  6 06:35:51 PM GMT 2025   
+electron - Sat 06 December 2025 19:43:56
+
+
+
+
 
 Legend:
 - ⬜ Pending
@@ -59,7 +92,8 @@ insertSave.ts:270 [OpenRepository] Found 35 markdown files
 App.tsx:1636 [App] Files found: 35
 
 ```
-
+Local:   https://localhost:3024/ save & stage file
+AND
 Network: https://192.168.0.69:3024/ save & stage file
 ```
 App.tsx:1311 Save error: Error: No repository directory set
