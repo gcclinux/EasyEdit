@@ -149,7 +149,11 @@ async function createMainWindow() {
       responseHeaders: {
         ...details.responseHeaders,
         'Content-Security-Policy': [
-          "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: http://localhost:* ws://localhost:*"
+          "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: http://localhost:* https://localhost:* ws://localhost:*; " +
+          "img-src 'self' data: https: http:; " +
+          "media-src 'self' data: https: http:; " +
+          "font-src 'self' data: https: http:; " +
+          "connect-src 'self' http://localhost:* https://localhost:* ws://localhost:* https: http:;"
         ]
       }
     });
@@ -271,6 +275,28 @@ function setupIPCHandlers() {
       return filePaths[0];
     }
     return null;
+  });
+
+  // Check if a directory is a Git repository
+  ipcMain.handle('fs:isGitRepository', async (event, dirPath) => {
+    try {
+      const gitPath = path.join(dirPath, '.git');
+      const exists = fs.existsSync(gitPath);
+      return exists;
+    } catch (error) {
+      console.error('Error checking Git repository:', error);
+      return false;
+    }
+  });
+
+  // Get the basename of a path
+  ipcMain.handle('path:basename', async (event, filePath) => {
+    try {
+      return path.basename(filePath);
+    } catch (error) {
+      console.error('Error getting basename:', error);
+      return filePath;
+    }
   });
 }
 

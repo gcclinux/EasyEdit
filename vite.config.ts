@@ -11,7 +11,13 @@ const keyPath = path.resolve(__dirname, 'key.pem');
 const certPath = path.resolve(__dirname, 'cert.pem');
 const hasHttps = fs.existsSync(keyPath) && fs.existsSync(certPath);
 
-if (hasHttps) {
+// Disable HTTPS for Electron app mode (when running npm run app)
+const isElectronMode = process.env.npm_lifecycle_event === 'app';
+const useHttps = hasHttps && !isElectronMode;
+
+if (isElectronMode) {
+  console.log('🖥️  Electron mode - using HTTP for compatibility');
+} else if (useHttps) {
   console.log('🔐 HTTPS certificates found - server will use HTTPS');
 } else {
   console.log('ℹ️  No HTTPS certificates found - server will use HTTP');
@@ -44,8 +50,8 @@ export default defineConfig({
     port: port,
     strictPort: true,
     host: '0.0.0.0',
-    // Enable HTTPS if certificates exist
-    ...(hasHttps && {
+    // Enable HTTPS if certificates exist and not in Electron mode
+    ...(useHttps && {
       https: {
         key: fs.readFileSync(keyPath),
         cert: fs.readFileSync(certPath)

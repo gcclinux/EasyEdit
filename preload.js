@@ -4,6 +4,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   openFile: () => ipcRenderer.invoke('dialog:openFile'),
   saveFile: (content) => ipcRenderer.invoke('dialog:saveFile', content),
   selectDirectory: () => ipcRenderer.invoke('dialog:selectDirectory'),
+  isGitRepository: (dirPath) => ipcRenderer.invoke('fs:isGitRepository', dirPath),
+  getBasename: (filePath) => ipcRenderer.invoke('path:basename', filePath),
   handleFileOpened: (callback) => ipcRenderer.on('file-opened', callback),
   handlePreviewSpacing: (callback) => {
     if (callback) {
