@@ -31,3 +31,4 @@ test-deploy
 firebase.json
 *dist
 .idx/*
+*.pem

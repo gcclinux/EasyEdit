@@ -1586,6 +1586,33 @@ const App = () => {
                   <div className="hdr-sep" />
                 </>
               )}
+              {/* Show message when Directory Picker not available (non-secure context) */}
+              {!(window as any).electronAPI && !('showDirectoryPicker' in window) && (
+                <>
+                  <div 
+                    className="dropdown-item" 
+                    style={{ 
+                      opacity: 0.7, 
+                      cursor: 'help',
+                      backgroundColor: '#fff3e0',
+                      borderLeft: '3px solid #f57c00',
+                      pointerEvents: 'none'
+                    }}
+                    title="This feature requires HTTPS or localhost access"
+                  >
+                    <div className="hdr-title">
+                      <FaCodeBranch /> Open Repository
+                      <span style={{ fontSize: '0.7em', marginLeft: '8px', color: '#f57c00' }}>
+                        ⚠️ HTTPS Required
+                      </span>
+                    </div>
+                    <div className="hdr-desc" style={{ fontSize: '0.85em', color: '#666' }}>
+                      Use https:// or http://localhost for this feature
+                    </div>
+                  </div>
+                  <div className="hdr-sep" />
+                </>
+              )}
               <button
                 className="dropdown-item"
                 onClick={() => {
