@@ -12,7 +12,8 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
   - Save to same file with Ctrl+S for Git
   - Basic Git repository detection
   - Progressive enhancement (fallback for older browsers)
-  - Full backward compatibility with Electron app
+  - Full backward compatibility with Electron app   
+  - Implemented https secure API connection for Git Repository
 
 
 
