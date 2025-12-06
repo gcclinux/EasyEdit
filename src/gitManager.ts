@@ -8,18 +8,27 @@ let path: any = null;
 let initialized = false;
 
 // Detect environment
-const isBrowser = () => typeof window !== 'undefined' && !(window as any).electronAPI;
+const isBrowser = () => {
+  // Check if we're in a browser environment (not Node.js)
+  if (typeof window === 'undefined') return false;
+
+  // If electronAPI exists, we're in Electron
+  if ((window as any).electronAPI) return false;
+
+  // If we're running in Vite dev server or built web app, we're in browser
+  return true;
+};
 
 // Initialize modules based on environment
 async function initializeModules() {
   if (initialized) return;
-  
+
   if (isBrowser()) {
     // Browser environment - use LightningFS
     const LightningFS = (await import('@isomorphic-git/lightning-fs')).default;
     fs = new LightningFS('fs');
     http = (await import('isomorphic-git/http/web')).default;
-    
+
     // Simple path implementation for browser
     path = {
       join: (...args: string[]) => args.filter(Boolean).join('/').replace(/\/+/g, '/'),
@@ -49,11 +58,13 @@ async function initializeModules() {
     };
   } else {
     // Node.js/Electron environment
-    fs = await import('fs');
+    const fsModule: any = await import('fs');
+    fs = fsModule.default || fsModule;
     http = (await import('isomorphic-git/http/node')).default;
-    path = await import('path');
+    const pathModule: any = await import('path');
+    path = pathModule.default || pathModule;
   }
-  
+
   initialized = true;
 }
 
@@ -110,7 +121,7 @@ export class GitManager {
       if (!gitCredentialManager.isUnlocked()) {
         return false;
       }
-      
+
       const creds = await gitCredentialManager.getCredentials(remoteUrl);
       if (creds) {
         this.credentials = creds;
@@ -160,24 +171,45 @@ export class GitManager {
    * Clone a repository
    */
   async clone(url: string, dir: string, options?: CloneOptions): Promise<void> {
+    if (!isBrowser()) {
+      console.log('=== Git Clone (Electron) ===');
+      try {
+        const result = await (window as any).electronAPI.git.clone({
+          url,
+          dir,
+          options,
+          credentials: this.credentials
+        });
+        this.setRepoDir(result.repoDir);
+        console.log('Clone successful:', result.repoDir);
+        return;
+      } catch (error: any) {
+        throw new Error(`Failed to clone repository: ${error.message}`);
+      }
+    }
+
     await initializeModules();
-    
+
     console.log('=== Git Clone Started ===');
     console.log('URL:', url);
     console.log('Target Dir:', dir);
     console.log('Is Browser:', isBrowser());
     console.log('Has dirHandle:', !!this.dirHandle);
     console.log('Options:', options);
-    
+    console.log('Path module type:', typeof path, 'has join:', !!path?.join);
+
     try {
       // Extract repo name from URL for subdirectory
       const repoName = url.split('/').pop()?.replace('.git', '') || 'repo';
       console.log('Repo name extracted:', repoName);
-      
+
       // Create subdirectory with repo name
+      if (!path || !path.join) {
+        throw new Error('Path module not initialized');
+      }
       const cloneDir = isBrowser() ? `/${repoName}` : path.join(dir, repoName);
       console.log('Clone Dir (with repo subdirectory):', cloneDir);
-      
+
       // In browser, clean up any existing repo data in LightningFS
       if (isBrowser()) {
         console.log('Cleaning up existing LightningFS data for:', cloneDir);
@@ -188,7 +220,7 @@ export class GitManager {
           console.log('No existing data to clean up');
         }
       }
-      
+
       const cloneOptions: any = {
         fs,
         http,
@@ -197,7 +229,7 @@ export class GitManager {
         singleBranch: options?.singleBranch ?? true,
         depth: options?.depth ?? 1,
       };
-      
+
       // In browser, add CORS mode
       if (isBrowser()) {
         cloneOptions.corsProxy = 'https://cors.isomorphic-git.org';
@@ -224,16 +256,16 @@ export class GitManager {
       console.log('Starting git.clone()...');
       await git.clone(cloneOptions);
       console.log('git.clone() completed successfully');
-      
+
       this.setRepoDir(cloneDir);
-      
+
       // In browser, sync files to File System Access API directory
       if (isBrowser() && this.dirHandle) {
         console.log('Starting file sync to File System Access API...');
         await this.syncToFileSystem(cloneDir, this.dirHandle, repoName);
         console.log('File sync completed');
       }
-      
+
       console.log('=== Git Clone Completed Successfully ===');
     } catch (error: any) {
       console.error('=== Git Clone Failed ===');
@@ -241,10 +273,10 @@ export class GitManager {
       console.error('Error name:', error.name);
       console.error('Error message:', error.message);
       console.error('Error stack:', error.stack);
-      
+
       // Provide more helpful error messages
       let errorMessage = error.message || 'Unknown error';
-      
+
       if (errorMessage.includes('401') || errorMessage.includes('authentication')) {
         errorMessage = 'Authentication failed (HTTP 401): This is a private repository. Please set up Git credentials first (Git menu → Setup Credentials) or use a public repository.';
       } else if (errorMessage.includes('404')) {
@@ -254,7 +286,7 @@ export class GitManager {
       } else if (errorMessage.includes('fetch')) {
         errorMessage = 'Network error: Unable to connect to the repository. Check the URL and your internet connection.';
       }
-      
+
       throw new Error(`Failed to clone repository: ${errorMessage}`);
     }
   }
@@ -264,22 +296,22 @@ export class GitManager {
    */
   private async syncToFileSystem(lightningPath: string, dirHandle: any, repoName: string): Promise<void> {
     if (!isBrowser()) return;
-    
+
     console.log('=== Starting File System Sync ===');
     console.log('Lightning path:', lightningPath);
     console.log('Repo name:', repoName);
     console.log('Dir handle:', dirHandle);
-    
+
     try {
       // Create repo subdirectory in the selected folder
       const repoHandle = await dirHandle.getDirectoryHandle(repoName, { create: true });
       console.log('Created repo subdirectory:', repoName);
-      
+
       // Get all files from LightningFS (including hidden files)
       console.log('Listing all files in LightningFS...');
       const files = await this.listAllFiles(lightningPath);
       console.log('Found', files.length, 'files to sync');
-      
+
       // Write each file to the actual file system
       for (const filePath of files) {
         const relativePath = filePath.replace(lightningPath, '').replace(/^\//, '');
@@ -287,16 +319,16 @@ export class GitManager {
           console.log('Skipping empty path');
           continue;
         }
-        
+
         console.log('Syncing file:', relativePath);
-        
+
         try {
           const content = await fs.promises.readFile(filePath);
-          
+
           // Navigate to create subdirectories if needed
           const pathParts = relativePath.split('/');
           let currentHandle = repoHandle;
-          
+
           for (let i = 0; i < pathParts.length - 1; i++) {
             if (pathParts[i]) {
               try {
@@ -307,7 +339,7 @@ export class GitManager {
               }
             }
           }
-          
+
           // Write the file
           const fileName = pathParts[pathParts.length - 1];
           if (fileName) {
@@ -321,7 +353,7 @@ export class GitManager {
           console.error('  Error syncing file:', relativePath, e);
         }
       }
-      
+
       console.log('=== File System Sync Completed ===');
     } catch (error) {
       console.error('=== File System Sync Failed ===');
@@ -335,10 +367,10 @@ export class GitManager {
    */
   private async listAllFiles(dir: string): Promise<string[]> {
     const files: string[] = [];
-    
+
     try {
       const entries = await fs.promises.readdir(dir);
-      
+
       for (const entry of entries) {
         const fullPath = `${dir}/${entry}`;
         try {
@@ -356,7 +388,7 @@ export class GitManager {
     } catch (error) {
       // Directory doesn't exist or can't be read
     }
-    
+
     return files;
   }
 
@@ -365,10 +397,10 @@ export class GitManager {
    */
   private async recursiveDelete(dir: string): Promise<void> {
     if (!isBrowser()) return;
-    
+
     try {
       const entries = await fs.promises.readdir(dir);
-      
+
       for (const entry of entries) {
         const fullPath = `${dir}/${entry}`;
         try {
@@ -383,7 +415,7 @@ export class GitManager {
           console.warn('Error deleting:', fullPath, e);
         }
       }
-      
+
       // Delete the directory itself
       await fs.promises.rmdir(dir);
     } catch (error) {
@@ -396,8 +428,21 @@ export class GitManager {
    * Pull latest changes from remote
    */
   async pull(): Promise<void> {
+    if (!isBrowser()) {
+      if (!this.repoDir) throw new Error('No repository directory set');
+      try {
+        await (window as any).electronAPI.git.pull({
+          dir: this.repoDir,
+          credentials: this.credentials
+        });
+        return;
+      } catch (error: any) {
+        throw new Error(`Failed to pull changes: ${error.message}`);
+      }
+    }
+
     await initializeModules();
-    
+
     if (!this.repoDir) {
       throw new Error('No repository directory set');
     }
@@ -432,8 +477,25 @@ export class GitManager {
    * Push changes to remote
    */
   async push(): Promise<void> {
+    if (!isBrowser()) {
+      if (!this.repoDir) throw new Error('No repository directory set');
+      try {
+        await (window as any).electronAPI.git.push({
+          dir: this.repoDir,
+          credentials: this.credentials,
+          options: {
+            remote: 'origin',
+            ref: await this.getCurrentBranch()
+          }
+        });
+        return;
+      } catch (error: any) {
+        throw new Error(`Failed to push changes: ${error.message}`);
+      }
+    }
+
     await initializeModules();
-    
+
     if (!this.repoDir) {
       throw new Error('No repository directory set');
     }
@@ -446,7 +508,7 @@ export class GitManager {
     try {
       const currentBranch = await this.getCurrentBranch();
       console.log('Current branch:', currentBranch);
-      
+
       const pushOptions: any = {
         fs,
         http,
@@ -478,9 +540,9 @@ export class GitManager {
       console.error('=== Git Push Failed ===');
       console.error('Error:', error);
       console.error('Error message:', error.message);
-      
+
       let errorMessage = error.message || 'Unknown error';
-      
+
       if (errorMessage.includes('401') || errorMessage.includes('authentication')) {
         errorMessage = 'Authentication failed: Please check your Git credentials.';
       } else if (errorMessage.includes('403')) {
@@ -488,7 +550,7 @@ export class GitManager {
       } else if (errorMessage.includes('CORS')) {
         errorMessage = 'CORS error: Unable to push to repository. Try using GitHub, GitLab, or Bitbucket.';
       }
-      
+
       throw new Error(`Failed to push changes: ${errorMessage}`);
     }
   }
@@ -497,8 +559,22 @@ export class GitManager {
    * Fetch from remote
    */
   async fetch(): Promise<void> {
+    if (!isBrowser()) {
+      if (!this.repoDir) throw new Error('No repository directory set');
+      try {
+        await (window as any).electronAPI.git.fetch({
+          dir: this.repoDir,
+          credentials: this.credentials,
+          options: { remote: 'origin' }
+        });
+        return;
+      } catch (error: any) {
+        throw new Error(`Failed to fetch from remote: ${error.message}`);
+      }
+    }
+
     await initializeModules();
-    
+
     if (!this.repoDir) {
       throw new Error('No repository directory set');
     }
@@ -531,8 +607,21 @@ export class GitManager {
    * Add/stage a file
    */
   async add(filepath: string): Promise<void> {
+    if (!isBrowser()) {
+      if (!this.repoDir) throw new Error('No repository directory set');
+      try {
+        await (window as any).electronAPI.git.add({
+          dir: this.repoDir,
+          filepath
+        });
+        return;
+      } catch (error: any) {
+        throw new Error(`Failed to add file: ${error.message}`);
+      }
+    }
+
     await initializeModules();
-    
+
     if (!this.repoDir) {
       throw new Error('No repository directory set');
     }
@@ -557,8 +646,22 @@ export class GitManager {
    * Commit changes
    */
   async commit(message: string, author?: { name: string; email: string }): Promise<string> {
+    if (!isBrowser()) {
+      if (!this.repoDir) throw new Error('No repository directory set');
+      try {
+        const sha = await (window as any).electronAPI.git.commit({
+          dir: this.repoDir,
+          message,
+          author
+        });
+        return sha;
+      } catch (error: any) {
+        throw new Error(`Failed to commit changes: ${error.message}`);
+      }
+    }
+
     await initializeModules();
-    
+
     if (!this.repoDir) {
       throw new Error('No repository directory set');
     }
@@ -594,8 +697,43 @@ export class GitManager {
    * Get repository status
    */
   async status(): Promise<GitStatus> {
+    if (!isBrowser()) {
+      if (!this.repoDir) throw new Error('No repository directory set');
+      try {
+        const result: GitStatus = {
+          modified: [],
+          staged: [],
+          untracked: [],
+        };
+
+        const files: string[] = await (window as any).electronAPI.git.listFiles({ dir: this.repoDir });
+
+        for (const file of files) {
+          let filepath = file.replace(this.repoDir!, '');
+          if (filepath.startsWith('\\') || filepath.startsWith('/')) filepath = filepath.substring(1);
+          filepath = filepath.replace(/\\/g, '/');
+
+          const status = await (window as any).electronAPI.git.status({
+            dir: this.repoDir,
+            filepath
+          });
+
+          if (status === 'modified') {
+            result.modified.push(filepath);
+          } else if (status === 'added') {
+            result.staged.push(filepath);
+          } else if (status === '*added') {
+            result.untracked.push(filepath);
+          }
+        }
+        return result;
+      } catch (error: any) {
+        throw new Error(`Failed to get status: ${error.message}`);
+      }
+    }
+
     await initializeModules();
-    
+
     if (!this.repoDir) {
       throw new Error('No repository directory set');
     }
@@ -637,8 +775,17 @@ export class GitManager {
    * Get current branch name
    */
   async getCurrentBranch(): Promise<string> {
+    if (!isBrowser()) {
+      if (!this.repoDir) throw new Error('No repository directory set');
+      try {
+        return await (window as any).electronAPI.git.currentBranch({ dir: this.repoDir });
+      } catch (error: any) {
+        throw new Error(`Failed to get current branch: ${error.message}`);
+      }
+    }
+
     await initializeModules();
-    
+
     if (!this.repoDir) {
       throw new Error('No repository directory set');
     }
@@ -660,6 +807,15 @@ export class GitManager {
    * List all branches
    */
   async listBranches(): Promise<string[]> {
+    if (!isBrowser()) {
+      if (!this.repoDir) throw new Error('No repository directory set');
+      try {
+        return await (window as any).electronAPI.git.listBranches({ dir: this.repoDir });
+      } catch (error: any) {
+        throw new Error(`Failed to list branches: ${error.message}`);
+      }
+    }
+
     if (!this.repoDir) {
       throw new Error('No repository directory set');
     }
@@ -680,6 +836,16 @@ export class GitManager {
    * Checkout a branch
    */
   async checkout(ref: string): Promise<void> {
+    if (!isBrowser()) {
+      if (!this.repoDir) throw new Error('No repository directory set');
+      try {
+        await (window as any).electronAPI.git.checkout({ dir: this.repoDir, ref });
+        return;
+      } catch (error: any) {
+        throw new Error(`Failed to checkout branch: ${error.message}`);
+      }
+    }
+
     if (!this.repoDir) {
       throw new Error('No repository directory set');
     }
@@ -699,8 +865,17 @@ export class GitManager {
    * Get commit log
    */
   async log(count: number = 10): Promise<Commit[]> {
+    if (!isBrowser()) {
+      if (!this.repoDir) throw new Error('No repository directory set');
+      try {
+        return await (window as any).electronAPI.git.log({ dir: this.repoDir, depth: count });
+      } catch (error: any) {
+        throw new Error(`Failed to get commit log: ${error.message}`);
+      }
+    }
+
     await initializeModules();
-    
+
     if (!this.repoDir) {
       throw new Error('No repository directory set');
     }
@@ -730,8 +905,29 @@ export class GitManager {
    * Get all markdown files in the repository
    */
   async getRepoFiles(extensions: string[] = ['.md', '.markdown']): Promise<string[]> {
+    if (!isBrowser()) {
+      if (!this.repoDir) throw new Error('No repository directory set');
+      try {
+        const files: string[] = await (window as any).electronAPI.git.listFiles({ dir: this.repoDir });
+        const markdownFiles = files.filter((file) => {
+          // Simple extension check
+          const ext = '.' + file.split('.').pop()?.toLowerCase();
+          return extensions.includes(ext);
+        });
+
+        // Return relative paths
+        return markdownFiles.map((file) => {
+          let rel = file.replace(this.repoDir!, '');
+          if (rel.startsWith('\\') || rel.startsWith('/')) rel = rel.substring(1);
+          return rel.replace(/\\/g, '/');
+        });
+      } catch (error: any) {
+        throw new Error(`Failed to get repository files: ${error.message}`);
+      }
+    }
+
     await initializeModules();
-    
+
     if (!this.repoDir) {
       throw new Error('No repository directory set');
     }
@@ -755,7 +951,7 @@ export class GitManager {
    */
   private async getAllFiles(dir: string): Promise<string[]> {
     await initializeModules();
-    
+
     const files: string[] = [];
 
     async function traverse(currentDir: string) {
@@ -793,8 +989,17 @@ export class GitManager {
    * Read a file from the repository
    */
   async readFile(filePath: string): Promise<string> {
+    if (!isBrowser()) {
+      if (!this.repoDir) throw new Error('No repository directory set');
+      try {
+        return await (window as any).electronAPI.git.readFile({ dir: this.repoDir, filepath: filePath });
+      } catch (error: any) {
+        throw new Error(`Failed to read file: ${error.message}`);
+      }
+    }
+
     await initializeModules();
-    
+
     if (!this.repoDir) {
       throw new Error('No repository directory set');
     }
@@ -815,8 +1020,18 @@ export class GitManager {
    * Write a file to the repository
    */
   async writeFile(filePath: string, content: string): Promise<void> {
+    if (!isBrowser()) {
+      if (!this.repoDir) throw new Error('No repository directory set');
+      try {
+        await (window as any).electronAPI.git.writeFile({ dir: this.repoDir, filepath: filePath, content });
+        return;
+      } catch (error: any) {
+        throw new Error(`Failed to write file: ${error.message}`);
+      }
+    }
+
     await initializeModules();
-    
+
     if (!this.repoDir) {
       throw new Error('No repository directory set');
     }
@@ -824,7 +1039,7 @@ export class GitManager {
     try {
       const fullPath = path.join(this.repoDir, filePath);
       console.log('[gitManager] Writing file:', fullPath);
-      
+
       // Ensure directory exists
       const dir = path.dirname(fullPath);
       try {
@@ -832,11 +1047,11 @@ export class GitManager {
       } catch (e) {
         // Directory might already exist
       }
-      
+
       // Write to LightningFS (or disk in Electron)
       await fs.promises.writeFile(fullPath, content, 'utf8');
       console.log('[gitManager] File written successfully to LightningFS/disk');
-      
+
       // In browser, also sync to File System Access API
       if (isBrowser() && this.dirHandle) {
         console.log('[gitManager] Syncing file to File System Access API...');
@@ -854,24 +1069,24 @@ export class GitManager {
    */
   private async syncSingleFileToFileSystem(filePath: string, content: string): Promise<void> {
     if (!isBrowser() || !this.dirHandle) return;
-    
+
     try {
       // Extract repo name from repoDir (e.g., /repoName -> repoName)
       const repoName = this.repoDir?.split('/').filter(Boolean)[0] || '';
-      
+
       // Get repo subdirectory handle
       const repoHandle = await this.dirHandle.getDirectoryHandle(repoName, { create: true });
-      
+
       // Navigate to file location
       const pathParts = filePath.split('/').filter(Boolean);
       let currentHandle = repoHandle;
-      
+
       for (let i = 0; i < pathParts.length - 1; i++) {
         if (pathParts[i]) {
           currentHandle = await currentHandle.getDirectoryHandle(pathParts[i], { create: true });
         }
       }
-      
+
       // Write the file
       const fileName = pathParts[pathParts.length - 1];
       if (fileName) {
@@ -891,8 +1106,16 @@ export class GitManager {
    * Check if a directory is a git repository
    */
   async isGitRepo(dir: string): Promise<boolean> {
+    if (!isBrowser()) {
+      try {
+        return await (window as any).electronAPI.git.isGitRepo({ dir });
+      } catch {
+        return false;
+      }
+    }
+
     await initializeModules();
-    
+
     try {
       const gitDir = path.join(dir, '.git');
       const stats = await fs.promises.stat(gitDir);
@@ -906,8 +1129,34 @@ export class GitManager {
    * Initialize a new git repository
    */
   async init(dir: string, initialCommit: boolean = true): Promise<void> {
+    if (!isBrowser()) {
+      try {
+        await (window as any).electronAPI.git.init({ dir });
+        this.repoDir = dir;
+
+        if (initialCommit) {
+          // We can reuse the existing logic if we implement writeFile via IPC (which we did)
+          // But init usually creates README.
+          // Let's just use the existing logic below? No, existing logic uses 'fs' directly.
+          // So we need to replicate the initial commit logic or use IPC calls.
+
+          const readmePath = 'README.md'; // Relative path for writeFile
+          const readmeContent = `# New Repository\n\nInitialized with EasyEdit\n`;
+          await this.writeFile(readmePath, readmeContent);
+          await this.add('README.md');
+          await this.commit('Initial commit', {
+            name: 'EasyEdit User',
+            email: 'user@easyedit.app'
+          });
+        }
+        return;
+      } catch (error: any) {
+        throw new Error(`Failed to initialize repository: ${error.message}`);
+      }
+    }
+
     await initializeModules();
-    
+
     try {
       // Initialize the repository
       await git.init({
@@ -943,8 +1192,6 @@ export class GitManager {
    * Create a .gitignore file with common patterns
    */
   async createGitignore(dir: string, template: 'node' | 'python' | 'general' = 'general'): Promise<void> {
-    await initializeModules();
-    
     const templates = {
       node: `# Node.js
 node_modules/
@@ -1039,9 +1286,24 @@ Thumbs.db
 `,
     };
 
-    const gitignorePath = path.join(dir, '.gitignore');
     const content = templates[template];
-    
+
+    if (!isBrowser()) {
+      const sep = dir.includes('\\') ? '\\' : '/';
+      const gitignorePath = dir.endsWith(sep) ? dir + '.gitignore' : dir + sep + '.gitignore';
+
+      try {
+        await (window as any).electronAPI.git.writeFile({ filepath: gitignorePath, content });
+        return;
+      } catch (error: any) {
+        throw new Error(`Failed to create .gitignore: ${error.message}`);
+      }
+    }
+
+    await initializeModules();
+
+    const gitignorePath = path.join(dir, '.gitignore');
+
     try {
       await fs.promises.writeFile(gitignorePath, content, 'utf-8');
     } catch (error) {

@@ -89,7 +89,7 @@ export default function GitDropdown({
       </button>
       <div className="hdr-sep" style={{ margin: '10px 0', borderTop: '2px solid var(--border-secondary)' }} />
       <button className="dropdown-item" onClick={() => { onSetupCredentials(); onClose(); }}>
-        <div className="hdr-title"><FaKey /> {hasCredentials ? 'Update & View' : 'Setup'}</div>
+        <div className="hdr-title"><FaKey /> {hasCredentials ? 'Authenticate' : 'Setup'}</div>
         <div className="hdr-desc"><em>{hasCredentials ? 'View or update saved credentials' : 'Save Git credentials securely'}</em></div>
         <div className="hdr-sep" />
       </button>

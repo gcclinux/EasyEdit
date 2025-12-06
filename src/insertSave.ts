@@ -127,6 +127,22 @@ export const saveToHTML = async (editorContent: string): Promise<void> => {
 export const handleOpenClick = (
     setEditorContent: (content: string, filePath?: string | null) => void
   ): void => {
+    // In Electron, use native file dialog via IPC to get actual file path
+    const electronAPI = (window as any).electronAPI;
+    if (electronAPI && electronAPI.openFile) {
+      electronAPI.openFile()
+        .then((result: { content: string; filePath?: string | null } | null) => {
+          if (result && typeof result.content === 'string') {
+            setEditorContent(result.content, result.filePath || null);
+          }
+        })
+        .catch((err: any) => {
+          console.error('Electron openFile error:', err);
+        });
+      return;
+    }
+
+    // Browser fallback: use DOM file input
     const input = document.createElement("input");
     input.type = "file";
     // Accept common markdown extensions and mime types

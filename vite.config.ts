@@ -2,7 +2,6 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { Buffer } from 'buffer';
 
-// Get the port from the environment variable or default to 3000
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3024;
 
 export default defineConfig({
@@ -14,7 +13,11 @@ export default defineConfig({
   resolve: {
     alias: {
       buffer: 'buffer',
+      path: 'path-browserify',
     },
+  },
+  ssr: {
+    noExternal: ['isomorphic-git', 'fs', 'path'],
   },
   optimizeDeps: {
     esbuildOptions: {
@@ -27,7 +30,6 @@ export default defineConfig({
     port: port,
     strictPort: true,
     host: '0.0.0.0',
-    // Prevent watcher from following large or symlink-heavy build dirs (fixes ELOOP)
     watch: {
       ignored: [
         '**/build-prebuilt/**',
@@ -41,6 +43,9 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: '.',
-    emptyOutDir: true
+    emptyOutDir: true,
+    rollupOptions: {
+      external: [],
+    },
   }
 });
