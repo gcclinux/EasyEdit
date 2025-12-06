@@ -1,8 +1,22 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { Buffer } from 'buffer';
+import fs from 'fs';
+import path from 'path';
 
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3024;
+
+// Check if HTTPS certificates exist
+const keyPath = path.resolve(__dirname, 'key.pem');
+const certPath = path.resolve(__dirname, 'cert.pem');
+const hasHttps = fs.existsSync(keyPath) && fs.existsSync(certPath);
+
+if (hasHttps) {
+  console.log('🔐 HTTPS certificates found - server will use HTTPS');
+} else {
+  console.log('ℹ️  No HTTPS certificates found - server will use HTTP');
+  console.log('   Run ./setup-https.sh to enable HTTPS');
+}
 
 export default defineConfig({
   plugins: [react()],
@@ -30,6 +44,13 @@ export default defineConfig({
     port: port,
     strictPort: true,
     host: '0.0.0.0',
+    // Enable HTTPS if certificates exist
+    ...(hasHttps && {
+      https: {
+        key: fs.readFileSync(keyPath),
+        cert: fs.readFileSync(certPath)
+      }
+    }),
     watch: {
       ignored: [
         '**/build-prebuilt/**',
