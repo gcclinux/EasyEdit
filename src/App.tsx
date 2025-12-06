@@ -212,7 +212,7 @@ const App = () => {
   const [hasStoredCredentials, setHasStoredCredentials] = useState(gitCredentialManager.hasCredentials());
   const [pendingCredentialAction, setPendingCredentialAction] = useState<(() => void) | null>(null);
   const [prefillCredentials, setPrefillCredentials] = useState<{ username: string; token: string } | null>(null);
-  const [, setCurrentDirHandle] = useState<any>(null); // For web File System Access API (reserved for future use)
+  const [currentDirHandle, setCurrentDirHandle] = useState<any>(null); // For web File System Access API
   const [confirmModalConfig, setConfirmModalConfig] = useState<{
     open: boolean;
     title: string;
@@ -426,16 +426,36 @@ const App = () => {
 
   // Add keyboard event handler for Ctrl+S
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
+    const handleKeyDown = async (event: KeyboardEvent) => {
       // Ctrl+S or Cmd+S
       if ((event.ctrlKey || event.metaKey) && event.key === 's') {
         event.preventDefault();
+        
+        // Priority 1: Git repo save (Electron or Web)
         if (isGitRepo && currentFilePath) {
           handleGitSave();
-        } else {
-          // Fallback to regular save
-          showToast('Use File menu to save, or clone a Git repository to enable Ctrl+S', 'info');
+          return;
         }
+        
+        // Priority 2: File System Access API save (Web)
+        if (!(window as any).electronAPI) {
+          const { saveToCurrentFile, getCurrentFileHandle } = await import('./insertSave');
+          const fileHandle = getCurrentFileHandle();
+          
+          if (fileHandle) {
+            const success = await saveToCurrentFile(editorContent);
+            if (success) {
+              showToast('File saved successfully!', 'success');
+              return;
+            } else {
+              showToast('Failed to save file', 'error');
+              return;
+            }
+          }
+        }
+        
+        // Fallback: Show info message
+        showToast('Use File menu to save, or open a file first to enable Ctrl+S', 'info');
       }
     };
 
@@ -1059,12 +1079,27 @@ const App = () => {
       console.log('[App] Current repo path:', currentRepoPath);
       console.log('[App] Is Electron:', !!(window as any).electronAPI);
 
-      // Use gitManager for both Electron and Web
-      console.log('[App] Reading file via gitManager:', filePath);
-      content = await gitManager.readFile(filePath);
-      fullPath = filePath; // gitManager handles the full path internally
+      // Check if we're in web mode with directory handle
+      if (!(window as any).electronAPI && currentDirHandle) {
+        console.log('[App] Reading file via directory handle:', filePath);
+        const { readFileFromDirectory } = await import('./insertSave');
+        const result = await readFileFromDirectory(currentDirHandle, filePath);
+        
+        if (result) {
+          content = result.content;
+          fullPath = filePath;
+          console.log('[App] File content loaded from directory, length:', content.length);
+        } else {
+          throw new Error('Failed to read file from directory');
+        }
+      } else {
+        // Use gitManager for Electron
+        console.log('[App] Reading file via gitManager:', filePath);
+        content = await gitManager.readFile(filePath);
+        fullPath = filePath; // gitManager handles the full path internally
+        console.log('[App] File content loaded, length:', content.length);
+      }
 
-      console.log('[App] File content loaded, length:', content.length);
       setEditorContent(content);
       setCurrentFilePath(fullPath);
 
@@ -1460,33 +1495,106 @@ const App = () => {
               <button
                 className="dropdown-item"
                 onClick={() => {
-                  handleOpenClick(async (content: string, filePath?: string | null) => {
-                    setEditorContent(content);
-                    if (filePath && (window as any).electronAPI) {
-                      // If we already know the repo root, only attach file if under that repo.
-                      if (currentRepoPath) {
-                        const path = await import('path');
-                        const normalizedRepo = path.resolve(currentRepoPath);
-                        const normalizedFile = path.resolve(filePath);
-                        if (normalizedFile.startsWith(normalizedRepo + path.sep)) {
-                          setCurrentFilePath(filePath);
-                          if (!isGitRepo) {
-                            setIsGitRepo(true);
-                          }
-                          updateGitStatus();
-                        }
-                      } else {
-                        // No repo known yet: try to auto-detect by walking up to find .git
+                  handleOpenClick(
+                    async (content: string, filePath?: string | null) => {
+                      setEditorContent(content);
+                      
+                      // Set file path for both Electron and Web
+                      if (filePath) {
                         setCurrentFilePath(filePath);
-                        await detectRepoFromFilePath(filePath);
+                        console.log('[App] File path set:', filePath);
+                        
+                        // Show helpful message for web users about Git features
+                        if (!(window as any).electronAPI && !isGitRepo) {
+                          showToast('File opened! For Git features, use "File → Open Repository"', 'info');
+                        }
                       }
+                      
+                      // Electron-specific Git detection
+                      if (filePath && (window as any).electronAPI) {
+                        // If we already know the repo root, only attach file if under that repo.
+                        if (currentRepoPath) {
+                          const path = await import('path');
+                          const normalizedRepo = path.resolve(currentRepoPath);
+                          const normalizedFile = path.resolve(filePath);
+                          if (normalizedFile.startsWith(normalizedRepo + path.sep)) {
+                            if (!isGitRepo) {
+                              setIsGitRepo(true);
+                            }
+                            updateGitStatus();
+                          }
+                        } else {
+                          // No repo known yet: try to auto-detect by walking up to find .git
+                          await detectRepoFromFilePath(filePath);
+                        }
+                      }
+                    },
+                    // Git repo detection callback for File System Access API (web)
+                    async (repoPath: string, fileHandle: any) => {
+                      console.log('[App] Git repo detected via File System Access API:', repoPath);
+                      // Store the directory handle for web-based Git operations
+                      setCurrentDirHandle(fileHandle);
+                      // Note: Full Git integration in browser requires additional setup
+                      // For now, just show that we detected a repo
+                      showToast('Git repository detected! Use "File → Open Repository" for full Git features', 'info');
                     }
-                  });
+                  );
                   setShowHelpDropdown(false);
                 }}
               >
                 <div className="hdr-title"><FaFileImport /> Open MarkDown</div>
                 <div className="hdr-desc">Open markdown .md file</div>
+              </button>
+              <div className="hdr-sep" />
+              {/* Web-only: Open Repository with Directory Picker */}
+              {!(window as any).electronAPI && 'showDirectoryPicker' in window && (
+                <>
+                  <button
+                    className="dropdown-item"
+                    onClick={async () => {
+                      const { handleOpenRepository, readFileFromDirectory } = await import('./insertSave');
+                      handleOpenRepository(
+                        setEditorContent,
+                        // onGitRepoDetected
+                        async (repoPath: string, dirHandle: any) => {
+                          console.log('[App] Repository opened:', repoPath);
+                          setCurrentDirHandle(dirHandle);
+                          setCurrentRepoPath(repoPath);
+                          setIsGitRepo(true);
+                          showToast(`Git repository opened: ${repoPath}`, 'success');
+                        },
+                        // onFileListReady
+                        async (files: string[], dirHandle: any) => {
+                          console.log('[App] Files found:', files.length);
+                          setRepoFiles(files);
+                          setCurrentDirHandle(dirHandle);
+                          
+                          // If files found, show file browser
+                          if (files.length > 0) {
+                            setFileBrowserModalOpen(true);
+                          } else {
+                            showToast('No markdown files found in this directory', 'warning');
+                          }
+                        }
+                      );
+                      setShowHelpDropdown(false);
+                    }}
+                  >
+                    <div className="hdr-title"><FaCodeBranch /> Open Repository</div>
+                    <div className="hdr-desc">Open folder with Git support</div>
+                  </button>
+                  <div className="hdr-sep" />
+                </>
+              )}
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  handleOpenTxtClick(setEditorContent);
+                  setShowHelpDropdown(false);
+                }}
+              >
+                <div className="hdr-title"><FaFileImport /> Open TXT</div>
+                <div className="hdr-desc">Open plain text .txt file</div>
               </button>
               <div className="hdr-sep" />
               <button
