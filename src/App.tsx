@@ -1225,7 +1225,29 @@ const App = () => {
       console.log('[App] Current repo path:', repoPath);
       console.log('[App] Is Electron:', !!(window as any).electronAPI);
 
-      // Calculate relative path
+      // Check if we're in web mode with directory handle
+      if (!(window as any).electronAPI && currentDirHandle) {
+        // Web mode: use directory handle
+        // currentFilePath is already relative (e.g., "CHANGELOG.md" or "docs/FILE.md")
+        relativePath = currentFilePath;
+        
+        console.log('[App] Writing via directory handle:', relativePath);
+        const { writeFileToDirectory } = await import('./insertSave');
+        const success = await writeFileToDirectory(currentDirHandle, relativePath, editorContent);
+        
+        if (!success) {
+          throw new Error('Failed to write file to directory');
+        }
+        
+        console.log('[App] File saved successfully');
+        showToast(`File saved: ${relativePath}`, 'success');
+        
+        // Note: Git operations (stage, commit, push) require additional setup for web
+        showToast('Git operations in browser coming soon! File saved locally.', 'info');
+        return; // Exit early, don't try Git operations
+      }
+      
+      // Electron mode: calculate relative path and use gitManager
       relativePath = currentFilePath;
       if (repoPath && currentFilePath.startsWith(repoPath)) {
         relativePath = currentFilePath.substring(repoPath.length);
@@ -1235,7 +1257,7 @@ const App = () => {
         // Normalize slashes
         relativePath = relativePath.replace(/\\/g, '/');
       }
-
+      
       console.log('[App] Writing via gitManager:', relativePath);
       await gitManager.writeFile(relativePath, editorContent);
 
@@ -1254,7 +1276,15 @@ const App = () => {
   };
 
   const handleSaveStageCommitPush = async () => {
-    // Use gitManager's repo path as fallback if state hasn't updated yet
+    // Check if we're in web mode
+    if (!(window as any).electronAPI && currentDirHandle) {
+      // Web mode: Just save the file
+      await handleGitSave();
+      // Git operations not available yet
+      return;
+    }
+
+    // Electron mode: Full Git workflow
     const repoPath = currentRepoPath || gitManager.getRepoDir();
 
     if (!repoPath && !isGitRepo) {
@@ -1284,6 +1314,12 @@ const App = () => {
 
   // Phase 4: Git status update
   const updateGitStatus = async () => {
+    // Skip Git status in web mode (not supported yet)
+    if (!(window as any).electronAPI && currentDirHandle) {
+      setGitStatus({ branch: '', modifiedCount: 0, status: 'clean' });
+      return;
+    }
+
     if (!isGitRepo || !currentRepoPath) {
       setGitStatus({ branch: '', modifiedCount: 0, status: 'clean' });
       return;

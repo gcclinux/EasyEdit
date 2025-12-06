@@ -334,6 +334,43 @@ export const readFileFromDirectory = async (
   }
 };
 
+// Write a file to a directory handle
+export const writeFileToDirectory = async (
+  dirHandle: any,
+  filePath: string,
+  content: string
+): Promise<boolean> => {
+  try {
+    const pathParts = filePath.split('/');
+    let currentHandle = dirHandle;
+
+    // Navigate to the directory (create if needed)
+    for (let i = 0; i < pathParts.length - 1; i++) {
+      try {
+        currentHandle = await currentHandle.getDirectoryHandle(pathParts[i]);
+      } catch (e) {
+        // Directory doesn't exist, create it
+        currentHandle = await currentHandle.getDirectoryHandle(pathParts[i], { create: true });
+      }
+    }
+
+    // Get or create the file
+    const fileName = pathParts[pathParts.length - 1];
+    const fileHandle = await currentHandle.getFileHandle(fileName, { create: true });
+    
+    // Write the content
+    const writable = await fileHandle.createWritable();
+    await writable.write(content);
+    await writable.close();
+
+    console.log('[WriteFile] Successfully wrote:', filePath);
+    return true;
+  } catch (error) {
+    console.error('[WriteFile] Error writing file:', filePath, error);
+    return false;
+  }
+};
+
 export const handleOpenClick = async (
     setEditorContent: (content: string, filePath?: string | null) => void,
     onGitRepoDetected?: (repoPath: string, fileHandle: any) => void
