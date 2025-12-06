@@ -124,9 +124,220 @@ export const saveToHTML = async (editorContent: string): Promise<void> => {
     }
   };
 
-export const handleOpenClick = (
-    setEditorContent: (content: string, filePath?: string | null) => void
-  ): void => {
+// Store file handle for File System Access API (modern browsers)
+let currentFileHandle: any = null;
+
+// Check if File System Access API is available
+const hasFileSystemAccess = (): boolean => {
+  return typeof window !== 'undefined' && 'showOpenFilePicker' in window;
+};
+
+// Get the file handle for saving back to the same file
+export const getCurrentFileHandle = () => currentFileHandle;
+
+// Clear the file handle (e.g., when creating a new file)
+export const clearFileHandle = () => {
+  currentFileHandle = null;
+};
+
+// Detect if a directory is a Git repository
+export const detectGitRepoInDirectory = async (dirHandle: any): Promise<boolean> => {
+  if (!dirHandle) return false;
+
+  try {
+    // Try to access .git directory
+    const gitDir = await dirHandle.getDirectoryHandle('.git', { create: false });
+    if (gitDir) {
+      console.log('[GitDetection] Found .git directory in:', dirHandle.name);
+      return true;
+    }
+    return false;
+  } catch (e) {
+    // .git not found
+    console.log('[GitDetection] No .git directory found in:', dirHandle.name);
+    return false;
+  }
+};
+
+// Open a directory picker and check if it's a Git repository
+export const selectGitRepository = async (): Promise<{ dirHandle: any; isGitRepo: boolean; path: string } | null> => {
+  if (!('showDirectoryPicker' in window)) {
+    console.log('[GitDetection] showDirectoryPicker not available');
+    return null;
+  }
+
+  try {
+    const dirHandle = await (window as any).showDirectoryPicker({
+      mode: 'readwrite'
+    });
+
+    const isGitRepo = await detectGitRepoInDirectory(dirHandle);
+    const path = dirHandle.name || 'repository';
+
+    console.log('[GitDetection] Selected directory:', path, 'Is Git repo:', isGitRepo);
+
+    return { dirHandle, isGitRepo, path };
+  } catch (error: any) {
+    if (error.name !== 'AbortError') {
+      console.error('[GitDetection] Error selecting directory:', error);
+    }
+    return null;
+  }
+};
+
+// Legacy: Detect if a file is in a Git repository (limited browser support)
+export const detectGitRepo = async (fileHandle: any): Promise<string | null> => {
+  if (!fileHandle) return null;
+
+  try {
+    // Note: getParent() is not widely supported yet in browsers
+    // Chrome/Edge may support it in the future, but for now it's not available
+    let dirHandle = await (fileHandle as any).getParent?.();
+    
+    if (!dirHandle) {
+      console.log('[GitDetection] getParent() not available - use "Git → Open Repository" for full Git features');
+      return null;
+    }
+
+    // Walk up the directory tree looking for .git folder
+    let currentDir = dirHandle;
+    let depth = 0;
+    const maxDepth = 10;
+
+    while (currentDir && depth < maxDepth) {
+      try {
+        const gitDir = await currentDir.getDirectoryHandle('.git', { create: false });
+        if (gitDir) {
+          console.log('[GitDetection] Found .git directory at depth', depth);
+          return (currentDir as any).name || 'repository';
+        }
+      } catch (e) {
+        // .git not found, continue
+      }
+
+      try {
+        const parent = await (currentDir as any).getParent?.();
+        if (!parent || parent === currentDir) {
+          break;
+        }
+        currentDir = parent;
+        depth++;
+      } catch (e) {
+        break;
+      }
+    }
+
+    console.log('[GitDetection] No .git directory found after checking', depth, 'levels');
+    return null;
+  } catch (error) {
+    console.error('[GitDetection] Error detecting Git repo:', error);
+    return null;
+  }
+};
+
+// Open a repository directory and then select a file from it
+export const handleOpenRepository = async (
+  setEditorContent: (content: string, filePath?: string | null) => void,
+  onGitRepoDetected?: (repoPath: string, dirHandle: any) => void,
+  onFileListReady?: (files: string[], dirHandle: any) => void
+): Promise<void> => {
+  // Check if Directory Picker is available
+  if (!('showDirectoryPicker' in window)) {
+    console.log('[OpenRepository] showDirectoryPicker not available');
+    return;
+  }
+
+  try {
+    // Select directory
+    const dirHandle = await (window as any).showDirectoryPicker({
+      mode: 'readwrite'
+    });
+
+    console.log('[OpenRepository] Selected directory:', dirHandle.name);
+
+    // Check if it's a Git repository
+    const isGitRepo = await detectGitRepoInDirectory(dirHandle);
+    
+    if (isGitRepo && onGitRepoDetected) {
+      console.log('[OpenRepository] Git repository detected');
+      onGitRepoDetected(dirHandle.name, dirHandle);
+    }
+
+    // Get list of markdown files
+    const files: string[] = [];
+    await scanDirectoryForMarkdown(dirHandle, '', files);
+    
+    console.log('[OpenRepository] Found', files.length, 'markdown files');
+
+    if (onFileListReady) {
+      onFileListReady(files, dirHandle);
+    }
+
+  } catch (error: any) {
+    if (error.name !== 'AbortError') {
+      console.error('[OpenRepository] Error:', error);
+    }
+  }
+};
+
+// Recursively scan directory for markdown files
+async function scanDirectoryForMarkdown(dirHandle: any, path: string, files: string[]): Promise<void> {
+  try {
+    for await (const entry of dirHandle.values()) {
+      const entryPath = path ? `${path}/${entry.name}` : entry.name;
+      
+      if (entry.kind === 'file') {
+        // Check if it's a markdown file
+        if (entry.name.endsWith('.md') || entry.name.endsWith('.markdown') || entry.name.endsWith('.txt')) {
+          files.push(entryPath);
+        }
+      } else if (entry.kind === 'directory') {
+        // Skip hidden directories and common ignore patterns
+        if (!entry.name.startsWith('.') && 
+            entry.name !== 'node_modules' && 
+            entry.name !== 'dist' && 
+            entry.name !== 'build') {
+          await scanDirectoryForMarkdown(entry, entryPath, files);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('[ScanDirectory] Error scanning:', path, error);
+  }
+}
+
+// Read a file from a directory handle
+export const readFileFromDirectory = async (
+  dirHandle: any,
+  filePath: string
+): Promise<{ content: string; fileHandle: any } | null> => {
+  try {
+    const pathParts = filePath.split('/');
+    let currentHandle = dirHandle;
+
+    // Navigate to the file
+    for (let i = 0; i < pathParts.length - 1; i++) {
+      currentHandle = await currentHandle.getDirectoryHandle(pathParts[i]);
+    }
+
+    // Get the file
+    const fileName = pathParts[pathParts.length - 1];
+    const fileHandle = await currentHandle.getFileHandle(fileName);
+    const file = await fileHandle.getFile();
+    const content = await file.text();
+
+    console.log('[ReadFile] Successfully read:', filePath);
+    return { content, fileHandle };
+  } catch (error) {
+    console.error('[ReadFile] Error reading file:', filePath, error);
+    return null;
+  }
+};
+
+export const handleOpenClick = async (
+    setEditorContent: (content: string, filePath?: string | null) => void,
+    onGitRepoDetected?: (repoPath: string, fileHandle: any) => void
+  ): Promise<void> => {
     // In Electron, use native file dialog via IPC to get actual file path
     const electronAPI = (window as any).electronAPI;
     if (electronAPI && electronAPI.openFile) {
@@ -142,7 +353,54 @@ export const handleOpenClick = (
       return;
     }
 
-    // Browser fallback: use DOM file input
+    // Modern browsers: Try File System Access API first
+    if (hasFileSystemAccess()) {
+      try {
+        const [fileHandle] = await (window as any).showOpenFilePicker({
+          types: [
+            {
+              description: 'Markdown Files',
+              accept: {
+                'text/markdown': ['.md', '.markdown'],
+                'text/plain': ['.txt']
+              }
+            }
+          ],
+          multiple: false
+        });
+
+        // Store the file handle for later saving
+        currentFileHandle = fileHandle;
+
+        // Read the file
+        const file = await fileHandle.getFile();
+        const content = await file.text();
+        
+        // Get the full path if available (Chromium provides it)
+        const filePath = (file as any).path || file.name;
+        
+        console.log('[FileSystemAccess] Opened file:', filePath);
+        
+        // Try to detect if file is in a Git repository
+        const repoPath = await detectGitRepo(fileHandle);
+        if (repoPath && onGitRepoDetected) {
+          console.log('[FileSystemAccess] Git repository detected:', repoPath);
+          onGitRepoDetected(repoPath, fileHandle);
+        }
+        
+        setEditorContent(content, filePath);
+        
+        return;
+      } catch (error: any) {
+        // User cancelled or error occurred
+        if (error.name !== 'AbortError') {
+          console.error('File System Access API error:', error);
+        }
+        return;
+      }
+    }
+
+    // Browser fallback: use DOM file input (for older browsers)
     const input = document.createElement("input");
     input.type = "file";
     // Accept common markdown extensions and mime types
@@ -185,6 +443,87 @@ export const handleOpenTxtClick = (
     }
   };
   input.click();
+};
+
+// Save to the currently open file (if using File System Access API)
+export const saveToCurrentFile = async (editorContent: string): Promise<boolean> => {
+  if (!currentFileHandle) {
+    return false;
+  }
+
+  try {
+    // Create a writable stream
+    const writable = await currentFileHandle.createWritable();
+    
+    // Write the content
+    await writable.write(editorContent);
+    
+    // Close the file
+    await writable.close();
+    
+    console.log('[FileSystemAccess] File saved successfully');
+    return true;
+  } catch (error) {
+    console.error('[FileSystemAccess] Failed to save file:', error);
+    return false;
+  }
+};
+
+// Save As with File System Access API (modern browsers)
+export const saveAsFile = async (editorContent: string, defaultName: string = "easyedit.md"): Promise<boolean> => {
+  // In Electron, use the existing saveFile method
+  const electronAPI = (window as any).electronAPI;
+  if (electronAPI && electronAPI.saveFile) {
+    try {
+      const filePath = await electronAPI.saveFile(editorContent);
+      if (filePath) {
+        console.log('[Electron] File saved to:', filePath);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('[Electron] Save error:', error);
+      return false;
+    }
+  }
+
+  // Modern browsers: Try File System Access API
+  if (hasFileSystemAccess()) {
+    try {
+      const fileHandle = await (window as any).showSaveFilePicker({
+        suggestedName: defaultName,
+        types: [
+          {
+            description: 'Markdown Files',
+            accept: {
+              'text/markdown': ['.md', '.markdown']
+            }
+          }
+        ]
+      });
+
+      // Store the new file handle
+      currentFileHandle = fileHandle;
+
+      // Write the content
+      const writable = await fileHandle.createWritable();
+      await writable.write(editorContent);
+      await writable.close();
+
+      console.log('[FileSystemAccess] File saved as:', fileHandle.name);
+      return true;
+    } catch (error: any) {
+      if (error.name !== 'AbortError') {
+        console.error('[FileSystemAccess] Save As error:', error);
+      }
+      return false;
+    }
+  }
+
+  // Fallback: use file-saver
+  const blob = new Blob([editorContent], { type: "text/markdown;charset=utf-8" });
+  saveAs(blob, defaultName);
+  return true;
 };
 
 export const saveToFile = (editorContent: string): void => {
