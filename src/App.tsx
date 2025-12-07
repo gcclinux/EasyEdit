@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import {
   FaUndo,
   FaRedo,
-  FaTrash,
+  // FaTrash,
   FaExchangeAlt,
   FaFileImport,
   FaInfoCircle,
@@ -71,7 +71,8 @@ import {
   handleOpenTxtClick,
   saveToHTML,
   saveToFile,
-  saveToTxT
+  saveToTxT,
+  saveAsFile
 } from './insertSave.ts';
 import {
   insertBoldSyntax,
@@ -430,18 +431,18 @@ const App = () => {
       // Ctrl+S or Cmd+S
       if ((event.ctrlKey || event.metaKey) && event.key === 's') {
         event.preventDefault();
-        
+
         // Priority 1: Git repo save (Electron or Web)
         if (isGitRepo && currentFilePath) {
           handleGitSave();
           return;
         }
-        
+
         // Priority 2: File System Access API save (Web)
         if (!(window as any).electronAPI) {
           const { saveToCurrentFile, getCurrentFileHandle } = await import('./insertSave');
           const fileHandle = getCurrentFileHandle();
-          
+
           if (fileHandle) {
             const success = await saveToCurrentFile(editorContent);
             if (success) {
@@ -453,7 +454,7 @@ const App = () => {
             }
           }
         }
-        
+
         // Fallback: Show info message
         showToast('Use File menu to save, or open a file first to enable Ctrl+S', 'info');
       }
@@ -1047,8 +1048,15 @@ const App = () => {
         });
         console.log('gitManager.clone() returned successfully');
 
-        setCurrentRepoPath(targetDir);
-        setIsGitRepo(true);
+        const actualRepoDir = gitManager.getRepoDir();
+        if (actualRepoDir) {
+          setCurrentRepoPath(actualRepoDir);
+          setIsGitRepo(true);
+        } else {
+          console.error('Failed to get repo dir after clone');
+          setCurrentRepoPath(targetDir); // Fallback, though likely incorrect for path calc
+          setIsGitRepo(true);
+        }
 
         // Get list of markdown files
         console.log('Getting repo files...');
@@ -1064,9 +1072,9 @@ const App = () => {
       } catch (error) {
         console.error('=== Clone Failed in Handler ===');
         console.error('Error:', error);
-        
+
         const errorMessage = (error as Error).message;
-        
+
         // Check if it's an authentication error
         if (errorMessage.includes('401') || errorMessage.includes('authentication') || errorMessage.includes('Authentication failed')) {
           showToast('Authentication required. Please set up Git credentials first.', 'error');
@@ -1096,7 +1104,7 @@ const App = () => {
             resolve(true);
           },
         });
-        
+
         // Also handle cancel
         setTimeout(() => {
           const cancelBtn = document.querySelector('.confirm-modal button:last-child');
@@ -1135,7 +1143,7 @@ const App = () => {
       await handleOpenRepositoryElectron();
       return;
     }
-    
+
     // Web: Use File System Access API
     const { handleOpenRepository } = await import('./insertSave');
     handleOpenRepository(
@@ -1146,16 +1154,16 @@ const App = () => {
         setCurrentDirHandle(dirHandle);
         setCurrentRepoPath(repoPath);
         setIsGitRepo(true);
-        
+
         // Set repo directory in gitManager for web mode
         // Use LightningFS path format: /repoName
         const lightningFSPath = `/${repoPath}`;
         gitManager.setRepoDir(lightningFSPath);
         gitManager.setDirHandle(dirHandle);
         console.log('[App] Set gitManager repo dir:', lightningFSPath);
-        
+
         showToast(`Git repository opened: ${repoPath}`, 'success');
-        
+
         // Update Git status
         await updateGitStatus();
       },
@@ -1164,7 +1172,7 @@ const App = () => {
         console.log('[App] Files found:', files.length);
         setRepoFiles(files);
         setCurrentDirHandle(dirHandle);
-        
+
         // If files found, show file browser
         if (files.length > 0) {
           setFileBrowserModalOpen(true);
@@ -1180,7 +1188,7 @@ const App = () => {
     try {
       // Use Electron's directory picker
       const dirPath = await (window as any).electronAPI.selectDirectory();
-      
+
       if (!dirPath) {
         console.log('[App] No directory selected');
         return;
@@ -1191,7 +1199,7 @@ const App = () => {
       // Check if it's a Git repository using Electron API
       const isGit = await (window as any).electronAPI.isGitRepository(dirPath);
       const basename = await (window as any).electronAPI.getBasename(dirPath);
-      
+
       if (isGit) {
         console.log('[App] Git repository detected');
         gitManager.setRepoDir(dirPath);
@@ -1239,7 +1247,7 @@ const App = () => {
       // Check if we're in web mode with directory handle
       if (!(window as any).electronAPI && currentDirHandle) {
         console.log('[App] Reading file via directory handle:', filePath);
-        
+
         // Try gitManager first (reads from LightningFS)
         try {
           content = await gitManager.readFile(filePath);
@@ -1250,7 +1258,7 @@ const App = () => {
           console.log('[App] gitManager failed, trying direct read from directory handle');
           const { readFileFromDirectory } = await import('./insertSave');
           const result = await readFileFromDirectory(currentDirHandle, filePath);
-          
+
           if (result) {
             content = result.content;
             fullPath = filePath;
@@ -1394,17 +1402,36 @@ const App = () => {
 
       // currentFilePath is already relative (e.g., "CHANGELOG.md" or "docs/FILE.md")
       relativePath = currentFilePath;
-      
-      // In Electron mode, we might have an absolute path, so normalize it
-      if ((window as any).electronAPI && repoPath && currentFilePath.startsWith(repoPath)) {
-        relativePath = currentFilePath.substring(repoPath.length);
-        if (relativePath.startsWith('\\') || relativePath.startsWith('/')) {
-          relativePath = relativePath.substring(1);
+
+      // In Electron mode, use native path module to calculate relative path safely
+      if ((window as any).electronAPI && repoPath) {
+        try {
+          const path = (window as any).require('path'); // Use native Node path via Electron
+
+          // Calculate relative path: e.g., relative('C:/Repo', 'C:/Repo/Sub/file.md') -> 'Sub/file.md'
+          // This handles slashes, capitalization (on Windows), and drive letters automatically.
+          const rel = path.relative(repoPath, currentFilePath);
+
+          // Check if the file is actually inside the repo (relative path shouldn't start with '..')
+          if (!rel.startsWith('..') && !path.isAbsolute(rel)) {
+            // Git needs forward slashes even on Windows
+            relativePath = rel.replace(/\\/g, '/');
+          } else {
+            console.warn('[App] Warning: File appears to be outside the repository path:', rel);
+          }
+        } catch (e) {
+          console.warn('[App] Failed to use path.relative, falling back to manual string manip:', e);
+          // Fallback manual logic (simplified but kept just in case)
+          const normRepo = repoPath.replace(/\\/g, '/');
+          const normFile = currentFilePath.replace(/\\/g, '/');
+          if (normFile.toLowerCase().startsWith(normRepo.toLowerCase())) {
+            let tempRel = normFile.substring(normRepo.length);
+            if (tempRel.startsWith('/') || tempRel.startsWith('\\')) tempRel = tempRel.substring(1);
+            relativePath = tempRel;
+          }
         }
-        // Normalize slashes
-        relativePath = relativePath.replace(/\\/g, '/');
       }
-      
+
       console.log('[App] Writing via gitManager:', relativePath);
       await gitManager.writeFile(relativePath, editorContent);
       console.log('[App] File saved successfully');
@@ -1539,6 +1566,29 @@ const App = () => {
     saveToTxT(editorContent);
   };
 
+  // Handle New File creation
+  const handleNewFile = async () => {
+    // 1. Clear content and state
+    handleClear(setEditorContent);
+    setCurrentFilePath(null);
+    setGitStatus({ branch: '', modifiedCount: 0, status: 'clean' });
+
+    // 2. Immediately prompt to save
+    const savedPath = await saveAsFile('');
+
+    // 3. If saved successfully, update state
+    if (savedPath) {
+      setCurrentFilePath(savedPath);
+
+      // If we are in a git repo, update status to see if the new file is tracked/untracked
+      if (isGitRepo) {
+        await updateGitStatus();
+      }
+
+      showToast('New file created successfully', 'success');
+    }
+  };
+
   // Save Encrypted wrapper
   const handleSaveEncrypted = () => {
     encryptContent(editorContent, (onSubmit) => {
@@ -1651,18 +1701,18 @@ const App = () => {
                   handleOpenClick(
                     async (content: string, filePath?: string | null) => {
                       setEditorContent(content);
-                      
+
                       // Set file path for both Electron and Web
                       if (filePath) {
                         setCurrentFilePath(filePath);
                         console.log('[App] File path set:', filePath);
-                        
+
                         // Show helpful message for web users about Git features
                         if (!(window as any).electronAPI && !isGitRepo) {
                           showToast('File opened! For Git features, use "File → Open Repository"', 'info');
                         }
                       }
-                      
+
                       // Electron-specific Git detection
                       if (filePath && (window as any).electronAPI) {
                         // If we already know the repo root, only attach file if under that repo.
@@ -1709,17 +1759,7 @@ const App = () => {
                 <div className="hdr-title"><FaFileImport /> Open TXT</div>
                 <div className="hdr-desc">Open plain text .txt file</div>
               </button>
-              <div className="hdr-sep" />
-              <button
-                className="dropdown-item"
-                onClick={() => {
-                  handleOpenTxtClick(setEditorContent);
-                  setShowHelpDropdown(false);
-                }}
-              >
-                <div className="hdr-title"><FaFileImport /> Open TXT</div>
-                <div className="hdr-desc">Open plain text .txt file</div>
-              </button>
+
               <div className="hdr-sep" />
               <button
                 className="dropdown-item"
@@ -1891,13 +1931,9 @@ const App = () => {
         </button>
         <button
           className="menu-item fixed-menubar-btn"
-          onClick={() => {
-            handleClear(setEditorContent);
-            setCurrentFilePath(null);
-            setGitStatus({ branch: '', modifiedCount: 0, status: 'clean' });
-          }}
+          onClick={handleNewFile}
         >
-          <FaTrash /> &nbsp; Clear
+          <GrDocumentText /> &nbsp; New File
         </button>
         <button
           className="menu-item fixed-menubar-btn"
