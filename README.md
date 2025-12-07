@@ -41,7 +41,7 @@ $ npm run electron:build
 ## *Run Pre-built Docker Example*
 ```
 # Latest build automatic on every code submition
-$ docker pull ghcr.io/gcclinux/easyedit:main
+$ docker pull ghcr.io/gcclinux/easyedit:latest
 $ docker run -d --name EASYEDIT -p 3024:3024 ghcr.io/gcclinux/easyedit:main
 ```
 
