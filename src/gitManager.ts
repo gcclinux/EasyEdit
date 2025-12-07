@@ -1080,7 +1080,12 @@ export class GitManager {
       const repoName = this.repoDir?.split('/').filter(Boolean)[0] || '';
 
       // Get repo subdirectory handle
-      const repoHandle = await this.dirHandle.getDirectoryHandle(repoName, { create: true });
+      let repoHandle;
+      if (this.dirHandle.name === repoName) {
+        repoHandle = this.dirHandle;
+      } else {
+        repoHandle = await this.dirHandle.getDirectoryHandle(repoName, { create: true });
+      }
 
       // Navigate to file location
       const pathParts = filePath.split('/').filter(Boolean);
