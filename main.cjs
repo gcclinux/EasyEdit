@@ -258,11 +258,22 @@ function setupIPCHandlers() {
   });
 
   ipcMain.handle('dialog:saveFile', async (event, content) => {
-    const { canceled, filePath } = await dialog.showSaveDialog(mainWindow);
+    const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+      filters: [
+        { name: 'Markdown File', extensions: ['md'] },
+        { name: 'All Files', extensions: ['*'] }
+      ]
+    });
 
-    if (!canceled) {
-      await fsPromises.writeFile(filePath, content);
-      return filePath;
+    if (!canceled && filePath) {
+      // Ensure file has an extension, default to .md
+      let finalPath = filePath;
+      if (!path.extname(finalPath)) {
+        finalPath += '.md';
+      }
+
+      await fsPromises.writeFile(finalPath, content);
+      return finalPath;
     }
   });
 
