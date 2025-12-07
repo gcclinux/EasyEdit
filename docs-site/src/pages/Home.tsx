@@ -52,9 +52,9 @@ export default function Home() {
               <p>Generate flowcharts, sequence diagrams, Gantt charts, and more</p>
             </div>
             <div className="feature-card">
-              <div className="feature-icon">📄</div>
-              <h3>PDF Export</h3>
-              <p>Export your documents to PDF with beautiful formatting</p>
+              <div className="feature-icon">🔀</div>
+              <h3>Git Integration</h3>
+              <p>Clone, edit, commit, and push Markdown files to Git repositories</p>
             </div>
             <div className="feature-card">
               <div className="feature-icon">🔒</div>

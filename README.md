@@ -45,6 +45,10 @@ $ docker pull ghcr.io/gcclinux/easyedit:main
 $ docker run -d --name EASYEDIT -p 3024:3024 ghcr.io/gcclinux/easyedit:main
 ```
 
+## *New basic Git enabled feature added*
+
+<a><img src="screenshots/git_feature.png" alt="Git Feature" width="720" height="400"></a>
+
 ## *Latest Example implementing Templates and Examples...*
 
 <a><img src="screenshots/020-1800x900.png" alt="Example" width="720" height="400"></a>

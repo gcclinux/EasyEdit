@@ -7,17 +7,11 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
 *EasyEdit is a free and open-source project. You can use it for free and modify it as you like.*
 
 ## Latest CODE version
-- 1.5.0 - Implemented File System Access API for modern browsers (Chrome/Edge/Opera)
-  - Native file picker in web version for Git Repo
-  - Save to same file with Ctrl+S for Git
-  - Basic Git repository detection
-  - Progressive enhancement (fallback for older browsers)
-  - Full backward compatibility with Electron app   
-  - Implemented https secure API connection for Git Repository
-
+- 1.5.1 - Several bug fixes and improvements, documentation
 
 
 ## Version changes
+- 1.5.0 - Implemented File System Access API for modern browsers (Chrome/Edge/Opera)
 - 1.4.6 - Implemented new ascii template and ascii-art in preview
 - 1.4.5 - Implemented theme picker or creator
 - 1.4.2 - Implemented UML diagram and new look & feel 
