@@ -150,6 +150,43 @@ export default function Features() {
 
           <div className="feature-detail">
             <div className="feature-detail-content">
+              <h2>🔀 Git Integration</h2>
+              <p>
+                Built-in Git support for managing documentation and notes stored in repositories.
+                Work seamlessly with GitHub, GitLab, and other Git hosting services.
+              </p>
+              <ul>
+                <li>Clone repositories directly from the app</li>
+                <li>Browse and open Markdown files from repositories</li>
+                <li>Stage and commit changes with descriptive messages</li>
+                <li>Push commits to remote servers</li>
+                <li>View commit history with author and timestamp details</li>
+                <li>Credential management with secure storage</li>
+                <li>Perfect for documentation workflows</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="feature-detail reverse">
+            <div className="feature-detail-content">
+              <h2>🎨 Customizable Themes</h2>
+              <p>
+                Personalize your editing experience with a variety of beautiful, modern themes.
+                Choose color schemes that match your style and reduce eye strain.
+              </p>
+              <ul>
+                <li>Multiple pre-built themes</li>
+                <li>Light and dark mode options</li>
+                <li>Vibrant color palettes</li>
+                <li>Switch themes instantly</li>
+                <li>Custom theme support</li>
+                <li>Carefully crafted designs for optimal readability</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="feature-detail">
+            <div className="feature-detail-content">
               <h2>🐧 Built for Linux</h2>
               <p>
                 Native Linux application built with Electron, optimized for performance.
