@@ -78,7 +78,7 @@ const FileBrowserModal: React.FC<FileBrowserModalProps> = ({ open, onClose, onSe
         </div>
 
         <div className="modal-actions">
-          <button onClick={onClose} className="modal-button cancel-button">Cancel</button>
+          <button onClick={onClose} className="modal-button cancel-button">Close</button>
           <button 
             onClick={handleOpenSelected} 
             className="modal-button submit-button"
