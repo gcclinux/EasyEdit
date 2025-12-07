@@ -44,7 +44,8 @@ async function initializeModules() {
       dirname: (p: string) => {
         const parts = p.split('/').filter(Boolean);
         parts.pop();
-        return parts.join('/') || '/';
+        const dir = parts.join('/');
+        return p.startsWith('/') ? '/' + dir : (dir || '.');
       },
       basename: (p: string) => {
         const parts = p.split('/').filter(Boolean);
@@ -798,7 +799,11 @@ export class GitManager {
       });
 
       return branch || 'main';
-    } catch (error) {
+    } catch (error: any) {
+      if (error.message.includes('Could not find HEAD') || error.code === 'NotFoundError') {
+        console.warn('Could not determine current branch (likely empty repo or detached HEAD), defaulting to main');
+        return 'main';
+      }
       throw new Error(`Failed to get current branch: ${(error as Error).message}`);
     }
   }

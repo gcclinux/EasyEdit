@@ -13,77 +13,77 @@ export interface HistoryState {
 
 // saveToHTML function
 export const saveToHTML = async (editorContent: string): Promise<void> => {
-    try {
-      // Initialize mermaid with config
-      mermaid.initialize({ 
-        startOnLoad: true,
-        theme: 'default',
-        securityLevel: 'loose'
-      });
-  
-      // First convert markdown to HTML
-      const htmlContent = await marked(editorContent);
-      
-      // Create a temporary div to render mermaid
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = htmlContent;
-      
-      // Find all mermaid code blocks
-      const mermaidBlocks = tempDiv.querySelectorAll('code.language-mermaid');
-      
-      // Process each mermaid block
-      await Promise.all(Array.from(mermaidBlocks).map(async (block) => {
-        try {
-          const mermaidCode = block.textContent || '';
-          const uniqueId = `mermaid-${Math.random().toString(36).substring(7)}`;
-          
-          // Create a container for the diagram
-          const container = document.createElement('div');
-          container.className = 'mermaid';
-          container.id = uniqueId;
-          
-          // Render the diagram
-          const { svg } = await mermaid.render(uniqueId, mermaidCode);
-          container.innerHTML = svg;
-          
-          // Replace the code block with rendered diagram
-          const pre = block.closest('pre');
-          if (pre?.parentElement) {
-            pre.parentElement.replaceChild(container, pre);
-          }
-        } catch (error) {
-          console.error('Mermaid rendering error:', error);
-        }
-      }));
+  try {
+    // Initialize mermaid with config
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'default',
+      securityLevel: 'loose'
+    });
 
-      // Find all Nomnoml/UML code blocks
-      const plantumlBlocks = tempDiv.querySelectorAll('code.language-plantuml');
-      
-      // Process each Nomnoml block (offline rendering)
-      plantumlBlocks.forEach((block) => {
-        try {
-          const umlCode = block.textContent || '';
-          const svg = nomnoml.renderSvg(umlCode);
-          
-          // Create a container for the diagram
-          const container = document.createElement('div');
-          container.className = 'plantuml-diagram';
-          container.style.textAlign = 'center';
-          container.style.margin = '1em 0';
-          container.innerHTML = svg;
-          
-          // Replace the code block with rendered diagram
-          const pre = block.closest('pre');
-          if (pre?.parentElement) {
-            pre.parentElement.replaceChild(container, pre);
-          }
-        } catch (error) {
-          console.error('Nomnoml rendering error:', error);
+    // First convert markdown to HTML
+    const htmlContent = await marked(editorContent);
+
+    // Create a temporary div to render mermaid
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
+
+    // Find all mermaid code blocks
+    const mermaidBlocks = tempDiv.querySelectorAll('code.language-mermaid');
+
+    // Process each mermaid block
+    await Promise.all(Array.from(mermaidBlocks).map(async (block) => {
+      try {
+        const mermaidCode = block.textContent || '';
+        const uniqueId = `mermaid-${Math.random().toString(36).substring(7)}`;
+
+        // Create a container for the diagram
+        const container = document.createElement('div');
+        container.className = 'mermaid';
+        container.id = uniqueId;
+
+        // Render the diagram
+        const { svg } = await mermaid.render(uniqueId, mermaidCode);
+        container.innerHTML = svg;
+
+        // Replace the code block with rendered diagram
+        const pre = block.closest('pre');
+        if (pre?.parentElement) {
+          pre.parentElement.replaceChild(container, pre);
         }
-      });
-  
-      // Create final HTML with proper styling and mermaid script
-      const finalHTML = `
+      } catch (error) {
+        console.error('Mermaid rendering error:', error);
+      }
+    }));
+
+    // Find all Nomnoml/UML code blocks
+    const plantumlBlocks = tempDiv.querySelectorAll('code.language-plantuml');
+
+    // Process each Nomnoml block (offline rendering)
+    plantumlBlocks.forEach((block) => {
+      try {
+        const umlCode = block.textContent || '';
+        const svg = nomnoml.renderSvg(umlCode);
+
+        // Create a container for the diagram
+        const container = document.createElement('div');
+        container.className = 'plantuml-diagram';
+        container.style.textAlign = 'center';
+        container.style.margin = '1em 0';
+        container.innerHTML = svg;
+
+        // Replace the code block with rendered diagram
+        const pre = block.closest('pre');
+        if (pre?.parentElement) {
+          pre.parentElement.replaceChild(container, pre);
+        }
+      } catch (error) {
+        console.error('Nomnoml rendering error:', error);
+      }
+    });
+
+    // Create final HTML with proper styling and mermaid script
+    const finalHTML = `
         <!DOCTYPE html>
         <html>
         <head>
@@ -113,16 +113,16 @@ export const saveToHTML = async (editorContent: string): Promise<void> => {
         </body>
         </html>
       `;
-  
-      // Save the file
-      const blob = new Blob([finalHTML], {
-        type: "text/html;charset=utf-8",
-      });
-      saveAs(blob, "easyedit.html");
-    } catch (error) {
-      console.error('Error saving HTML:', error);
-    }
-  };
+
+    // Save the file
+    const blob = new Blob([finalHTML], {
+      type: "text/html;charset=utf-8",
+    });
+    saveAs(blob, "easyedit.html");
+  } catch (error) {
+    console.error('Error saving HTML:', error);
+  }
+};
 
 // Store file handle for File System Access API (modern browsers)
 let currentFileHandle: any = null;
@@ -193,7 +193,7 @@ export const detectGitRepo = async (fileHandle: any): Promise<string | null> => 
     // Note: getParent() is not widely supported yet in browsers
     // Chrome/Edge may support it in the future, but for now it's not available
     let dirHandle = await (fileHandle as any).getParent?.();
-    
+
     if (!dirHandle) {
       console.log('[GitDetection] getParent() not available - use "Git → Open Repository" for full Git features');
       return null;
@@ -257,7 +257,7 @@ export const handleOpenRepository = async (
 
     // Check if it's a Git repository
     const isGitRepo = await detectGitRepoInDirectory(dirHandle);
-    
+
     if (isGitRepo && onGitRepoDetected) {
       console.log('[OpenRepository] Git repository detected');
       onGitRepoDetected(dirHandle.name, dirHandle);
@@ -266,7 +266,7 @@ export const handleOpenRepository = async (
     // Get list of markdown files
     const files: string[] = [];
     await scanDirectoryForMarkdown(dirHandle, '', files);
-    
+
     console.log('[OpenRepository] Found', files.length, 'markdown files');
 
     if (onFileListReady) {
@@ -285,7 +285,7 @@ async function scanDirectoryForMarkdown(dirHandle: any, path: string, files: str
   try {
     for await (const entry of dirHandle.values()) {
       const entryPath = path ? `${path}/${entry.name}` : entry.name;
-      
+
       if (entry.kind === 'file') {
         // Check if it's a markdown file
         if (entry.name.endsWith('.md') || entry.name.endsWith('.markdown') || entry.name.endsWith('.txt')) {
@@ -293,10 +293,10 @@ async function scanDirectoryForMarkdown(dirHandle: any, path: string, files: str
         }
       } else if (entry.kind === 'directory') {
         // Skip hidden directories and common ignore patterns
-        if (!entry.name.startsWith('.') && 
-            entry.name !== 'node_modules' && 
-            entry.name !== 'dist' && 
-            entry.name !== 'build') {
+        if (!entry.name.startsWith('.') &&
+          entry.name !== 'node_modules' &&
+          entry.name !== 'dist' &&
+          entry.name !== 'build') {
           await scanDirectoryForMarkdown(entry, entryPath, files);
         }
       }
@@ -314,13 +314,13 @@ export const readFileFromDirectory = async (
   try {
     console.log('[ReadFile] Reading file:', filePath);
     console.log('[ReadFile] Directory handle:', dirHandle?.name);
-    
+
     // Normalize path separators
     const normalizedPath = filePath.replace(/\\/g, '/');
     const pathParts = normalizedPath.split('/').filter(part => part.length > 0);
-    
+
     console.log('[ReadFile] Path parts:', pathParts);
-    
+
     let currentHandle = dirHandle;
 
     // Navigate to the file through subdirectories
@@ -368,7 +368,7 @@ export const writeFileToDirectory = async (
     // Get or create the file
     const fileName = pathParts[pathParts.length - 1];
     const fileHandle = await currentHandle.getFileHandle(fileName, { create: true });
-    
+
     // Write the content
     const writable = await fileHandle.createWritable();
     await writable.write(content);
@@ -383,92 +383,92 @@ export const writeFileToDirectory = async (
 };
 
 export const handleOpenClick = async (
-    setEditorContent: (content: string, filePath?: string | null) => void,
-    onGitRepoDetected?: (repoPath: string, fileHandle: any) => void
-  ): Promise<void> => {
-    // In Electron, use native file dialog via IPC to get actual file path
-    const electronAPI = (window as any).electronAPI;
-    if (electronAPI && electronAPI.openFile) {
-      electronAPI.openFile()
-        .then((result: { content: string; filePath?: string | null } | null) => {
-          if (result && typeof result.content === 'string') {
-            setEditorContent(result.content, result.filePath || null);
+  setEditorContent: (content: string, filePath?: string | null) => void,
+  onGitRepoDetected?: (repoPath: string, fileHandle: any) => void
+): Promise<void> => {
+  // In Electron, use native file dialog via IPC to get actual file path
+  const electronAPI = (window as any).electronAPI;
+  if (electronAPI && electronAPI.openFile) {
+    electronAPI.openFile()
+      .then((result: { content: string; filePath?: string | null } | null) => {
+        if (result && typeof result.content === 'string') {
+          setEditorContent(result.content, result.filePath || null);
+        }
+      })
+      .catch((err: any) => {
+        console.error('Electron openFile error:', err);
+      });
+    return;
+  }
+
+  // Modern browsers: Try File System Access API first
+  if (hasFileSystemAccess()) {
+    try {
+      const [fileHandle] = await (window as any).showOpenFilePicker({
+        types: [
+          {
+            description: 'Markdown Files',
+            accept: {
+              'text/markdown': ['.md', '.markdown'],
+              'text/plain': ['.txt']
+            }
           }
-        })
-        .catch((err: any) => {
-          console.error('Electron openFile error:', err);
-        });
+        ],
+        multiple: false
+      });
+
+      // Store the file handle for later saving
+      currentFileHandle = fileHandle;
+
+      // Read the file
+      const file = await fileHandle.getFile();
+      const content = await file.text();
+
+      // Get the full path if available (Chromium provides it)
+      const filePath = (file as any).path || file.name;
+
+      console.log('[FileSystemAccess] Opened file:', filePath);
+
+      // Try to detect if file is in a Git repository
+      const repoPath = await detectGitRepo(fileHandle);
+      if (repoPath && onGitRepoDetected) {
+        console.log('[FileSystemAccess] Git repository detected:', repoPath);
+        onGitRepoDetected(repoPath, fileHandle);
+      }
+
+      setEditorContent(content, filePath);
+
+      return;
+    } catch (error: any) {
+      // User cancelled or error occurred
+      if (error.name !== 'AbortError') {
+        console.error('File System Access API error:', error);
+      }
       return;
     }
+  }
 
-    // Modern browsers: Try File System Access API first
-    if (hasFileSystemAccess()) {
-      try {
-        const [fileHandle] = await (window as any).showOpenFilePicker({
-          types: [
-            {
-              description: 'Markdown Files',
-              accept: {
-                'text/markdown': ['.md', '.markdown'],
-                'text/plain': ['.txt']
-              }
-            }
-          ],
-          multiple: false
-        });
-
-        // Store the file handle for later saving
-        currentFileHandle = fileHandle;
-
-        // Read the file
-        const file = await fileHandle.getFile();
-        const content = await file.text();
-        
-        // Get the full path if available (Chromium provides it)
-        const filePath = (file as any).path || file.name;
-        
-        console.log('[FileSystemAccess] Opened file:', filePath);
-        
-        // Try to detect if file is in a Git repository
-        const repoPath = await detectGitRepo(fileHandle);
-        if (repoPath && onGitRepoDetected) {
-          console.log('[FileSystemAccess] Git repository detected:', repoPath);
-          onGitRepoDetected(repoPath, fileHandle);
+  // Browser fallback: use DOM file input (for older browsers)
+  const input = document.createElement("input");
+  input.type = "file";
+  // Accept common markdown extensions and mime types
+  input.accept = ".md,.markdown,text/markdown,application/markdown";
+  input.onchange = (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const contents = e.target?.result;
+        if (typeof contents === "string") {
+          // In the browser we don't have a real path; pass name only
+          setEditorContent(contents, (file as any).path || file.name || null);
         }
-        
-        setEditorContent(content, filePath);
-        
-        return;
-      } catch (error: any) {
-        // User cancelled or error occurred
-        if (error.name !== 'AbortError') {
-          console.error('File System Access API error:', error);
-        }
-        return;
-      }
+      };
+      reader.readAsText(file);
     }
-
-    // Browser fallback: use DOM file input (for older browsers)
-    const input = document.createElement("input");
-    input.type = "file";
-    // Accept common markdown extensions and mime types
-    input.accept = ".md,.markdown,text/markdown,application/markdown";
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const contents = e.target?.result;
-          if (typeof contents === "string") {
-            // In the browser we don't have a real path; pass name only
-            setEditorContent(contents, (file as any).path || file.name || null);
-          }
-        };
-        reader.readAsText(file);
-      }
-    };
-    input.click();
   };
+  input.click();
+};
 
 // Open a plain text (.txt) file and load its contents into the editor
 export const handleOpenTxtClick = (
@@ -502,13 +502,13 @@ export const saveToCurrentFile = async (editorContent: string): Promise<boolean>
   try {
     // Create a writable stream
     const writable = await currentFileHandle.createWritable();
-    
+
     // Write the content
     await writable.write(editorContent);
-    
+
     // Close the file
     await writable.close();
-    
+
     console.log('[FileSystemAccess] File saved successfully');
     return true;
   } catch (error) {
@@ -518,7 +518,7 @@ export const saveToCurrentFile = async (editorContent: string): Promise<boolean>
 };
 
 // Save As with File System Access API (modern browsers)
-export const saveAsFile = async (editorContent: string, defaultName: string = "easyedit.md"): Promise<boolean> => {
+export const saveAsFile = async (editorContent: string, defaultName: string = "easyedit.md"): Promise<string | null> => {
   // In Electron, use the existing saveFile method
   const electronAPI = (window as any).electronAPI;
   if (electronAPI && electronAPI.saveFile) {
@@ -526,12 +526,12 @@ export const saveAsFile = async (editorContent: string, defaultName: string = "e
       const filePath = await electronAPI.saveFile(editorContent);
       if (filePath) {
         console.log('[Electron] File saved to:', filePath);
-        return true;
+        return filePath;
       }
-      return false;
+      return null;
     } catch (error) {
       console.error('[Electron] Save error:', error);
-      return false;
+      return null;
     }
   }
 
@@ -559,29 +559,29 @@ export const saveAsFile = async (editorContent: string, defaultName: string = "e
       await writable.close();
 
       console.log('[FileSystemAccess] File saved as:', fileHandle.name);
-      return true;
+      return fileHandle.name;
     } catch (error: any) {
       if (error.name !== 'AbortError') {
         console.error('[FileSystemAccess] Save As error:', error);
       }
-      return false;
+      return null;
     }
   }
 
   // Fallback: use file-saver
   const blob = new Blob([editorContent], { type: "text/markdown;charset=utf-8" });
   saveAs(blob, defaultName);
-  return true;
+  return null; // Cannot track path with file-saver
 };
 
 export const saveToFile = (editorContent: string): void => {
-const blob = new Blob([editorContent], { type: "text/markdown;charset=utf-8" });
-saveAs(blob, "easyedit.md");
+  const blob = new Blob([editorContent], { type: "text/markdown;charset=utf-8" });
+  saveAs(blob, "easyedit.md");
 };
 
 export const saveToTxT = (editorContent: string): void => {
-const blob = new Blob([editorContent], { type: "text/plain;charset=utf-8" });
-saveAs(blob, "easyedit.txt");
+  const blob = new Blob([editorContent], { type: "text/plain;charset=utf-8" });
+  saveAs(blob, "easyedit.txt");
 };
 
 export interface MainHandlerProps {
@@ -596,7 +596,7 @@ export interface MainHandlerProps {
 }
 
 export const addToHistory = (
-  content: string, 
+  content: string,
   cursorPos: number,
   documentHistory: HistoryState[],
   historyIndex: number,
