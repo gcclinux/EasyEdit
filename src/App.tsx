@@ -1158,9 +1158,18 @@ const App = () => {
         // Set repo directory in gitManager for web mode
         // Use LightningFS path format: /repoName
         const lightningFSPath = `/${repoPath}`;
-        gitManager.setRepoDir(lightningFSPath);
-        gitManager.setDirHandle(dirHandle);
-        console.log('[App] Set gitManager repo dir:', lightningFSPath);
+
+        // Sync the repo contents to LightningFS
+        console.log('[App] Syncing repo to LightningFS:', lightningFSPath);
+        try {
+          await gitManager.openRepoFromHandle(dirHandle, lightningFSPath);
+          console.log('[App] Repo sync complete');
+        } catch (e) {
+          console.error('[App] Repo sync failed:', e);
+          // Fallback to basic setup if sync fails
+          gitManager.setRepoDir(lightningFSPath);
+          gitManager.setDirHandle(dirHandle);
+        }
 
         showToast(`Git repository opened: ${repoPath}`, 'success');
 

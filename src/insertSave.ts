@@ -260,7 +260,7 @@ export const handleOpenRepository = async (
 
     if (isGitRepo && onGitRepoDetected) {
       console.log('[OpenRepository] Git repository detected');
-      onGitRepoDetected(dirHandle.name, dirHandle);
+      await onGitRepoDetected(dirHandle.name, dirHandle);
     }
 
     // Get list of markdown files

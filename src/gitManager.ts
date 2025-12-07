@@ -115,6 +115,99 @@ export class GitManager {
   }
 
   /**
+   * Initialize and sync a repository directly from a File System Access Handle (Open Repo)
+   */
+  async openRepoFromHandle(dirHandle: any, repoPath: string): Promise<void> {
+    if (!isBrowser()) return;
+
+    await initializeModules();
+
+    console.log('=== Opening Repo from Handle ===');
+    console.log('Repo path:', repoPath);
+
+    this.setRepoDir(repoPath);
+    this.setDirHandle(dirHandle);
+
+    // Create the repo directory in LightningFS
+    try {
+      await fs.promises.mkdir(repoPath, { recursive: true });
+    } catch (e) {
+      // Ignore if exists
+    }
+
+    // Sync the .git directory from the handle to LightningFS
+    console.log('Syncing .git directory...');
+    try {
+      // Check if .git exists in the handle
+      const gitDirHandle = await dirHandle.getDirectoryHandle('.git');
+      const gitPath = path.join(repoPath, '.git');
+      try {
+        await fs.promises.mkdir(gitPath, { recursive: true });
+      } catch (e: any) {
+        if (e.code !== 'EEXIST') throw e;
+      }
+
+      await this.syncDirectoryFromHandle(gitDirHandle, gitPath);
+      console.log('.git directory synced successfully');
+
+      // Also sync working directory files (source files)
+      // We'll skip node_modules and hidden files other than .git (which we just did)
+      // This is crucial for 'git status' to not show everything as deleted
+      console.log('Syncing working directory...');
+      await this.syncDirectoryFromHandle(dirHandle, repoPath, ['.git', 'node_modules', 'dist', 'build', '.DS_Store']);
+      console.log('Working directory synced successfully');
+
+    } catch (error) {
+      console.error('Failed to sync .git directory:', error);
+      throw new Error('Failed to load Git repository. Make sure this is a valid Git repo.');
+    }
+  }
+
+  /**
+   * Helper to recursively sync from a directory handle to LightningFS
+   */
+  private async syncDirectoryFromHandle(sourceHandle: any, targetPath: string, ignoreList: string[] = []): Promise<void> {
+    for await (const entry of sourceHandle.values()) {
+      // Check ignore list
+      if (ignoreList.includes(entry.name)) continue;
+
+      const fullPath = path.join(targetPath, entry.name);
+
+      if (entry.kind === 'file') {
+        try {
+          const file = await entry.getFile();
+          // Read as text if possible, binary if needed? LightningFS handles Uint8Array/Buffer
+          const arrayBuffer = await file.arrayBuffer();
+          const buffer = new Uint8Array(arrayBuffer);
+
+          await fs.promises.writeFile(fullPath, buffer);
+        } catch (e) {
+          console.warn(`Failed to sync file ${entry.name}:`, e);
+        }
+      } else if (entry.kind === 'directory') {
+        // Recursive sync
+        try {
+          await fs.promises.mkdir(fullPath, { recursive: true });
+          await this.syncDirectoryFromHandle(entry, fullPath);
+        } catch (e: any) {
+          if (e.code !== 'EEXIST') {
+            console.warn(`Failed to sync directory ${entry.name}:`, e);
+            // Continue syncing contents even if directory creation failed (might exist)
+            try {
+              await this.syncDirectoryFromHandle(entry, fullPath);
+            } catch (innerE) {
+              console.warn(`Failed to sync contents of ${entry.name}:`, innerE);
+            }
+          } else {
+            // If exists, just sync contents
+            await this.syncDirectoryFromHandle(entry, fullPath);
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * Load credentials from credential manager
    */
   async loadStoredCredentials(remoteUrl?: string): Promise<boolean> {
