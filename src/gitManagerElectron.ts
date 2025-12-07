@@ -155,9 +155,27 @@ export class GitManagerElectron {
   async log(count: number = 10): Promise<any[]> {
     if (!this.repoDir) throw new Error('No repository directory set');
     try {
-      const output = execSync(`git log --oneline -n ${count}`, { cwd: this.repoDir }).toString();
-      return output.split('\n').filter(Boolean).map(line => ({ message: line }));
-    } catch {
+      // Use git log with format to match isomorphic-git structure
+      // Format: hash|author name|author email|timestamp|commit message
+      const format = '%H|%an|%ae|%at|%s';
+      const output = execSync(`git log --format="${format}" -n ${count}`, { cwd: this.repoDir }).toString();
+      
+      const commits = output.split('\n').filter(Boolean).map(line => {
+        const [oid, name, email, timestamp, ...messageParts] = line.split('|');
+        return {
+          oid,
+          message: messageParts.join('|'), // Rejoin in case message contains |
+          author: {
+            name,
+            email,
+            timestamp: parseInt(timestamp, 10)
+          }
+        };
+      });
+      
+      return commits;
+    } catch (error) {
+      console.error('[GitManagerElectron] Error in log:', error);
       return [];
     }
   }

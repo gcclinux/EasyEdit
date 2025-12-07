@@ -133,7 +133,7 @@ import MasterPasswordModal from './components/MasterPasswordModal';
 import CommitModal from './components/CommitModal';
 import GitHistoryModal from './components/GitHistoryModal';
 import GitStatusIndicator from './components/GitStatusIndicator';
-import { gitManager } from './gitManager';
+import { getGitManager } from './gitManagerWrapper';
 import { gitCredentialManager } from './gitCredentialManager';
 import ToastContainer from './components/ToastContainer';
 
@@ -143,6 +143,7 @@ const App = () => {
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
   const [isHorizontal, setIsHorizontal] = useState<boolean>(false);
   const previewRef = useRef<HTMLDivElement>(null!);
+  const [gitManager, setGitManager] = useState<any>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null!);
   const cursorPositionRef = useRef<number>(0);
   const [tableModalOpen, setTableModalOpen] = useState(false);
@@ -254,6 +255,13 @@ const App = () => {
     setToasts(prev => prev.filter(toast => toast.id !== id));
   };
 
+  // Initialize git manager based on environment
+  useEffect(() => {
+    getGitManager().then(manager => {
+      setGitManager(manager);
+    });
+  }, []);
+
   // Detect Electron environment and add class to body for CSS targeting
   useEffect(() => {
     if (typeof window !== 'undefined' && (window as any).electronAPI) {
@@ -274,6 +282,7 @@ const App = () => {
 
     // Check for saved repository directory
     const checkRepo = () => {
+      if (!gitManager) return;
       const savedRepoDir = gitManager.getRepoDir();
       if (savedRepoDir) {
         console.log('[App] Restored repository from session:', savedRepoDir);
@@ -284,7 +293,7 @@ const App = () => {
 
     checkCredentials();
     checkRepo();
-  }, []);
+  }, [gitManager]);
 
   // Selection state fixing the issue with the Headers selection
   const [selectionStart, setSelectionStart] = useState<number | null>(null);
@@ -969,7 +978,9 @@ const App = () => {
       onConfirm: async () => {
         try {
           await gitCredentialManager.clearCredentials();
-          gitManager.clearCredentials();
+          if (gitManager) {
+            gitManager.clearCredentials();
+          }
           setHasStoredCredentials(false);
           showToast('Credentials cleared successfully.', 'success');
         } catch (error) {
@@ -980,6 +991,11 @@ const App = () => {
   };
 
   const ensureCredentials = async (action: () => Promise<void>) => {
+    if (!gitManager) {
+      showToast('Git manager not initialized yet. Please wait.', 'info');
+      return false;
+    }
+    
     // Check if we have stored credentials
     if (!gitCredentialManager.hasCredentials()) {
       // No stored credentials, prompt user to set them up
@@ -1025,6 +1041,11 @@ const App = () => {
 
     // Helper function to perform the actual clone
     const performClone = async () => {
+      if (!gitManager) {
+        showToast('Git manager not initialized yet. Please wait.', 'error');
+        return;
+      }
+      
       try {
         // Show loading state
         showToast('Cloning repository... This may take a moment.', 'info');
@@ -1295,6 +1316,11 @@ const App = () => {
   };
 
   const handleGitPull = async () => {
+    if (!gitManager) {
+      showToast('Git manager not initialized yet. Please wait.', 'info');
+      return;
+    }
+    
     if (!isGitRepo) {
       showToast('No active Git repository. Please clone a repository first.', 'info');
       return;
@@ -1511,6 +1537,11 @@ const App = () => {
 
   // Phase 4: View commit history
   const handleViewHistory = async () => {
+    if (!gitManager) {
+      showToast('Git manager not initialized yet. Please wait.', 'info');
+      return;
+    }
+    
     if (!isGitRepo) {
       showToast('No active Git repository. Please clone a repository first.', 'info');
       return;
