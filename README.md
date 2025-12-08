@@ -1,16 +1,21 @@
 ## *EasyEdit*
 
-![EasyEdit](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png)
+![EasyEdit](screenshots/copilot_banner.png)
 
-EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and preview it in real-time. You can save, load .md files, load Git repo and stage,commit, push and export to HTML,TXT, PDF & SSTP Encryption. The idea is to provide a single MD / Mermaid /UML Aplication that can help creating MD documents by build the MD code as easy as a click of a button, with over 130 features & examples.
+About the product: EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and preview it in real-time. You can save, load .md files, load Git repo and stage, commit, push and export to HTML,TXT, PDF & SSTP Encryption. The idea is to provide a single MD / Mermaid /UML Application that can help creating MD documents by build the MD code as easy as a click of a button, with over 130 features & examples.
 
-![EasyEdit](screenshots/banner-720x360.png)
 
 ** *EasyEdit is a free and open-source project. You can use it for free and modify it as you like.* **
 
 ## *Try it before Installing it*
 
 [![Try EasyEdit Online](https://img.shields.io/badge/🚀_Try_EasyEdit-Launch_Web_App-success?style=for-the-badge&logo=rocket)](https://gcclinux.github.io/EasyEdit/webapp/)
+
+## *Download the App*
+
+🚀 **Get the best experience!** Grab the easy-to-install standalone version for Windows & Linux directly from our releases.
+
+[![Download Latest Release](https://img.shields.io/badge/⬇️_Download_Desktop_App-Get_Latest_Release-blue?style=for-the-badge&logo=github)](https://github.com/gcclinux/EasyEdit/releases/latest)
 
 ## *Install the project*
 ```
@@ -44,8 +49,11 @@ $ npm run electron:build
 $ docker pull ghcr.io/gcclinux/easyedit:main
 $ docker run -d --name EASYEDIT -p 3024:3024 ghcr.io/gcclinux/easyedit:main
 ```
+## *Example of the new git functionality to edit MD straight in the repository*
 
-## *Latest Example implementing Templates and Examples...*
+<a><img src="screenshots/git_functions.png" alt="Example" width="720" height="400"></a>
+
+## *Example of the EasyEdit power with over 130 features & examples*
 
 <a><img src="screenshots/020-1800x900.png" alt="Example" width="720" height="400"></a>
 
@@ -57,12 +65,6 @@ $ docker run -d --name EASYEDIT -p 3024:3024 ghcr.io/gcclinux/easyedit:main
 
 <a><img src="screenshots/Themes_2025-10-24.png" alt="Example" width="720" height="400"></a>
 
-## *Example Table displayed*
-
-| header1 | header2 | header3 |
-| :--- | :--- | :--- |
-| row1 | col2 | col3 |
-| row2 | col2 | col3 |
 
 ---
 
