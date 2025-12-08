@@ -11,7 +11,7 @@ interface AboutModalProps {
 export function AboutModal({ open, onClose }: AboutModalProps) {
   if (!open) return null;
 
-  const lastUpdated = '26 September 2025';
+  const lastUpdated = 'Sun Dec 7 2025';
   const [version, setVersion] = React.useState<string>('');
   const [availableVersion, setAvailableVersion] = React.useState<string>('');
 
@@ -151,12 +151,28 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
             <p>Great for journaling, meeting notes, planning, and any quick-capture workflow.</p>
           </div>
           <div className="about-card">
+            <h3>Customizable Themes</h3>
+            <p>
+              Choose from a variety of <strong>slick, modern themes</strong> with different color schemes
+              to match your style and reduce eye strain. Switch themes instantly to find the perfect
+              look for your workflow — whether you prefer light, dark, or vibrant color palettes.
+            </p>
+            <p>Personalize your editing experience with beautiful, carefully crafted designs.</p>
+          </div>
+          <div className="about-card">
+            <h3>Git Integration</h3>
+            <p>
+              <strong>Basic Git features</strong> built right in — clone repositories, edit Markdown files,
+              stage changes, commit, and push directly to Git servers. Perfect for managing documentation,
+              notes, and content stored in Git repositories without leaving the editor.
+            </p>
+            <p>Seamlessly work with GitHub, GitLab, and other Git hosting services.</p>
+          </div>
+          <div className="about-card">
             <h3>Credits</h3>
             <p>Built with care by <strong>Ricardo Wagemaker</strong>.<br />
               <span className="muted">Last updated: {lastUpdated}</span>
-            </p>
-            <p>Contributions: <a href="https://github.com/Lewish1998" target="_blank">Lewis Halstead</a></p>
-        
+            </p>        
             <p>License: MIT<br />Running Version: <strong>{version || '...'}</strong><br />Available Version: <strong>{availableVersion || '...'}</strong></p>
           </div>
         </div>

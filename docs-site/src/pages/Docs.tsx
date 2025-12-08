@@ -56,6 +56,12 @@ export default function Docs() {
               <p>Create and import custom color themes for EasyEdit</p>
             </Link>
 
+            <Link to="/docs/git-integration" className="doc-card">
+              <div className="doc-icon">🔀</div>
+              <h3>Git Integration</h3>
+              <p>Clone, edit, commit, and push Markdown files to Git repositories</p>
+            </Link>
+
           </div>
 
           <div className="getting-started">
@@ -90,6 +96,19 @@ export default function Docs() {
                 <li>Study Notes</li>
                 <li>And more...</li>
               </ul>
+            </div>
+
+            <div className="guide-section">
+              <h3>Git Integration</h3>
+              <p>Work with Git repositories directly from EasyEdit:</p>
+              <ul>
+                <li><strong>Clone:</strong> Clone repositories from GitHub, GitLab, or other Git servers</li>
+                <li><strong>Edit:</strong> Open and edit Markdown files from your repository</li>
+                <li><strong>Stage & Commit:</strong> Stage changes and commit with descriptive messages</li>
+                <li><strong>Push:</strong> Push your commits to remote repositories</li>
+                <li><strong>View History:</strong> Browse commit history and see who changed what</li>
+              </ul>
+              <p>Perfect for managing documentation, notes, and content stored in Git repositories.</p>
             </div>
 
             <div className="guide-section">

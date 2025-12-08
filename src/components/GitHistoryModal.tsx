@@ -4,11 +4,20 @@ import { FaCodeBranch, FaUser, FaClock } from 'react-icons/fa';
 
 interface Commit {
   oid: string;
-  message: string;
-  author: {
+  message?: string;
+  author?: {
     name: string;
     email: string;
     timestamp: number;
+  };
+  // isomorphic-git structure
+  commit?: {
+    message: string;
+    author: {
+      name: string;
+      email: string;
+      timestamp: number;
+    };
   };
 }
 
@@ -31,12 +40,14 @@ const GitHistoryModal: React.FC<GitHistoryModalProps> = ({
     return null;
   }
 
-  const formatDate = (timestamp: number): string => {
+  const formatDate = (timestamp: number | undefined): string => {
+    if (!timestamp) return 'Unknown date';
     const date = new Date(timestamp * 1000);
     return date.toLocaleString();
   };
 
-  const formatRelativeTime = (timestamp: number): string => {
+  const formatRelativeTime = (timestamp: number | undefined): string => {
+    if (!timestamp) return 'Unknown time';
     const now = Date.now();
     const commitTime = timestamp * 1000;
     const diff = now - commitTime;
@@ -73,53 +84,62 @@ const GitHistoryModal: React.FC<GitHistoryModalProps> = ({
             </div>
           ) : (
             <ul className="commits-list">
-              {commits.map((commit) => (
-                <li 
-                  key={commit.oid}
-                  className={`commit-item ${selectedCommit?.oid === commit.oid ? 'selected' : ''}`}
-                  onClick={() => handleCommitClick(commit)}
-                >
-                  <div className="commit-header">
-                    <div className="commit-hash">
-                      <FaCodeBranch className="commit-icon" />
-                      <code>{getShortHash(commit.oid)}</code>
+              {commits.map((commit) => {
+                // Defensive check for malformed commit data
+                if (!commit || !commit.oid) return null;
+                
+                // Normalize data structure - handle both isomorphic-git and custom format
+                const author = commit.author || commit.commit?.author || { name: 'Unknown', email: '', timestamp: 0 };
+                const message = commit.message || commit.commit?.message || 'No message';
+                
+                return (
+                  <li 
+                    key={commit.oid}
+                    className={`commit-item ${selectedCommit?.oid === commit.oid ? 'selected' : ''}`}
+                    onClick={() => handleCommitClick(commit)}
+                  >
+                    <div className="commit-header">
+                      <div className="commit-hash">
+                        <FaCodeBranch className="commit-icon" />
+                        <code>{getShortHash(commit.oid)}</code>
+                      </div>
+                      <div className="commit-time">
+                        <FaClock className="time-icon" />
+                        <span>{formatRelativeTime(author.timestamp)}</span>
+                      </div>
                     </div>
-                    <div className="commit-time">
-                      <FaClock className="time-icon" />
-                      <span>{formatRelativeTime(commit.author.timestamp)}</span>
+                    
+                    <div className="commit-message">
+                      {message.split('\n')[0]}
                     </div>
-                  </div>
-                  
-                  <div className="commit-message">
-                    {commit.message.split('\n')[0]}
-                  </div>
-                  
-                  <div className="commit-author">
-                    <FaUser className="author-icon" />
-                    <span>{commit.author.name}</span>
-                    <span className="author-email">({commit.author.email})</span>
-                  </div>
+                    
+                    <div className="commit-author">
+                      <FaUser className="author-icon" />
+                      <span>{author.name}</span>
+                      {author.email && <span className="author-email">({author.email})</span>}
+                    </div>
 
-                  {selectedCommit?.oid === commit.oid && (
-                    <div className="commit-details">
-                      <div className="detail-row">
-                        <strong>Full Hash:</strong>
-                        <code className="full-hash">{commit.oid}</code>
-                      </div>
-                      <div className="detail-row">
-                        <strong>Date:</strong>
-                        <span>{formatDate(commit.author.timestamp)}</span>
-                      </div>
-                      {commit.message.includes('\n') && (
+                    {selectedCommit?.oid === commit.oid && (
+                      <div className="commit-details">
                         <div className="detail-row">
-                          <strong>Full Message:</strong>
-                          <pre className="full-message">{commit.message}</pre>
+                          <strong>Full Hash:</strong>
+                          <code className="full-hash">{commit.oid}</code>
                         </div>
-                      )}
-                    </div>
-                  )}
-                </li>
-              ))}
+                        <div className="detail-row">
+                          <strong>Date:</strong>
+                          <span>{formatDate(author.timestamp)}</span>
+                        </div>
+                        {message.includes('\n') && (
+                          <div className="detail-row">
+                            <strong>Full Message:</strong>
+                            <pre className="full-message">{message}</pre>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>

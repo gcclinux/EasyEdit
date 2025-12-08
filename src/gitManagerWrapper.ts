@@ -1,4 +1,5 @@
 // Wrapper that selects the correct git manager based on environment
+import { gitManager } from './gitManager';
 
 const isElectron = () => {
   if (typeof window === 'undefined') return false;
@@ -11,10 +12,10 @@ async function getGitManager() {
   if (gitManagerInstance) return gitManagerInstance;
 
   if (isElectron()) {
-    const { gitManagerElectron } = await import('./gitManagerElectron');
-    gitManagerInstance = gitManagerElectron;
+    // For Electron, use the web version (isomorphic-git) for now
+    // The Electron-specific version would require different bundling
+    gitManagerInstance = gitManager;
   } else {
-    const { gitManager } = await import('./gitManager');
     gitManagerInstance = gitManager;
   }
 

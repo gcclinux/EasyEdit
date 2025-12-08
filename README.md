@@ -46,14 +46,16 @@ $ npm run electron:build
 ## *Run Pre-built Docker Example*
 ```
 # Latest build automatic on every code submition
-$ docker pull ghcr.io/gcclinux/easyedit:main
+$ docker pull ghcr.io/gcclinux/easyedit:latest
 $ docker run -d --name EASYEDIT -p 3024:3024 ghcr.io/gcclinux/easyedit:main
 ```
 ## *Example of the new git functionality to edit MD straight in the repository*
 
-<a><img src="screenshots/git_functions.png" alt="Example" width="720" height="400"></a>
+## *New basic Git enabled feature added*
 
-## *Example of the EasyEdit power with over 130 features & examples*
+<a><img src="screenshots/git_feature.png" alt="Git Feature" width="720" height="400"></a>
+
+## *Latest Example implementing Templates and Examples...*
 
 <a><img src="screenshots/020-1800x900.png" alt="Example" width="720" height="400"></a>
 
