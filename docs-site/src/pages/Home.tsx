@@ -8,14 +8,10 @@ export default function Home() {
       <section className="hero">
         <div className="container">
           <div className="hero-content">
-            <h1 className="hero-title">EasyEdit</h1>
-            <p className="hero-subtitle">
-              A Powerful Markdown Editor with UML & Mermaid Diagram Support
-            </p>
-            <p className="hero-description">
-              Create beautiful documents, diagrams, and notes with ease. 
-              Built for Linux with advanced features for developers and writers.
-            </p>
+            <div className="hero-banner-container">
+              <img src="/EasyEdit/banner.png" alt="EasyEdit Preview" className="hero-banner" />
+            </div>
+
             <div className="hero-buttons">
               <Link to="/docs" className="btn btn-secondary">
                 📚 Documentation

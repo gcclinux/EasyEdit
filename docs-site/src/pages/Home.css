@@ -1,32 +1,50 @@
 .hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
   color: white;
-  padding: 6rem 0;
+  padding: 4rem 0 6rem;
   text-align: center;
+  position: relative;
+  overflow: visible;
+}
+
+
+
+.hero-banner-container {
+  margin-top: 0;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 10;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: inline-block;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.hero-banner {
+  max-width: 100%;
+  border-radius: 12px;
+  display: block;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .hero-content {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
 .hero-title {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-  font-weight: 700;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  display: none;
 }
 
 .hero-subtitle {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  font-weight: 500;
+  display: none;
 }
 
 .hero-description {
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-  opacity: 0.9;
+  display: none;
 }
 
 .hero-buttons {
@@ -34,6 +52,8 @@
   gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 11;
 }
 
 .hero-buttons .btn-primary {
@@ -76,7 +96,7 @@
 
 .btn-primary {
   background-color: white;
-  color: #667eea !important;
+  color: #10b981 !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -84,8 +104,8 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   text-decoration: none !important;
-  color: #5570d6 !important;
-  background-color: #f8f9ff;
+  color: #047857 !important;
+  background-color: #f0fdf4;
 }
 
 .btn-secondary {
@@ -96,7 +116,7 @@
 
 .btn-secondary:hover {
   background-color: white;
-  color: #667eea;
+  color: #10b981;
   text-decoration: none;
 }
 
@@ -118,7 +138,8 @@
 }
 
 .features-preview {
-  padding: 5rem 0;
+  padding: 12rem 0 5rem;
+  /* Increased top padding to clear the banner */
   background-color: var(--bg-color);
 }
 
@@ -200,7 +221,7 @@
 
 .cta {
   padding: 5rem 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
   color: white;
   text-align: center;
 }
@@ -224,15 +245,15 @@
   .hero-title {
     font-size: 2.5rem;
   }
-  
+
   .hero-subtitle {
     font-size: 1.2rem;
   }
-  
+
   .section-title {
     font-size: 2rem;
   }
-  
+
   .features-grid,
   .generators-grid {
     grid-template-columns: 1fr;

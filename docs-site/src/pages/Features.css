@@ -2,24 +2,7 @@
   min-height: 100vh;
 }
 
-.page-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 4rem 0;
-  text-align: center;
-}
 
-.page-header h1 {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.page-header p {
-  font-size: 1.2rem;
-  opacity: 0.9;
-  max-width: 600px;
-  margin: 0 auto;
-}
 
 .features-detailed {
   padding: 4rem 0;
@@ -74,18 +57,12 @@
 }
 
 @media (max-width: 768px) {
-  .page-header h1 {
-    font-size: 2rem;
-  }
-  
-  .page-header p {
-    font-size: 1rem;
-  }
-  
+
+
   .feature-detail {
     padding: 1.5rem;
   }
-  
+
   .feature-detail-content h2 {
     font-size: 1.5rem;
   }
