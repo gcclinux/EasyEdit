@@ -22,6 +22,9 @@ export default function Home() {
               <Link to="/download" className="btn btn-secondary">
                 ⬇️ Download
               </Link>
+              <a href="https://github.com/sponsors/gcclinux" target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
+                ❤️ Support the Project
+              </a>
             </div>
           </div>
         </div>
