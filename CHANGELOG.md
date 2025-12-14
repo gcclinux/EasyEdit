@@ -7,6 +7,7 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
 *EasyEdit is a free and open-source project. You can use it for free and modify it as you like.*
 
 ## Latest CODE version
+- 1.5.1-tauri - The same build just packaged with tauri package manager
 - 1.5.1 - Several bug fixes and improvements, documentation
 
 
