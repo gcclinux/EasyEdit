@@ -32,6 +32,10 @@ export class TauriGitManager {
     console.log('Options:', options);
 
     try {
+      // Extract repo name from URL and append to target directory
+      const repoName = url.split('/').pop()?.replace('.git', '') || 'repo';
+      const fullTargetPath = `${targetDir}/${repoName}`;
+      
       // Build git clone command
       const args = ['clone'];
       
@@ -43,7 +47,7 @@ export class TauriGitManager {
         args.push('--branch', options.ref);
       }
       
-      args.push(url, targetDir);
+      args.push(url, fullTargetPath);
 
       console.log('Executing git command:', 'git', args.join(' '));
 
@@ -56,7 +60,7 @@ export class TauriGitManager {
       }
 
       console.log('Git clone output:', output.stdout);
-      this.setRepoDir(targetDir);
+      this.setRepoDir(fullTargetPath);
 
       console.log('=== Tauri Git Clone Completed Successfully ===');
     } catch (error: any) {
