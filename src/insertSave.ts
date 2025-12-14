@@ -386,20 +386,6 @@ export const handleOpenClick = async (
   setEditorContent: (content: string, filePath?: string | null) => void,
   onGitRepoDetected?: (repoPath: string, fileHandle: any) => void
 ): Promise<void> => {
-  // In Electron, use native file dialog via IPC to get actual file path
-  const electronAPI = (window as any).electronAPI;
-  if (electronAPI && electronAPI.openFile) {
-    electronAPI.openFile()
-      .then((result: { content: string; filePath?: string | null } | null) => {
-        if (result && typeof result.content === 'string') {
-          setEditorContent(result.content, result.filePath || null);
-        }
-      })
-      .catch((err: any) => {
-        console.error('Electron openFile error:', err);
-      });
-    return;
-  }
 
   // Modern browsers: Try File System Access API first
   if (hasFileSystemAccess()) {
@@ -519,21 +505,6 @@ export const saveToCurrentFile = async (editorContent: string): Promise<boolean>
 
 // Save As with File System Access API (modern browsers)
 export const saveAsFile = async (editorContent: string, defaultName: string = "easyedit.md"): Promise<string | null> => {
-  // In Electron, use the existing saveFile method
-  const electronAPI = (window as any).electronAPI;
-  if (electronAPI && electronAPI.saveFile) {
-    try {
-      const filePath = await electronAPI.saveFile(editorContent);
-      if (filePath) {
-        console.log('[Electron] File saved to:', filePath);
-        return filePath;
-      }
-      return null;
-    } catch (error) {
-      console.error('[Electron] Save error:', error);
-      return null;
-    }
-  }
 
   // Modern browsers: Try File System Access API
   if (hasFileSystemAccess()) {

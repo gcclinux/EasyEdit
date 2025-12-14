@@ -42,83 +42,70 @@ const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit }) => {
   };
 
   const handleSelectDirectory = async () => {
-    // Use Electron's dialog to select directory if available
-    if ((window as any).electronAPI && (window as any).electronAPI.selectDirectory) {
-      try {
-        const result = await (window as any).electronAPI.selectDirectory();
-        if (result) {
-          setTargetDir(result);
-        }
-      } catch (error) {
-        console.error('Failed to select directory:', error);
-        alert('Failed to open directory selector. Please try again.');
-      }
-    } else {
-      // Web version: Use File System Access API
-      try {
-        // Check if the API is supported
-        if ('showDirectoryPicker' in window) {
-          const dirHandle = await (window as any).showDirectoryPicker({
-            mode: 'readwrite',
-            startIn: 'downloads' // Start in downloads folder
-          });
-          
-          // Verify we can write to the directory
-          try {
-            const testFileName = '.easyedit-test';
-            const testFileHandle = await dirHandle.getFileHandle(testFileName, { create: true });
-            await testFileHandle.remove();
-          } catch (permError) {
-            alert('Cannot write to this directory. Please choose a different folder or grant write permissions.');
-            return;
-          }
-          
-          // Get the directory name (browser security prevents getting full path)
-          // Store both name and handle
-          const dirName = dirHandle.name;
-          
-          // Try to build a more descriptive path
-          // Note: Browser security limits what we can show
-          let displayPath = dirName;
-          
-          // Check if we can resolve any parent info (usually we can't due to security)
-          try {
-            // Most browsers don't allow this, but we can try
-            if ((dirHandle as any).resolve) {
-              const resolved = await (dirHandle as any).resolve();
-              console.log('Resolved path:', resolved);
-              if (resolved && resolved.length > 0) {
-                displayPath = resolved.join('/');
-              }
-            }
-          } catch (e) {
-            console.log('Cannot resolve full path (browser security):', e);
-          }
-          
-          console.log('Selected directory handle:', dirHandle);
-          console.log('Directory name:', dirName);
-          console.log('Display path:', displayPath);
-          
-          setTargetDir(displayPath);
-          
-          // Store the handle and additional info for later use
-          (window as any).selectedDirHandle = dirHandle;
-          (window as any).selectedDirName = dirName;
-        } else {
-          // Fallback: show input field with helpful message
-          alert('Your browser does not support directory selection.\n\nPlease type the full directory path in the input field.\n\nRecommended browsers: Chrome, Edge, or use the Electron app.');
-        }
-      } catch (error: any) {
-        // User cancelled or error occurred
-        if (error.name === 'AbortError') {
-          // User cancelled - do nothing
+    // Web version: Use File System Access API
+    try {
+      // Check if the API is supported
+      if ('showDirectoryPicker' in window) {
+        const dirHandle = await (window as any).showDirectoryPicker({
+          mode: 'readwrite',
+          startIn: 'downloads' // Start in downloads folder
+        });
+        
+        // Verify we can write to the directory
+        try {
+          const testFileName = '.easyedit-test';
+          const testFileHandle = await dirHandle.getFileHandle(testFileName, { create: true });
+          await testFileHandle.remove();
+        } catch (permError) {
+          alert('Cannot write to this directory. Please choose a different folder or grant write permissions.');
           return;
-        } else if (error.name === 'SecurityError') {
-          alert('Cannot access this folder due to browser security restrictions.\n\nPlease choose a different folder (avoid system folders like Program Files, Windows, etc.).\n\nRecommended: Create a new folder in your Documents or a custom location.');
-        } else {
-          console.error('Directory selection error:', error);
-          alert('Failed to select directory. Please try a different folder.');
         }
+        
+        // Get the directory name (browser security prevents getting full path)
+        // Store both name and handle
+        const dirName = dirHandle.name;
+        
+        // Try to build a more descriptive path
+        // Note: Browser security limits what we can show
+        let displayPath = dirName;
+        
+        // Check if we can resolve any parent info (usually we can't due to security)
+        try {
+          // Most browsers don't allow this, but we can try
+          if ((dirHandle as any).resolve) {
+            const resolved = await (dirHandle as any).resolve();
+            console.log('Resolved path:', resolved);
+            if (resolved && resolved.length > 0) {
+              displayPath = resolved.join('/');
+            }
+          }
+        } catch (e) {
+          console.log('Cannot resolve full path (browser security):', e);
+        }
+        
+        console.log('Selected directory handle:', dirHandle);
+        console.log('Directory name:', dirName);
+        console.log('Display path:', displayPath);
+        
+        setTargetDir(displayPath);
+        
+        // Store the handle and additional info for later use
+        (window as any).selectedDirHandle = dirHandle;
+        (window as any).selectedDirName = dirName;
+      } else {
+        // Fallback: show input field with helpful message
+        alert('Your browser does not support directory selection.\n\nPlease type the full directory path in the input field.\n\nRecommended browsers: Chrome, Edge, or use the Electron app.');
+      }
+    } catch (error: any) {
+      // User cancelled or error occurred
+      if (error.name === 'AbortError') {
+        // User cancelled - do nothing
+        return;
+      } else if (error.name === 'SecurityError') {
+        alert('Cannot access this folder due to browser security restrictions.\n\nPlease choose a different folder (avoid system folders like Program Files, Windows, etc.).\n\nRecommended: Create a new folder in your Documents or a custom location.');
+      } else {
+        console.error('Directory selection error:', error);
+        alert('Failed to select directory. Please try a different folder.');
       }
     }
   };

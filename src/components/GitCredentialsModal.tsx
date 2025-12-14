@@ -106,11 +106,7 @@ const GitCredentialsModal: React.FC<GitCredentialsModalProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 const url = 'https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token';
-                if ((window as any).electronAPI?.openExternal) {
-                  (window as any).electronAPI.openExternal(url);
-                } else {
-                  window.open(url, '_blank');
-                }
+                window.open(url, '_blank');
               }}
             >
               How to create a personal access token
