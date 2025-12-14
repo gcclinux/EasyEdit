@@ -27,19 +27,8 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
       // ignore
     }
 
-    // Try to use the electron preload API when available (packaged apps).
+    // Web-only version detection
     (async () => {
-      const electronAPI = (window as any).electronAPI;
-      if (electronAPI && typeof electronAPI.getVersionInfo === 'function') {
-        try {
-          const info = await electronAPI.getVersionInfo();
-          setVersion(info.version || 'unknown');
-          setAvailableVersion(info.latest || 'unknown');
-          return;
-        } catch (e) {
-          // fallback to fetch-based approach
-        }
-      }
 
       // Try fetching package.json (works if app serves it) and also try to fetch
       // the latest available version info (local release/latest.json or remote fallback).

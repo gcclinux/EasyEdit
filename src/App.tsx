@@ -262,11 +262,9 @@ const App = () => {
     });
   }, []);
 
-  // Detect Electron environment and add class to body for CSS targeting
+  // Web-only mode - no Electron detection needed
   useEffect(() => {
-    if (typeof window !== 'undefined' && (window as any).electronAPI) {
-      document.body.classList.add('electron-app');
-    }
+    // Always web mode
   }, []);
 
   // Check for saved credentials on startup
@@ -448,19 +446,17 @@ const App = () => {
         }
 
         // Priority 2: File System Access API save (Web)
-        if (!(window as any).electronAPI) {
-          const { saveToCurrentFile, getCurrentFileHandle } = await import('./insertSave');
-          const fileHandle = getCurrentFileHandle();
+        const { saveToCurrentFile, getCurrentFileHandle } = await import('./insertSave');
+        const fileHandle = getCurrentFileHandle();
 
-          if (fileHandle) {
-            const success = await saveToCurrentFile(editorContent);
-            if (success) {
-              showToast('File saved successfully!', 'success');
-              return;
-            } else {
-              showToast('Failed to save file', 'error');
-              return;
-            }
+        if (fileHandle) {
+          const success = await saveToCurrentFile(editorContent);
+          if (success) {
+            showToast('File saved successfully!', 'success');
+            return;
+          } else {
+            showToast('Failed to save file', 'error');
+            return;
           }
         }
 
@@ -479,110 +475,13 @@ const App = () => {
     setEditorContent(e.target.value);
   };
 
-  // First, define the interface for electronAPI
-  interface ElectronAPI {
-    handleFileOpened?: (callback: any) => void;
-    handlePreviewSpacing?: (callback: any) => void;
-    getLineHeight?: () => void;
-    setLineHeight?: (callback: any) => void;
-    openExternal?: (url: string) => Promise<any>;
-  }
+  // Web-only mode - no Electron API
+  const electronAPI = undefined;
 
-  // Update the electronAPI declaration
-  const electronAPI = (window as any).electronAPI as ElectronAPI | undefined;
-
-  // Add event listeners for file-opened and update-paragraph-spacing for rendering
+  // Web-only mode - no Electron event listeners needed
   useEffect(() => {
-    if (!electronAPI) {
-      console.log('Running in browser mode - some features disabled');
-      return;
-    }
-
-    const fileOpenedHandler = async (_event: any, payload: string | { content: string; filePath?: string | null }) => {
-      // Handle both old (string) and new ({ content, filePath }) formats for backwards compatibility
-      let content: string;
-      let filePath: string | null = null;
-
-      if (typeof payload === 'string') {
-        content = payload;
-      } else if (payload && typeof payload.content === 'string') {
-        content = payload.content;
-        filePath = payload.filePath || null;
-      } else {
-        return;
-      }
-
-      setEditorContent(content);
-
-      // If we have a filePath, set it and try to detect the git repo
-      if (filePath) {
-        setCurrentFilePath(filePath);
-        // If we already know a repo, check if file is within it
-        if (currentRepoPath) {
-          try {
-            const pathModule = await import('path');
-            const normalizedRepo = pathModule.resolve(currentRepoPath);
-            const normalizedFile = pathModule.resolve(filePath);
-            if (normalizedFile.startsWith(normalizedRepo + pathModule.sep)) {
-              if (!isGitRepo) {
-                setIsGitRepo(true);
-              }
-              updateGitStatus();
-            }
-          } catch (e) {
-            console.error('Error checking file path against repo:', e);
-          }
-        } else {
-          // No repo known yet: try to auto-detect by walking up to find .git
-          await detectRepoFromFilePath(filePath);
-        }
-      }
-    };
-
-    const previewSpacingHandler = (_event: any, { action }: { action: string }) => {
-      let previewLineHeight = 1.1;
-      let newLineHeight = previewLineHeight;
-      if (action === 'increase' && previewLineHeight < 1.9) {
-        newLineHeight = Math.min(1.9, previewLineHeight + 0.1);
-        lineHeightValue.current = newLineHeight;
-      } else if (action === 'decrease' && previewLineHeight > 0.9) {
-        newLineHeight = Math.max(1.0, previewLineHeight - 0.1);
-        lineHeightValue.current = newLineHeight;
-      }
-
-      newLineHeight = Math.round(newLineHeight * 10) / 10;
-      if (newLineHeight !== previewLineHeight) {
-        const previewElements = document.querySelectorAll(
-          '.preview-horizontal, .preview-parallel, .preview-horizontal-full'
-        );
-        previewElements.forEach((element) => {
-          const htmlElement = element as HTMLElement;
-          htmlElement.style.lineHeight = newLineHeight.toString();
-        });
-      }
-    };
-
-    const lineHeightHandler = (value: number) => {
-      lineHeightValue.current = value;
-    };
-
-    // Set up event listeners if available
-    if (electronAPI.handleFileOpened) {
-      electronAPI.handleFileOpened(fileOpenedHandler);
-    }
-    if (electronAPI.handlePreviewSpacing) {
-      electronAPI.handlePreviewSpacing(previewSpacingHandler);
-    }
-    if (electronAPI.getLineHeight && electronAPI.setLineHeight) {
-      electronAPI.getLineHeight();
-      electronAPI.setLineHeight(lineHeightHandler);
-    }
-
-    // Cleanup: if the electron API provided deregister functions they'd be called here.
-    return () => {
-      // no-op cleanup (electron handlers are assumed to be one-shot registrations)
-    };
-  }, [lineHeightValue]);
+    console.log('Running in web mode');
+  }, []);
 
   // Restore cursor position effect
   useEffect(() => {
@@ -1157,14 +1056,8 @@ const App = () => {
     await performClone();
   };
 
-  // Open an existing repository (Unified handler for both Electron and Web)
+  // Open an existing repository (Web-only)
   const handleOpenRepositoryClick = async () => {
-    // Electron: Use native directory picker
-    if ((window as any).electronAPI) {
-      await handleOpenRepositoryElectron();
-      return;
-    }
-
     // Web: Use File System Access API
     const { handleOpenRepository } = await import('./insertSave');
     handleOpenRepository(
@@ -1213,53 +1106,7 @@ const App = () => {
     );
   };
 
-  // Open an existing repository (Electron)
-  const handleOpenRepositoryElectron = async () => {
-    try {
-      // Use Electron's directory picker
-      const dirPath = await (window as any).electronAPI.selectDirectory();
 
-      if (!dirPath) {
-        console.log('[App] No directory selected');
-        return;
-      }
-
-      console.log('[App] Selected directory:', dirPath);
-
-      // Check if it's a Git repository using Electron API
-      const isGit = await (window as any).electronAPI.isGitRepository(dirPath);
-      const basename = await (window as any).electronAPI.getBasename(dirPath);
-
-      if (isGit) {
-        console.log('[App] Git repository detected');
-        gitManager.setRepoDir(dirPath);
-        setCurrentRepoPath(dirPath);
-        setIsGitRepo(true);
-        showToast(`Git repository opened: ${basename}`, 'success');
-      } else {
-        console.log('[App] Not a Git repository');
-        setCurrentRepoPath(dirPath);
-        setIsGitRepo(false);
-        showToast(`Folder opened: ${basename}`, 'info');
-      }
-
-      // Get list of markdown files
-      console.log('[App] Getting markdown files...');
-      const files = await gitManager.getRepoFiles();
-      console.log('[App] Found', files.length, 'markdown files');
-      setRepoFiles(files);
-
-      // Open file browser
-      if (files.length > 0) {
-        setFileBrowserModalOpen(true);
-      } else {
-        showToast('No markdown files found in this directory', 'warning');
-      }
-    } catch (error) {
-      console.error('[App] Error opening repository:', error);
-      showToast(`Failed to open repository: ${(error as Error).message}`, 'error');
-    }
-  };
 
   const handleFileSelect = async (filePath: string) => {
     setFileBrowserModalOpen(false);
@@ -1274,8 +1121,8 @@ const App = () => {
       console.log('[App] Current repo path:', currentRepoPath);
       console.log('[App] Is Electron:', !!(window as any).electronAPI);
 
-      // Check if we're in web mode with directory handle
-      if (!(window as any).electronAPI && currentDirHandle) {
+      // Web mode with directory handle
+      if (currentDirHandle) {
         console.log('[App] Reading file via directory handle:', filePath);
 
         // Try gitManager first (reads from LightningFS)
@@ -1298,7 +1145,7 @@ const App = () => {
           }
         }
       } else {
-        // Use gitManager for Electron
+        // Use gitManager
         console.log('[App] Reading file via gitManager:', filePath);
         content = await gitManager.readFile(filePath);
         fullPath = filePath; // gitManager handles the full path internally
@@ -1438,35 +1285,6 @@ const App = () => {
       // currentFilePath is already relative (e.g., "CHANGELOG.md" or "docs/FILE.md")
       relativePath = currentFilePath;
 
-      // In Electron mode, use native path module to calculate relative path safely
-      if ((window as any).electronAPI && repoPath) {
-        try {
-          const path = (window as any).require('path'); // Use native Node path via Electron
-
-          // Calculate relative path: e.g., relative('C:/Repo', 'C:/Repo/Sub/file.md') -> 'Sub/file.md'
-          // This handles slashes, capitalization (on Windows), and drive letters automatically.
-          const rel = path.relative(repoPath, currentFilePath);
-
-          // Check if the file is actually inside the repo (relative path shouldn't start with '..')
-          if (!rel.startsWith('..') && !path.isAbsolute(rel)) {
-            // Git needs forward slashes even on Windows
-            relativePath = rel.replace(/\\/g, '/');
-          } else {
-            console.warn('[App] Warning: File appears to be outside the repository path:', rel);
-          }
-        } catch (e) {
-          console.warn('[App] Failed to use path.relative, falling back to manual string manip:', e);
-          // Fallback manual logic (simplified but kept just in case)
-          const normRepo = repoPath.replace(/\\/g, '/');
-          const normFile = currentFilePath.replace(/\\/g, '/');
-          if (normFile.toLowerCase().startsWith(normRepo.toLowerCase())) {
-            let tempRel = normFile.substring(normRepo.length);
-            if (tempRel.startsWith('/') || tempRel.startsWith('\\')) tempRel = tempRel.substring(1);
-            relativePath = tempRel;
-          }
-        }
-      }
-
       console.log('[App] Writing via gitManager:', relativePath);
       await gitManager.writeFile(relativePath, editorContent);
       console.log('[App] File saved successfully');
@@ -1557,34 +1375,9 @@ const App = () => {
     }
   };
 
-  // Phase 4: Initialize new repository
+  // Phase 4: Initialize new repository (Web-only)
   const handleInitRepo = async () => {
-    try {
-      const dirPath = await (window as any).electronAPI.selectDirectory();
-      if (!dirPath) return;
-      setConfirmModalConfig({
-        open: true,
-        title: 'Initialize Git Repository',
-        message: `Initialize a new Git repository in:\n${dirPath}\n\nThis will create a .git directory and an initial commit with README.md.`,
-        confirmLabel: 'Initialize Repo',
-        cancelLabel: 'Cancel',
-        onConfirm: async () => {
-          try {
-            await gitManager.init(dirPath, true);
-            setCurrentRepoPath(dirPath);
-            setIsGitRepo(true);
-            showToast('Repository initialized successfully!', 'success');
-            await updateGitStatus();
-          } catch (error) {
-            showToast(`Failed to initialize repository: ${(error as Error).message}`, 'error');
-            console.error('Init error:', error);
-          }
-        },
-      });
-    } catch (error) {
-      showToast(`Failed to initialize repository: ${(error as Error).message}`, 'error');
-      console.error('Init error:', error);
-    }
+    showToast('Repository initialization is not available in web mode. Use "Clone Repository" instead.', 'info');
   };
 
   const handleSaveAsPDF = () => {
@@ -1670,27 +1463,10 @@ const App = () => {
     }
   }, [isGitRepo, currentRepoPath]);
 
-  // Helper (Electron-only): detect git repo root by walking up from a file path
+  // Web-only mode - no file path detection
   const detectRepoFromFilePath = async (filePath: string) => {
-    try {
-      if (!(window as any).electronAPI) return;
-
-      const repoRoot = await (window as any).electronAPI.git.findRepoRoot({ filepath: filePath });
-
-      if (repoRoot) {
-        console.log('[App] Detected Git repo at:', repoRoot);
-        // Set in gitManager first (synchronous)
-        gitManager.setRepoDir(repoRoot);
-        // Then update state (asynchronous)
-        setCurrentRepoPath(repoRoot);
-        setIsGitRepo(true);
-        await updateGitStatus();
-      } else {
-        console.log('[App] No Git repo found for file:', filePath);
-      }
-    } catch (e) {
-      console.error('Failed to auto-detect git repo from file path:', e);
-    }
+    // Not available in web mode
+    console.log('[App] File path Git detection not available in web mode');
   };
 
   // Add this function near other utility functions
@@ -1748,29 +1524,12 @@ const App = () => {
                         console.log('[App] File path set:', filePath);
 
                         // Show helpful message for web users about Git features
-                        if (!(window as any).electronAPI && !isGitRepo) {
+                        if (!isGitRepo) {
                           showToast('File opened! For Git features, use "File → Open Repository"', 'info');
                         }
                       }
 
-                      // Electron-specific Git detection
-                      if (filePath && (window as any).electronAPI) {
-                        // If we already know the repo root, only attach file if under that repo.
-                        if (currentRepoPath) {
-                          const path = await import('path');
-                          const normalizedRepo = path.resolve(currentRepoPath);
-                          const normalizedFile = path.resolve(filePath);
-                          if (normalizedFile.startsWith(normalizedRepo + path.sep)) {
-                            if (!isGitRepo) {
-                              setIsGitRepo(true);
-                            }
-                            updateGitStatus();
-                          }
-                        } else {
-                          // No repo known yet: try to auto-detect by walking up to find .git
-                          await detectRepoFromFilePath(filePath);
-                        }
-                      }
+                      // Web mode - no automatic Git detection from file paths
                     },
                     // Git repo detection callback for File System Access API (web)
                     async (repoPath: string, fileHandle: any) => {
@@ -1823,16 +1582,10 @@ const App = () => {
                 const url = 'https://github.com/gcclinux/EasyEdit/discussions';
                 let opened = false;
                 try {
-                  if (electronAPI && electronAPI.openExternal) {
-                    const res = await electronAPI.openExternal(url);
-                    if (res && res.success) opened = true;
-                    else console.warn('openExternal returned failure:', res);
-                  } else {
-                    const w = window.open(url, '_blank', 'noopener');
-                    if (w) opened = true;
-                  }
+                  const w = window.open(url, '_blank', 'noopener');
+                  if (w) opened = true;
                 } catch (e) {
-                  console.warn('openExternal/window.open threw:', e);
+                  console.warn('window.open threw:', e);
                 }
 
                 if (!opened) {
@@ -1856,16 +1609,10 @@ const App = () => {
                 const url = 'https://buymeacoffee.com/gcclinux';
                 let opened = false;
                 try {
-                  if (electronAPI && electronAPI.openExternal) {
-                    const res = await electronAPI.openExternal(url);
-                    if (res && res.success) opened = true;
-                    else console.warn('openExternal returned failure:', res);
-                  } else {
-                    const w = window.open(url, '_blank', 'noopener');
-                    if (w) opened = true;
-                  }
+                  const w = window.open(url, '_blank', 'noopener');
+                  if (w) opened = true;
                 } catch (e) {
-                  console.warn('openExternal/window.open threw:', e);
+                  console.warn('window.open threw:', e);
                 }
 
                 if (!opened) {

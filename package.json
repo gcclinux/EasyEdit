@@ -8,153 +8,11 @@
     "server": "vite --host --port 3024",
     "setup-https": "./setup-https.sh",
     "setup-https-windows": "powershell -ExecutionPolicy Bypass -File ./setup-https.ps1",
-    "app": "concurrently \"vite\" \"wait-on http://localhost:3024 && electron .\"",
     "build": "tsc && vite build",
-    "build:web": "tsc && vite build --config vite.config.web.ts",
-    "electron:build": "npm run build && electron-builder && node renameArtifacts.cjs"
-  },
-  "main": "main.cjs",
-  "build": {
-    "appId": "EasyEdit",
-    "productName": "EasyEdit",
-    "files": [
-      "dist/**/*",
-      "src/*",
-      "about/*",
-      "release/*",
-      "src/assets/*",
-      "src/themes/*",
-      "src/components/*",
-      "src/templates/*",
-      "src/autoGenerator/*",
-      "public/*",
-      "screenshots/*",
-      "index.html",
-      "LICENSE",
-      "preload.js",
-      "package.json",
-      "tsconfig.app.json",
-      "tsconfig.json",
-      "tsconfig.node.json",
-      "vite.config.ts",
-      "main.cjs",
-      "gitHandler.cjs"
-    ],
-    "directories": {
-      "buildResources": "public",
-      "output": "dist"
-    },
-    "win": {
-      "target": [
-        {
-          "target": "msi",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "zip",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "portable",
-          "arch": [
-            "x64"
-          ]
-        }
-      ],
-      "icon": "public/icon.ico",
-      "fileAssociations": [
-        {
-          "ext": [
-            "txt",
-            "md",
-            "html"
-          ],
-          "description": "Markdown Files Editor",
-          "icon": "public/icon.ico"
-        }
-      ],
-      "legalTrademarks": "EasyEdit"
-    },
-    "linux": {
-      "extraResources": [
-        {
-          "from": "build/linux/metainfo/easyedit.appdata.xml",
-          "to": "usr/share/metainfo/easyedit.appdata.xml"
-        },
-        {
-          "from": "public/easyedit.png",
-          "to": "easyedit.png"
-        }
-      ],
-      "target": [
-        {
-          "target": "zip",
-          "arch": [
-            "x64"
-          ]
-        }
-      ],
-      "icon": "public/icon.png",
-      "category": "Development;TextEditor;Utility",
-      "maintainer": "Ricardo Wagemaker",
-      "description": "A lightweight Markdown editor built with Electron",
-      "synopsis": "Simple Markdown editor",
-      "artifactName": "EasyEdit-${version}-${arch}.${ext}",
-      "fileAssociations": [
-        {
-          "ext": "txt",
-          "description": "Text Files",
-          "icon": "public/icon.png"
-        },
-        {
-          "ext": "md",
-          "description": "Markdown Files",
-          "icon": "public/icon.png"
-        },
-        {
-          "ext": "html",
-          "description": "HTML Files",
-          "icon": "public/icon.png"
-        }
-      ]
-    },
-    "publish": null,
-    "mac": {
-      "target": [
-        "dmg",
-        "zip"
-      ],
-      "category": "public.app-category.developer-tools",
-      "darkModeSupport": true,
-      "icon": "public/icon.png",
-      "fileAssociations": [
-        {
-          "ext": "txt",
-          "description": "Text Files",
-          "icon": "public/icon.png"
-        },
-        {
-          "ext": "md",
-          "description": "Markdown Files",
-          "icon": "public/icon.png"
-        },
-        {
-          "ext": "html",
-          "description": "HTML Files",
-          "icon": "public/icon.png"
-        }
-      ]
-    }
+    "preview": "vite preview --port 3024",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
   },
   "author": "Ricardo Wagemaker <wagemra@gmail.com>",
   "license": "MIT",
@@ -164,7 +22,6 @@
     "buffer": "^6.0.3",
     "crypto-js": "^4.2.0",
     "detect-port": "^2.1.0",
-    "electron-is-dev": "^3.0.1",
     "express": "^5.1.0",
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
@@ -185,9 +42,9 @@
     "twemoji": "^14.0.2"
   },
   "devDependencies": {
-    "@electron-forge/publisher-github": "^7.9.0",
     "@eslint/js": "^9.36.0",
     "@playwright/test": "^1.55.1",
+    "@tauri-apps/cli": "^2.9.6",
     "@types/crypto-js": "^4.2.2",
     "@types/file-saver": "^2.0.7",
     "@types/lodash.debounce": "^4.0.9",
@@ -198,15 +55,12 @@
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.3",
     "@vitejs/plugin-react-swc": "^4.1.0",
-    "concurrently": "^9.2.1",
-    "electron": "^38.1.2",
-    "electron-builder": "^26.0.12",
     "eslint": "^9.36.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",
     "globals": "^16.4.0",
     "playwright": "^1.55.1",
-    "vite": "^7.1.7",
-    "wait-on": "^9.0.1"
+    "typescript": "^5.9.3",
+    "vite": "^7.1.7"
   }
 }

@@ -1,0 +1,42 @@
+{
+  "productName": "EasyEdit",
+  "version": "1.5.1",
+  "identifier": "com.easyedit.app",
+  "build": {
+    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "npm run dev",
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:3024"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "EasyEdit",
+        "width": 1850,
+        "height": 900,
+        "minWidth": 800,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "",
+    "shortDescription": "Easy Markdown Editor",
+    "longDescription": "EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and preview it in real-time.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  },
+  "plugins": {}
+}
