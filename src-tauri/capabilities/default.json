@@ -1,0 +1,27 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "shell:default",
+    "shell:allow-execute",
+    "shell:allow-open",
+    "dialog:default",
+    "fs:default",
+    "fs:allow-read-dir",
+    "fs:allow-read-text-file",
+    "fs:allow-write-text-file",
+    "fs:allow-exists",
+    "fs:read-all",
+    "fs:write-all",
+    "fs:scope-home-recursive"
+  ],
+  "platforms": ["linux", "macOS", "windows"],
+  "local": true,
+  "remote": {
+    "urls": []
+  },
+  "context": "local"
+}

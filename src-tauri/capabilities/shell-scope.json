@@ -1,0 +1,21 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "shell-scope",
+  "description": "Shell commands scope for git operations",
+  "windows": ["main"],
+  "permissions": [
+    "shell:allow-execute",
+    "shell:allow-open",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "git",
+          "cmd": "git",
+          "args": true,
+          "sidecar": false
+        }
+      ]
+    }
+  ]
+}

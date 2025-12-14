@@ -949,14 +949,21 @@ const App = () => {
         // Show loading state
         showToast('Cloning repository... This may take a moment.', 'info');
 
-        // Check if we're using web File System Access API
-        const dirHandle = (window as any).selectedDirHandle;
-        console.log('Dir handle available:', !!dirHandle);
+        const isTauri = typeof window !== 'undefined' && (window as any).__TAURI__;
+        
+        if (isTauri) {
+          // Tauri mode: targetDir is the full path
+          console.log('Using Tauri mode for clone');
+        } else {
+          // Web mode: Check if we're using web File System Access API
+          const dirHandle = (window as any).selectedDirHandle;
+          console.log('Dir handle available:', !!dirHandle);
 
-        if (dirHandle) {
-          setCurrentDirHandle(dirHandle);
-          gitManager.setDirHandle(dirHandle);
-          console.log('Dir handle set in gitManager');
+          if (dirHandle) {
+            setCurrentDirHandle(dirHandle);
+            gitManager.setDirHandle(dirHandle);
+            console.log('Dir handle set in gitManager');
+          }
         }
 
         // Perform clone operation
@@ -974,7 +981,9 @@ const App = () => {
           setIsGitRepo(true);
         } else {
           console.error('Failed to get repo dir after clone');
-          setCurrentRepoPath(targetDir); // Fallback, though likely incorrect for path calc
+          // For Tauri, use the target directory directly
+          const isTauri = typeof window !== 'undefined' && (window as any).__TAURI__;
+          setCurrentRepoPath(isTauri ? targetDir : targetDir);
           setIsGitRepo(true);
         }
 
@@ -1056,54 +1065,102 @@ const App = () => {
     await performClone();
   };
 
-  // Open an existing repository (Web-only)
+  // Open an existing repository
   const handleOpenRepositoryClick = async () => {
-    // Web: Use File System Access API
-    const { handleOpenRepository } = await import('./insertSave');
-    handleOpenRepository(
-      setEditorContent,
-      // onGitRepoDetected
-      async (repoPath: string, dirHandle: any) => {
-        console.log('[App] Repository opened:', repoPath);
-        setCurrentDirHandle(dirHandle);
-        setCurrentRepoPath(repoPath);
-        setIsGitRepo(true);
+    // Check if running in Tauri
+    const isTauri = typeof window !== 'undefined' && 
+      ((window as any).__TAURI__ || (window as any).__TAURI_INTERNALS__ || 
+       typeof (window as any).__TAURI_INVOKE__ === 'function');
+    console.log('[App] Tauri detection:', isTauri);
+    console.log('[App] Window object:', typeof window);
+    console.log('[App] __TAURI__ property:', (window as any).__TAURI__);
+    
+    if (isTauri) {
+      // Tauri: Use Tauri file operations
+      const { handleTauriOpenRepository } = await import('./tauriFileHandler');
+      handleTauriOpenRepository(
+        setEditorContent,
+        // onGitRepoDetected
+        async (repoPath: string, dirPath: string) => {
+          console.log('[App] Repository opened:', repoPath);
+          setCurrentRepoPath(dirPath);
+          setIsGitRepo(true);
+          
+          // Set the repository directory in gitManager
+          gitManager.setRepoDir(dirPath);
+          console.log('[App] Set repo dir in gitManager:', dirPath);
 
-        // Set repo directory in gitManager for web mode
-        // Use LightningFS path format: /repoName
-        const lightningFSPath = `/${repoPath}`;
+          showToast(`Git repository opened: ${repoPath}`, 'success');
 
-        // Sync the repo contents to LightningFS
-        console.log('[App] Syncing repo to LightningFS:', lightningFSPath);
-        try {
-          await gitManager.openRepoFromHandle(dirHandle, lightningFSPath);
-          console.log('[App] Repo sync complete');
-        } catch (e) {
-          console.error('[App] Repo sync failed:', e);
-          // Fallback to basic setup if sync fails
-          gitManager.setRepoDir(lightningFSPath);
-          gitManager.setDirHandle(dirHandle);
+          // Update Git status
+          await updateGitStatus();
+        },
+        // onFileListReady
+        async (files: string[], dirPath: string) => {
+          console.log('[App] Files found:', files.length);
+          setRepoFiles(files);
+          setCurrentRepoPath(dirPath);
+          
+          // Set the repository directory in gitManager
+          gitManager.setRepoDir(dirPath);
+          console.log('[App] Set repo dir in gitManager for file list:', dirPath);
+
+          // If files found, show file browser
+          if (files.length > 0) {
+            setFileBrowserModalOpen(true);
+          } else {
+            showToast('No markdown files found in this directory', 'warning');
+          }
         }
+      );
+    } else {
+      // Web: Use File System Access API
+      const { handleOpenRepository } = await import('./insertSave');
+      handleOpenRepository(
+        setEditorContent,
+        // onGitRepoDetected
+        async (repoPath: string, dirHandle: any) => {
+          console.log('[App] Repository opened:', repoPath);
+          setCurrentDirHandle(dirHandle);
+          setCurrentRepoPath(repoPath);
+          setIsGitRepo(true);
 
-        showToast(`Git repository opened: ${repoPath}`, 'success');
+          // Set repo directory in gitManager for web mode
+          // Use LightningFS path format: /repoName
+          const lightningFSPath = `/${repoPath}`;
 
-        // Update Git status
-        await updateGitStatus();
-      },
-      // onFileListReady
-      async (files: string[], dirHandle: any) => {
-        console.log('[App] Files found:', files.length);
-        setRepoFiles(files);
-        setCurrentDirHandle(dirHandle);
+          // Sync the repo contents to LightningFS
+          console.log('[App] Syncing repo to LightningFS:', lightningFSPath);
+          try {
+            await gitManager.openRepoFromHandle(dirHandle, lightningFSPath);
+            console.log('[App] Repo sync complete');
+          } catch (e) {
+            console.error('[App] Repo sync failed:', e);
+            // Fallback to basic setup if sync fails
+            gitManager.setRepoDir(lightningFSPath);
+            gitManager.setDirHandle(dirHandle);
+          }
 
-        // If files found, show file browser
-        if (files.length > 0) {
-          setFileBrowserModalOpen(true);
-        } else {
-          showToast('No markdown files found in this directory', 'warning');
+          showToast(`Git repository opened: ${repoPath}`, 'success');
+
+          // Update Git status
+          await updateGitStatus();
+        },
+        // onFileListReady
+        async (files: string[], dirHandle: any) => {
+          console.log('[App] Files found:', files.length);
+          setRepoFiles(files);
+          setCurrentDirHandle(dirHandle);
+
+          // If files found, show file browser
+          if (files.length > 0) {
+            setFileBrowserModalOpen(true);
+          } else {
+            showToast('No markdown files found in this directory', 'warning');
+          }
         }
-      }
-    );
+      );
+    }
   };
 
 
@@ -1119,37 +1176,70 @@ const App = () => {
 
       console.log('[App] Opening file:', filePath);
       console.log('[App] Current repo path:', currentRepoPath);
-      console.log('[App] Is Electron:', !!(window as any).electronAPI);
-
-      // Web mode with directory handle
-      if (currentDirHandle) {
-        console.log('[App] Reading file via directory handle:', filePath);
-
-        // Try gitManager first (reads from LightningFS)
-        try {
-          content = await gitManager.readFile(filePath);
-          fullPath = filePath;
-          console.log('[App] File content loaded from gitManager, length:', content.length);
-        } catch (gitError) {
-          // Fallback: read directly from directory handle
-          console.log('[App] gitManager failed, trying direct read from directory handle');
-          const { readFileFromDirectory } = await import('./insertSave');
-          const result = await readFileFromDirectory(currentDirHandle, filePath);
-
-          if (result) {
-            content = result.content;
-            fullPath = filePath;
-            console.log('[App] File content loaded from directory, length:', content.length);
-          } else {
-            throw new Error('Failed to read file from directory');
+      
+      const isTauri = typeof window !== 'undefined' && (window as any).__TAURI__;
+      
+      if (isTauri) {
+        // Tauri mode: read file directly from filesystem
+        console.log('[App] Reading file via Tauri:', filePath);
+        const { readTauriFile } = await import('./tauriFileHandler');
+        const result = await readTauriFile(currentRepoPath, filePath);
+        
+        if (result) {
+          content = result.content;
+          fullPath = result.path;
+          console.log('[App] File content loaded from Tauri, length:', content.length);
+          
+          // Set the repository directory in gitManager for Tauri
+          if (currentRepoPath) {
+            gitManager.setRepoDir(currentRepoPath);
+            console.log('[App] Set repo dir in gitManager:', currentRepoPath);
           }
+          
+          // For Tauri, we need to store the relative path for Git operations
+          // but the full path for file operations
+          setCurrentFilePath(result.path); // Store full path
+        } else {
+          throw new Error('Failed to read file from Tauri filesystem');
         }
       } else {
-        // Use gitManager
-        console.log('[App] Reading file via gitManager:', filePath);
-        content = await gitManager.readFile(filePath);
-        fullPath = filePath; // gitManager handles the full path internally
-        console.log('[App] File content loaded, length:', content.length);
+        // Web mode with directory handle
+        if (currentDirHandle) {
+          console.log('[App] Reading file via directory handle:', filePath);
+
+          // Try gitManager first (reads from LightningFS)
+          try {
+            content = await gitManager.readFile(filePath);
+            fullPath = filePath;
+            console.log('[App] File content loaded from gitManager, length:', content.length);
+          } catch (gitError) {
+            // Fallback: read directly from directory handle
+            console.log('[App] gitManager failed, trying direct read from directory handle');
+            const { readFileFromDirectory } = await import('./insertSave');
+            const result = await readFileFromDirectory(currentDirHandle, filePath);
+
+            if (result) {
+              content = result.content;
+              fullPath = filePath;
+              console.log('[App] File content loaded from directory, length:', content.length);
+            } else {
+              throw new Error('Failed to read file from directory');
+            }
+          }
+        } else {
+          // Use Tauri file handler for direct file system access
+          console.log('[App] Reading file via Tauri file handler:', filePath);
+          const { readTauriFile } = await import('./tauriFileHandler');
+          const result = await readTauriFile(currentRepoPath, filePath);
+          
+          if (result) {
+            content = result.content;
+            fullPath = result.path;
+            console.log('[App] File content loaded from Tauri file handler, length:', content.length);
+          } else {
+            throw new Error('Failed to read file from Tauri file handler');
+          }
+        }
       }
 
       setEditorContent(content);
@@ -1282,16 +1372,38 @@ const App = () => {
       console.log('[App] Current repo path:', repoPath);
       console.log('[App] Is Electron:', !!(window as any).electronAPI);
 
-      // currentFilePath is already relative (e.g., "CHANGELOG.md" or "docs/FILE.md")
-      relativePath = currentFilePath;
+      // Extract relative path from full path
+      relativePath = currentFilePath.startsWith(repoPath) 
+        ? currentFilePath.substring(repoPath.length).replace(/^\//, '')
+        : currentFilePath;
 
-      console.log('[App] Writing via gitManager:', relativePath);
-      await gitManager.writeFile(relativePath, editorContent);
-      console.log('[App] File saved successfully');
+      const isTauri = typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__;
+      
+      if (isTauri) {
+        // Tauri mode: currentFilePath is already the full path
+        console.log('[App] Writing via Tauri gitManager:', currentFilePath);
+        const { writeTauriFile } = await import('./tauriFileHandler');
+        const success = await writeTauriFile(currentFilePath, editorContent);
+        
+        if (!success) {
+          throw new Error('Failed to write file');
+        }
+        
+        console.log('[App] File saved successfully via Tauri');
+        
+        console.log('[App] Staging file via Tauri:', relativePath);
+        await gitManager.add(relativePath);
+        console.log('[App] File staged successfully via Tauri');
+      } else {
+        // Web mode
+        console.log('[App] Writing via gitManager:', relativePath);
+        await gitManager.writeFile(relativePath, editorContent);
+        console.log('[App] File saved successfully');
 
-      console.log('[App] Staging file:', relativePath);
-      await gitManager.add(relativePath);
-      console.log('[App] File staged successfully');
+        console.log('[App] Staging file:', relativePath);
+        await gitManager.add(relativePath);
+        console.log('[App] File staged successfully');
+      }
 
       showToast(`Saved and staged: ${relativePath}`, 'success');
       await updateGitStatus(); // Refresh status after save

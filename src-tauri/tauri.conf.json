@@ -1,7 +1,7 @@
 {
   "productName": "EasyEdit",
   "version": "1.5.1",
-  "identifier": "com.easyedit.app",
+  "identifier": "com.easyedit.editor",
   "build": {
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run dev",
@@ -11,18 +11,23 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "EasyEdit",
         "width": 1850,
         "height": 900,
         "minWidth": 800,
         "minHeight": 600,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "devtools": true
       }
     ],
     "security": {
-      "csp": null
-    }
+      "csp": null,
+      "capabilities": ["default", "shell-scope"],
+      "dangerousDisableAssetCspModification": true
+    },
+    "withGlobalTauri": false
   },
   "bundle": {
     "active": true,
@@ -38,5 +43,10 @@
       "icons/icon.ico"
     ]
   },
-  "plugins": {}
+  "plugins": {
+    "fs": {},
+    "shell": {
+      "open": true
+    }
+  }
 }
