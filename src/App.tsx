@@ -478,9 +478,55 @@ const App = () => {
   // Web-only mode - no Electron API
   const electronAPI = undefined;
 
-  // Web-only mode - no Electron event listeners needed
+  // Handle file opening from command line arguments (Tauri)
   useEffect(() => {
-    console.log('Running in web mode');
+    const setupTauriEventListeners = async () => {
+      try {
+        // Check if running in Tauri
+        const isTauri = typeof window !== 'undefined' && 
+          ((window as any).__TAURI__ || (window as any).__TAURI_INTERNALS__ || 
+           typeof (window as any).__TAURI_INVOKE__ === 'function');
+        
+        if (isTauri) {
+          console.log('Setting up Tauri event listeners...');
+          
+          // Import Tauri event listener
+          const { listen } = await import('@tauri-apps/api/event');
+          
+          // Listen for file open events from command line
+          const unlisten = await listen('open-file', (event) => {
+            console.log('Received open-file event:', event.payload);
+            const filePath = event.payload as string;
+            
+            // Open the file
+            handleOpenFileFromCommandLine(filePath);
+          });
+          
+          // Check for command line arguments on startup
+          const { invoke } = await import('@tauri-apps/api/core');
+          try {
+            const filePath = await invoke('open_file_from_args');
+            if (filePath) {
+              console.log('Opening file from command line args:', filePath);
+              handleOpenFileFromCommandLine(filePath as string);
+            }
+          } catch (error) {
+            console.log('No file specified in command line args');
+          }
+          
+          // Cleanup function
+          return () => {
+            unlisten();
+          };
+        } else {
+          console.log('Running in web mode');
+        }
+      } catch (error) {
+        console.error('Failed to setup Tauri event listeners:', error);
+      }
+    };
+    
+    setupTauriEventListeners();
   }, []);
 
   // Restore cursor position effect
@@ -1164,6 +1210,44 @@ const App = () => {
   };
 
 
+
+  // Handle opening file from command line arguments
+  const handleOpenFileFromCommandLine = async (filePath: string) => {
+    try {
+      console.log('Opening file from command line:', filePath);
+      
+      // Read the file content
+      const { readFileContent } = await import('./tauriFileHandler');
+      const content = await readFileContent(filePath);
+      
+      if (content !== null) {
+        setEditorContent(content);
+        setCurrentFilePath(filePath);
+        
+        // Extract directory path to check if it's a Git repo
+        const dirPath = filePath.substring(0, filePath.lastIndexOf('/'));
+        const { checkGitRepo } = await import('./tauriFileHandler');
+        const isGitRepo = await checkGitRepo(dirPath);
+        
+        if (isGitRepo) {
+          setCurrentRepoPath(dirPath);
+          setIsGitRepo(true);
+          if (gitManager) {
+            gitManager.setRepoDir(dirPath);
+            await updateGitStatus();
+          }
+          showToast(`Opened file from Git repository: ${filePath.split('/').pop()}`, 'success');
+        } else {
+          showToast(`Opened file: ${filePath.split('/').pop()}`, 'success');
+        }
+      } else {
+        showToast(`Failed to open file: ${filePath}`, 'error');
+      }
+    } catch (error) {
+      console.error('Error opening file from command line:', error);
+      showToast(`Failed to open file: ${(error as Error).message}`, 'error');
+    }
+  };
 
   const handleFileSelect = async (filePath: string) => {
     setFileBrowserModalOpen(false);
