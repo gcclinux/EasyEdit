@@ -31,21 +31,30 @@ jobs:
       - name: Build application
         run: npm run build
 
-      - name: Build Linux packages
-        run: npm run electron:build
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Build Tauri packages
+        run: npm run tauri build
 
       - name: List built artifacts
         run: |
-          echo "Contents of dist directory:"
-          ls -lh dist/EasyEdit-* || echo "No artifacts found"
+          echo "Contents of src-tauri/target/release/bundle:"
+          find src-tauri/target/release/bundle -name "*.deb" -o -name "*.AppImage" -o -name "*.rpm" | head -10
 
       - name: Upload artifacts to release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            dist/EasyEdit-*.zip
-            dist/EasyEdit-*.AppImage
+            src-tauri/target/release/bundle/deb/*.deb
+            src-tauri/target/release/bundle/appimage/*.AppImage
+            src-tauri/target/release/bundle/rpm/*.rpm
           fail_on_unmatched_files: false
           generate_release_notes: true
         env:
@@ -56,6 +65,7 @@ jobs:
         with:
           name: linux-packages
           path: |
-            dist/EasyEdit-*.zip
-            dist/EasyEdit-*.AppImage
+            src-tauri/target/release/bundle/deb/*.deb
+            src-tauri/target/release/bundle/appimage/*.AppImage
+            src-tauri/target/release/bundle/rpm/*.rpm
           retention-days: 30
