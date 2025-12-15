@@ -1,0 +1,111 @@
+name: easyedit
+version: '1.5.1'
+summary: Easy Markdown Editor
+description: |
+  EasyEdit is an easy markdown editor that allows you to write Markdown (MD) 
+  and preview it in real-time. You can save, load .md files, load Git repo 
+  and stage, commit, push and export to HTML, TXT, PDF & SSTP Encryption.
+
+grade: stable
+confinement: classic
+icon: snap/gui/easyedit.png
+base: core24
+
+title: Easyedit
+license: MIT
+contact: https://github.com/gcclinux/easyedit/discussions
+website: https://gcclinux.github.io/EasyEdit/
+source-code: https://github.com/gcclinux/easyedit
+issues: https://github.com/gcclinux/easyedit/issues
+donation: https://github.com/sponsors/gcclinux
+
+platforms:
+  amd64:
+
+apps:
+  easyedit:
+    command: bin/easyedit-wrapper
+    desktop: snap/gui/easyedit.desktop
+    plugs:
+      - home
+      - desktop
+      - desktop-legacy
+      - wayland
+      - x11
+      - opengl
+      - network
+      - network-bind
+      - removable-media
+      - gsettings
+      - audio-playback
+      - audio-record
+      - camera
+      - unity7
+      - browser-support
+      - process-control
+
+parts:
+  easyedit:
+    plugin: nil
+    source: .
+    build-packages:
+      - curl
+      - wget
+      - pkg-config
+      - libgtk-3-dev
+      - libwebkit2gtk-4.1-dev
+      - libappindicator3-dev
+      - librsvg2-dev
+      - patchelf
+    stage-packages:
+      - libgtk-3-0
+      - libwebkit2gtk-4.1-0
+      - libappindicator3-1
+      - librsvg2-2
+      - libglib2.0-0
+      - libgdk-pixbuf-2.0-0
+      - libpango-1.0-0
+      - libcairo2
+      - libatk1.0-0
+      - libc6
+      - libgcc-s1
+      - libstdc++6
+      - libssl3
+      - libxkbcommon0
+      - libwayland-client0
+      - libx11-6
+      - libxcursor1
+      - libxcb1
+      - libfontconfig1
+      - libharfbuzz0b
+      - libicu74
+      - libxml2
+      - libxslt1.1
+      - libgstreamer1.0-0
+      - libwayland-server0
+      - libatk-bridge2.0-0
+      - libdw1
+      - liborc-0.4-0
+      - libegl1
+      - libelf1
+      - libglvnd0
+      - libglx0
+    override-build: |
+      # Copy pre-built binary
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
+      cp src-tauri/target/release/easyedit $SNAPCRAFT_PART_INSTALL/bin/ || echo "Binary not found, please build first with 'npm run tauri build'"
+      chmod +x $SNAPCRAFT_PART_INSTALL/bin/easyedit
+      
+      # Copy WebKit executables from stage area
+      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/lib/x86_64-linux-gnu/webkit2gtk-4.1
+      if [ -d $SNAPCRAFT_STAGE/usr/lib/x86_64-linux-gnu/webkit2gtk-4.1 ]; then
+        cp -r $SNAPCRAFT_STAGE/usr/lib/x86_64-linux-gnu/webkit2gtk-4.1/* $SNAPCRAFT_PART_INSTALL/usr/lib/x86_64-linux-gnu/webkit2gtk-4.1/
+      fi
+      
+      # Create wrapper script
+      cat > $SNAPCRAFT_PART_INSTALL/bin/easyedit-wrapper << 'WRAPPER_EOF'
+      #!/bin/bash
+      export LD_LIBRARY_PATH="$SNAP/usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
+      exec "$SNAP/bin/easyedit" "$@"
+      WRAPPER_EOF
+      chmod +x $SNAPCRAFT_PART_INSTALL/bin/easyedit-wrapper
