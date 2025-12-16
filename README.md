@@ -1,14 +1,14 @@
-## *EasyEdit*
+## *Easyedit*
 
-EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and preview it in real-time. You can save, load .md files, load Git repo and stage,commit, push and export to HTML,TXT, PDF & SSTP Encryption. The idea is to provide a single MD / Mermaid /UML Aplication that can help creating MD documents by build the MD code as easy as a click of a button, with over 130 features & examples.
+Easyedit is an easy markdown editor that allows you to write Markdown (MD) and preview it in real-time. You can save, load .md files, load Git repo and stage,commit, push and export to HTML,TXT, PDF & SSTP Encryption. The idea is to provide a single MD / Mermaid /UML Aplication that can help creating MD documents by build the MD code as easy as a click of a button, with over 130 features & examples.
 
 ![EasyEdit](screenshots/banner-tauri.png)
 
-** *EasyEdit is a free and open-source project. You can use it for free and modify it as you like.* **
+***EasyEdit is a free and open-source project. You can use it for free and modify it as you like.***
 
 ## *Try it before Installing it*
 
-[![Try EasyEdit Online](https://img.shields.io/badge/🚀_Try_EasyEdit-Launch_Web_App-success?style=for-the-badge&logo=rocket)](https://gcclinux.github.io/EasyEdit/webapp/)
+[![Try EasyEdit Online](https://img.shields.io/badge/🚀_Try_EasyEdit-Launch_Web_App-success?style=for-the-badge&logo=rocket)](https://easyedit-cloud.web.app/)
 
 ## *Install the project*
 ```
@@ -71,8 +71,34 @@ xcode-select --install
 ```
 
 **Windows:**
-- Install [Microsoft Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
-- Install [WebView2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) (usually pre-installed on Windows 11)
+```powershell
+# Install Visual Studio Build Tools for Tauri development
+Write-Host "Installing Visual Studio Build Tools..." -ForegroundColor Green
+
+# Download VS Build Tools installer
+$url = "https://aka.ms/vs/17/release/vs_buildtools.exe"
+$output = "$env:TEMP\vs_buildtools.exe"
+
+Write-Host "Downloading Visual Studio Build Tools..." -ForegroundColor Yellow
+Invoke-WebRequest -Uri $url -OutFile $output
+
+Write-Host "Installing Build Tools with C++ workload..." -ForegroundColor Yellow
+Write-Host "This may take several minutes..." -ForegroundColor Yellow
+
+# Install with C++ build tools
+Start-Process -FilePath $output -ArgumentList @(
+    "--quiet",
+    "--wait", 
+    "--add", "Microsoft.VisualStudio.Workload.VCTools",
+    "--includeRecommended"
+) -Wait
+
+Write-Host "Build Tools installation completed!" -ForegroundColor Green
+Write-Host "You may need to restart your terminal/IDE for changes to take effect." -ForegroundColor Yellow
+
+# Clean up
+Remove-Item $output -Force
+```
 
 ### Build Tauri App
 ```bash
