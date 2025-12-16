@@ -23,6 +23,68 @@ $ cd EasyEdit
 $ npm install
 ```
 
+## *Tauri Desktop App Requirements*
+
+To build and run the Tauri desktop application, you need:
+
+### Prerequisites
+```bash
+# Install Rust (required for Tauri)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source ~/.cargo/env
+
+# Verify Rust installation
+rustc --version
+cargo --version
+```
+
+### System Dependencies
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt update
+sudo apt install libwebkit2gtk-4.1-dev \
+  build-essential \
+  curl \
+  wget \
+  file \
+  libxdo-dev \
+  libssl-dev \
+  libayatana-appindicator3-dev \
+  librsvg2-dev
+```
+
+**Linux (Fedora):**
+```bash
+sudo dnf install webkit2gtk4.1-devel \
+  openssl-devel \
+  curl \
+  wget \
+  file \
+  libappindicator-gtk3-devel \
+  librsvg2-devel
+sudo dnf group install "C Development Tools and Libraries"
+```
+
+**macOS:**
+```bash
+# Install Xcode Command Line Tools
+xcode-select --install
+```
+
+**Windows:**
+- Install [Microsoft Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+- Install [WebView2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) (usually pre-installed on Windows 11)
+
+### Build Tauri App
+```bash
+# Development mode
+npm run tauri:dev
+
+# Production build
+npm run tauri:build
+```
+
 ## *Run the Standalone Project*
 ```
 $ npm run app
@@ -31,11 +93,6 @@ $ npm run app
 ## *Run the server manually*
 ```
 $ npm run server
-```
-
-## *Build as an standalone App (Windows & Linux)*
-```
-$ npm run electron:build
 ```
 
 ## *Run Pre-built Docker Example*
