@@ -118,6 +118,7 @@ import { buildBugReportTemplate } from './templates/bugReport';
 import { buildDiagramExamplesTemplate } from './templates/diagramExamples';
 import { buildDiagramASCIITemplate } from './templates/diagramASCII';
 import AboutModal from './components/AboutModal';
+import EasyNotesSidebar from './components/EasyNotesSidebar';
 import FeaturesModal from './components/FeaturesModal';
 import ThemeModal from './components/ThemeModal';
 import ImportThemeModal from './components/ImportThemeModal';
@@ -188,6 +189,8 @@ const App = () => {
   const [showGitDropdown, setShowGitDropdown] = useState(false);
   const gitButtonRef = useRef<HTMLButtonElement | null>(null);
   const [gitPos, setGitPos] = useState<{ top: number; left: number; width: number } | null>(null);
+  const [showEasyNotesSidebar, setShowEasyNotesSidebar] = useState(false);
+  const easyNotesButtonRef = useRef<HTMLButtonElement | null>(null);
   const [isEditFull, setIsEditFull] = useState<boolean>(false);
   const [isPreviewFull, setIsPreviewFull] = useState<boolean>(false);
   const lineHeightValue = useRef<number>(1);
@@ -354,6 +357,7 @@ const App = () => {
     setTasksPos(null);
     setShowGitDropdown(false);
     setGitPos(null);
+    // Note: EasyNotes sidebar is independent and doesn't close with other dropdowns
   };
 
   // Click-away listener to close dropdowns when clicking outside
@@ -1844,6 +1848,21 @@ const App = () => {
         <div className="dropdown-container">
           <button
             className="help-menubar-btn"
+            ref={el => { easyNotesButtonRef.current = el; }}
+            onClick={(e) => {
+              e.preventDefault();
+              closeAllDropdowns();
+              setShowEasyNotesSidebar(!showEasyNotesSidebar);
+            }}
+            title="EasyNotes"
+            style={{ backgroundColor: showEasyNotesSidebar ? '#4a5568' : undefined }}
+          >
+            <FaStickyNote /> &nbsp; EasyNotes
+          </button>
+        </div>
+        <div className="dropdown-container">
+          <button
+            className="help-menubar-btn"
             ref={el => { gitButtonRef.current = el; }}
             onMouseDown={(e) => {
               e.preventDefault();
@@ -2539,6 +2558,13 @@ const App = () => {
 
 
         <p></p>
+
+        {/* EasyNotes Sidebar */}
+        <EasyNotesSidebar
+          showEasyNotesSidebar={showEasyNotesSidebar}
+          setShowEasyNotesSidebar={setShowEasyNotesSidebar}
+          showToast={showToast}
+        />
 
         <div
           className={getEditorPreviewContainerClass()}

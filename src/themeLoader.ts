@@ -32,6 +32,9 @@ export const loadTheme = (themeName: string, isCustom: boolean = false) => {
   // Save to localStorage
   localStorage.setItem('easyedit-theme', themeName);
   localStorage.setItem('easyedit-theme-custom', isCustom.toString());
+  
+  // Add data attribute to body for CSS targeting
+  document.body.setAttribute('data-theme', themeName);
 };
 
 export const getCurrentTheme = (): string => {
