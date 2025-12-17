@@ -537,28 +537,29 @@ const App = () => {
     }
   }, [editorContent]);
 
-  // toggleEdit function
-  const toggleEdit = () => {
-    setIsEditFull(!isEditFull);
-    setIsPreviewFull(false);
-    if (!isEditFull) {
-      // No change needed when entering full mode
-    } else {
-      // When exiting full mode (isEditFull becoming false)
+  // toggleView function - cycles through three view modes
+  const toggleView = () => {
+    if (!isEditFull && !isPreviewFull) {
+      // Currently in split view -> go to full edit
+      setIsEditFull(true);
+      setIsPreviewFull(false);
+    } else if (isEditFull && !isPreviewFull) {
+      // Currently in full edit -> go to full preview
+      setIsEditFull(false);
+      setIsPreviewFull(true);
+    } else if (!isEditFull && isPreviewFull) {
+      // Currently in full preview -> go back to split view
+      setIsEditFull(false);
+      setIsPreviewFull(false);
       setIsHorizontal(false);
     }
   };
 
-  // togglePreview function
-  const togglePreview = () => {
-    setIsPreviewFull(!isPreviewFull);
-    setIsEditFull(false);
-    if (!isPreviewFull) {
-      // No change needed when entering full mode
-    } else {
-      // When exiting full mode
-      setIsHorizontal(false);
-    }
+  // Get current view mode for button text
+  const getCurrentViewMode = () => {
+    if (isEditFull && !isPreviewFull) return "Toggled Edit";
+    if (!isEditFull && isPreviewFull) return "Toggled Preview";
+    return "Toggled Split";
   };
 
   // insertSymbol function inserts a symbol into the textarea
@@ -1899,11 +1900,8 @@ const App = () => {
             status={gitStatus.status}
           />
         )}
-        <button className="menu-item fixed-menubar-btn" onClick={toggleEdit}>
-          <FaExchangeAlt /> &nbsp; Toggle Edit
-        </button>
-        <button className="menu-item fixed-menubar-btn" onClick={togglePreview}>
-          <FaExchangeAlt /> &nbsp; Toggle Preview
+        <button className="menu-item fixed-menubar-btn" onClick={toggleView}>
+          <FaExchangeAlt /> &nbsp; {getCurrentViewMode()}
         </button>
         <button
           className="menu-item fixed-menubar-btn"
