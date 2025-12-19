@@ -1,0 +1,23 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "window-scope",
+  "description": "Capability for window management operations",
+  "windows": ["main"],
+  "permissions": [
+    "core:window:allow-set-title",
+    "core:window:allow-title",
+    "core:window:allow-maximize",
+    "core:window:allow-minimize",
+    "core:window:allow-close",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-set-size",
+    "core:window:allow-set-position"
+  ],
+  "platforms": ["linux", "macOS", "windows"],
+  "local": true,
+  "remote": {
+    "urls": []
+  },
+  "context": "local"
+}

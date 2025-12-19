@@ -1,6 +1,6 @@
 {
   "productName": "easyedit",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "identifier": "com.easyedit.editor",
   "build": {
     "beforeBuildCommand": "npm run build",
@@ -24,7 +24,7 @@
     ],
     "security": {
       "csp": null,
-      "capabilities": ["default", "shell-scope"],
+      "capabilities": ["default", "shell-scope", "window-scope"],
       "dangerousDisableAssetCspModification": true
     },
     "withGlobalTauri": false

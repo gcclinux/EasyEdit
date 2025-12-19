@@ -8,7 +8,7 @@
 export const FEATURES = {
   // EasyNotes cloud integration feature
   // Set to true when ready to release to users
-  EASY_NOTES: false,
+  EASY_NOTES: true,
   
   // Add other feature flags here as needed
   // EXAMPLE_FEATURE: true,
