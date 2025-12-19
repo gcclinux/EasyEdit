@@ -15,7 +15,7 @@ import {
 import { validateGoogleDriveConfiguration } from '../config/config-validator';
 import { ErrorHandler } from '../utils/ErrorHandler';
 import { cloudToastService } from '../utils/CloudToastService';
-import { GoogleApiTest } from '../utils/GoogleApiTest';
+import { runGoogleApiTests, testOAuthClientId } from '../utils/GoogleApiTest';
 import '../utils/ConnectionDiagnostic'; // Load diagnostic utility
 
 interface GoogleDriveFile {
@@ -56,7 +56,9 @@ export class GoogleDriveProvider implements CloudProvider {
       console.warn('Google Drive integration not configured. Users will see a helpful error message.');
       
       // Log detailed configuration status in development
-      if (import.meta.env.MODE === 'development') {
+      const isDevelopment = (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') ||
+                           (typeof window !== 'undefined' && (window as any).import?.meta?.env?.MODE === 'development');
+      if (isDevelopment) {
         const validation = validateGoogleDriveConfiguration(true);
         console.warn('Configuration validation:', validation);
       }
@@ -131,7 +133,7 @@ export class GoogleDriveProvider implements CloudProvider {
       console.log('[GoogleDriveProvider] Starting authentication...');
       
       // Run OAuth configuration test only (skip API key test for now)
-      const oauthTest = await GoogleApiTest.testOAuthConfiguration();
+      const oauthTest = await testOAuthClientId();
       if (!oauthTest.success) {
         console.error('[GoogleDriveProvider] OAuth configuration test failed:', oauthTest);
         return {

@@ -23,7 +23,21 @@ export function isWebEnvironment(): boolean {
  * Check if the app is running in development mode
  */
 export function isDevelopmentMode(): boolean {
-  return import.meta.env.MODE === 'development';
+  // In Node.js/Jest environment
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env.NODE_ENV === 'development';
+  }
+  
+  // In Vite environment (only when import.meta is available)
+  try {
+    if (typeof window !== 'undefined' && (window as any).import?.meta?.env) {
+      return (window as any).import.meta.env.MODE === 'development';
+    }
+  } catch (e) {
+    // Ignore import.meta access errors in test environments
+  }
+  
+  return false;
 }
 
 /**

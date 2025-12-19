@@ -1,0 +1,205 @@
+/**
+ * OAuth Status Indicator Styles
+ * Displays authentication status for cloud services
+ */
+
+.oauth-status-indicator {
+  background-color: var(--bg-dropdown);
+  border: 1px solid var(--border-secondary);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.oauth-status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-secondary);
+}
+
+.oauth-status-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.oauth-status-summary-text {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.oauth-status-providers {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.oauth-status-provider {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-input);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.oauth-status-provider:hover {
+  border-color: var(--border-primary);
+}
+
+.oauth-status-provider-info {
+  flex: 1;
+}
+
+.oauth-status-provider-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.oauth-status-provider-icon {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.oauth-status-provider-name {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.oauth-status-user-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.oauth-status-user-icon {
+  font-size: 12px;
+}
+
+.oauth-status-user-name {
+  font-size: 13px;
+}
+
+.oauth-status-error-message {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--color-error);
+  font-style: italic;
+}
+
+.oauth-status-disconnect-btn {
+  background: none;
+  border: 1px solid var(--border-secondary);
+  border-radius: 4px;
+  padding: 6px 8px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.oauth-status-disconnect-btn:hover {
+  background-color: var(--color-error);
+  border-color: var(--color-error);
+  color: var(--color-text-button);
+}
+
+/* Status Icons */
+.oauth-status-icon-connected {
+  color: var(--color-success);
+}
+
+.oauth-status-icon-authenticating {
+  color: var(--color-primary);
+}
+
+.oauth-status-icon-error {
+  color: var(--color-error);
+}
+
+/* Status States */
+.oauth-status-connected {
+  border-color: var(--color-success);
+}
+
+.oauth-status-authenticating {
+  border-color: var(--color-primary);
+}
+
+.oauth-status-error {
+  border-color: var(--color-error);
+}
+
+.oauth-status-disconnected {
+  border-color: var(--border-secondary);
+}
+
+/* Compact Mode */
+.oauth-status-compact {
+  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+  min-width: auto;
+  margin-bottom: 0;
+}
+
+.oauth-status-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.oauth-status-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Animation for spinner */
+.fa-spin {
+  animation: fa-spin 1s infinite linear;
+}
+
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .oauth-status-indicator {
+    padding: 12px;
+  }
+  
+  .oauth-status-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .oauth-status-provider {
+    padding: 10px;
+  }
+  
+  .oauth-status-provider-header {
+    flex-wrap: wrap;
+  }
+}

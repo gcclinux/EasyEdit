@@ -7,6 +7,48 @@
 import { GOOGLE_DRIVE_CONFIG } from '../config/google-credentials';
 
 /**
+ * Safe environment variable access that works in both Vite and Jest environments
+ */
+function getEnvVar(key: string): string | undefined {
+  // In Node.js/Jest environment (check first as it's more reliable)
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env[key];
+  }
+  
+  // In Vite environment (only when import.meta is available)
+  try {
+    if (typeof window !== 'undefined' && 'import' in window && (window as any).import?.meta?.env) {
+      return (window as any).import.meta.env[key];
+    }
+  } catch (e) {
+    // Ignore import.meta access errors in test environments
+  }
+  
+  return undefined;
+}
+
+/**
+ * Get current build mode safely
+ */
+function getBuildMode(): string {
+  // In Node.js/Jest environment (check first)
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env.NODE_ENV || 'development';
+  }
+  
+  // In Vite environment (only when import.meta is available)
+  try {
+    if (typeof window !== 'undefined' && 'import' in window && (window as any).import?.meta?.env) {
+      return (window as any).import.meta.env.MODE || 'development';
+    }
+  } catch (e) {
+    // Ignore import.meta access errors in test environments
+  }
+  
+  return 'development';
+}
+
+/**
  * Test Google API Key validity
  */
 export async function testGoogleApiKey(): Promise<{
@@ -16,7 +58,7 @@ export async function testGoogleApiKey(): Promise<{
 }> {
   try {
     // Test API key with a simple API call
-    const apiKey = import.meta.env.VITE_GOOGLE_API_KEY || 'your-development-api-key';
+    const apiKey = getEnvVar('VITE_GOOGLE_API_KEY') || 'your-development-api-key';
     
     try {
       const response = await fetch(
@@ -66,7 +108,7 @@ export async function testOAuthClientId(): Promise<{
   details?: any;
 }> {
   try {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'your-development-client-id.apps.googleusercontent.com';
+    const clientId = getEnvVar('VITE_GOOGLE_CLIENT_ID') || 'your-development-client-id.apps.googleusercontent.com';
     const currentOrigin = window.location.origin;
     
     // Basic format validation
@@ -142,11 +184,11 @@ export async function runGoogleApiTests(): Promise<{
  * Get Google API configuration summary (safe for logging)
  */
 export function getGoogleApiConfigSummary(): Record<string, any> {
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'not-configured';
-  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY || 'not-configured';
+  const clientId = getEnvVar('VITE_GOOGLE_CLIENT_ID') || 'not-configured';
+  const apiKey = getEnvVar('VITE_GOOGLE_API_KEY') || 'not-configured';
   
   return {
-    environment: import.meta.env.MODE,
+    environment: getBuildMode(),
     clientIdConfigured: clientId !== 'not-configured' && !clientId.includes('your-'),
     apiKeyConfigured: apiKey !== 'not-configured' && !apiKey.includes('your-'),
     authorizedDomains: GOOGLE_DRIVE_CONFIG.AUTHORIZED_DOMAINS,

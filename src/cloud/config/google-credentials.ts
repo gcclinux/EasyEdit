@@ -5,6 +5,48 @@
  * comprehensive credential management for Google Drive integration.
  */
 
+/**
+ * Safe environment variable access that works in both Vite and Jest environments
+ */
+function getEnvVar(key: string): string | undefined {
+  // In Node.js/Jest environment (check first as it's more reliable)
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env[key];
+  }
+  
+  // In Vite environment (only when import.meta is available)
+  try {
+    if (typeof window !== 'undefined' && 'import' in window && (window as any).import?.meta?.env) {
+      return (window as any).import.meta.env[key];
+    }
+  } catch (e) {
+    // Ignore import.meta access errors in test environments
+  }
+  
+  return undefined;
+}
+
+/**
+ * Get current build mode safely
+ */
+function getBuildMode(): string {
+  // In Node.js/Jest environment (check first)
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env.NODE_ENV || 'development';
+  }
+  
+  // In Vite environment (only when import.meta is available)
+  try {
+    if (typeof window !== 'undefined' && 'import' in window && (window as any).import?.meta?.env) {
+      return (window as any).import.meta.env.MODE || 'development';
+    }
+  } catch (e) {
+    // Ignore import.meta access errors in test environments
+  }
+  
+  return 'development';
+}
+
 interface GoogleDriveEnvironmentConfig {
   CLIENT_ID: string;
   API_KEY: string;
@@ -26,9 +68,9 @@ interface GoogleDriveConfig {
  */
 const ENVIRONMENT_CONFIGS: Record<string, GoogleDriveEnvironmentConfig> = {
   development: {
-    CLIENT_ID: import.meta.env.VITE_GOOGLE_CLIENT_ID || 
+    CLIENT_ID: getEnvVar('VITE_GOOGLE_CLIENT_ID') || 
                'your-development-client-id.apps.googleusercontent.com',
-    API_KEY: import.meta.env.VITE_GOOGLE_API_KEY || 
+    API_KEY: getEnvVar('VITE_GOOGLE_API_KEY') || 
              'your-development-api-key',
     AUTHORIZED_DOMAINS: [
       'http://localhost:3024',
@@ -42,9 +84,9 @@ const ENVIRONMENT_CONFIGS: Record<string, GoogleDriveEnvironmentConfig> = {
   },
   
   production: {
-    CLIENT_ID: import.meta.env.VITE_GOOGLE_CLIENT_ID_PROD || 
+    CLIENT_ID: getEnvVar('VITE_GOOGLE_CLIENT_ID_PROD') || 
                'your-production-client-id.apps.googleusercontent.com',
-    API_KEY: import.meta.env.VITE_GOOGLE_API_KEY_PROD || 
+    API_KEY: getEnvVar('VITE_GOOGLE_API_KEY_PROD') || 
              'your-production-api-key',
     AUTHORIZED_DOMAINS: [
       'https://easyeditor.co.uk',
@@ -59,7 +101,7 @@ const ENVIRONMENT_CONFIGS: Record<string, GoogleDriveEnvironmentConfig> = {
  */
 function getCurrentEnvironment(): string {
   // Check explicit environment variable first
-  const explicitEnv = import.meta.env.VITE_ENVIRONMENT;
+  const explicitEnv = getEnvVar('VITE_ENVIRONMENT');
   if (explicitEnv && ENVIRONMENT_CONFIGS[explicitEnv]) {
     return explicitEnv;
   }
@@ -70,7 +112,7 @@ function getCurrentEnvironment(): string {
   }
   
   // Auto-detect based on build mode
-  if (import.meta.env.MODE === 'production') {
+  if (getBuildMode() === 'production') {
     return 'production';
   }
   

@@ -1,0 +1,146 @@
+/**
+ * OAuth Button Styles
+ * Provides visual feedback for OAuth authentication states
+ */
+
+.oauth-button-container {
+  margin-bottom: 16px;
+}
+
+.oauth-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 20px;
+  border: 2px solid var(--border-secondary);
+  border-radius: 8px;
+  background-color: var(--bg-button-secondary);
+  color: var(--color-text-primary);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px;
+}
+
+.oauth-button:hover:not(:disabled) {
+  background-color: var(--bg-button-hover);
+  border-color: var(--border-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px var(--shadow-md);
+}
+
+.oauth-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.oauth-button-icon {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+}
+
+.oauth-button-text {
+  flex: 1;
+  text-align: center;
+}
+
+/* Button States */
+.oauth-button-default {
+  border-color: var(--border-secondary);
+  background: linear-gradient(135deg, var(--btn-menu-gradient-start) 0%, var(--btn-menu-gradient-end) 100%);
+  color: var(--color-text-button);
+}
+
+.oauth-button-default:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--shadow-lg);
+}
+
+.oauth-button-authenticating {
+  border-color: var(--color-primary);
+  background-color: var(--bg-primary-light);
+  color: var(--color-primary);
+}
+
+.oauth-button-authenticating .oauth-button-icon {
+  color: var(--color-primary);
+}
+
+.oauth-button-connected {
+  border-color: var(--color-success);
+  background-color: var(--bg-success-light);
+  color: var(--color-success);
+}
+
+.oauth-button-connected .oauth-button-icon {
+  color: var(--color-success);
+}
+
+.oauth-button-connected:hover:not(:disabled) {
+  background-color: var(--bg-success);
+  color: var(--color-text-button);
+}
+
+.oauth-button-error {
+  border-color: var(--color-error);
+  background-color: var(--bg-error-light);
+  color: var(--color-error);
+}
+
+.oauth-button-error .oauth-button-icon {
+  color: var(--color-error);
+}
+
+.oauth-button-error:hover:not(:disabled) {
+  background-color: var(--color-error);
+  color: var(--color-text-button);
+}
+
+.oauth-button-error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: var(--bg-error-light);
+  border: 1px solid var(--color-error);
+  border-radius: 4px;
+  color: var(--color-error);
+  font-size: 14px;
+}
+
+.oauth-button-error-message svg {
+  flex-shrink: 0;
+}
+
+/* Animation for spinner */
+.fa-spin {
+  animation: fa-spin 1s infinite linear;
+}
+
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .oauth-button {
+    padding: 10px 16px;
+    font-size: 14px;
+    min-height: 44px;
+  }
+  
+  .oauth-button-icon {
+    font-size: 16px;
+  }
+}

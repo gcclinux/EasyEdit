@@ -1,0 +1,321 @@
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::sync::Mutex;
+use tauri::{AppHandle, Emitter, State};
+use uuid::Uuid;
+
+/// OAuth token structure for Tauri communication
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct OAuthTokens {
+    pub access_token: String,
+    pub refresh_token: Option<String>,
+    pub expires_at: String, // ISO date string
+    pub scope: String,
+    pub token_type: String,
+}
+
+/// OAuth authentication result
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct OAuthResult {
+    pub success: bool,
+    pub provider: String,
+    pub tokens: Option<OAuthTokens>,
+    pub error: Option<String>,
+    pub error_description: Option<String>,
+}
+
+/// OAuth authentication status
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct OAuthStatus {
+    pub provider: String,
+    pub is_authenticated: bool,
+    pub expires_at: Option<String>,
+    pub last_refresh: Option<String>,
+}
+
+/// OAuth provider information
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct OAuthProvider {
+    pub name: String,
+    pub display_name: String,
+    pub enabled: bool,
+}
+
+/// OAuth authentication request
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct OAuthAuthRequest {
+    pub provider: String,
+    pub force_reauth: Option<bool>,
+}
+
+/// OAuth logout request
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct OAuthLogoutRequest {
+    pub provider: String,
+    pub revoke_tokens: Option<bool>,
+}
+
+/// OAuth state management for tracking active flows
+#[derive(Debug, Clone)]
+pub struct OAuthFlowState {
+    pub flow_id: String,
+    pub provider: String,
+    pub started_at: std::time::SystemTime,
+    pub status: String,
+}
+
+/// OAuth manager state for Tauri
+pub struct OAuthManagerState {
+    pub active_flows: Mutex<HashMap<String, OAuthFlowState>>,
+    pub last_error: Mutex<Option<String>>,
+}
+
+impl Default for OAuthManagerState {
+    fn default() -> Self {
+        Self {
+            active_flows: Mutex::new(HashMap::new()),
+            last_error: Mutex::new(None),
+        }
+    }
+}
+
+/// Initiate OAuth authentication flow
+/// Requirements: 1.1, 6.1
+#[tauri::command]
+pub async fn oauth_authenticate(
+    app_handle: AppHandle,
+    state: State<'_, OAuthManagerState>,
+    request: OAuthAuthRequest,
+) -> Result<String, String> {
+    let flow_id = Uuid::new_v4().to_string();
+    
+    // Create flow state
+    let flow_state = OAuthFlowState {
+        flow_id: flow_id.clone(),
+        provider: request.provider.clone(),
+        started_at: std::time::SystemTime::now(),
+        status: "initiated".to_string(),
+    };
+    
+    // Store active flow
+    {
+        let mut active_flows = state.active_flows.lock().unwrap();
+        active_flows.insert(flow_id.clone(), flow_state);
+    }
+    
+    // Emit event to frontend to start OAuth flow
+    let _ = app_handle.emit("oauth-flow-started", serde_json::json!({
+        "flow_id": flow_id,
+        "provider": request.provider,
+        "force_reauth": request.force_reauth.unwrap_or(false)
+    }));
+    
+    Ok(flow_id)
+}
+
+/// Check OAuth authentication status for a provider
+/// Requirements: 1.5, 6.4
+#[tauri::command]
+pub async fn oauth_get_status(
+    app_handle: AppHandle,
+    provider: String,
+) -> Result<OAuthStatus, String> {
+    // Emit event to frontend to check status
+    let _ = app_handle.emit("oauth-status-requested", serde_json::json!({
+        "provider": provider
+    }));
+    
+    // For now, return a placeholder - the frontend will handle the actual status check
+    // and update through events
+    Ok(OAuthStatus {
+        provider: provider.clone(),
+        is_authenticated: false,
+        expires_at: None,
+        last_refresh: None,
+    })
+}
+
+/// Get authentication status for all providers
+/// Requirements: 1.5
+#[tauri::command]
+pub async fn oauth_get_all_status(
+    app_handle: AppHandle,
+) -> Result<Vec<OAuthStatus>, String> {
+    // Emit event to frontend to get all status
+    let _ = app_handle.emit("oauth-all-status-requested", serde_json::json!({}));
+    
+    // Return empty vec - frontend will populate through events
+    Ok(vec![])
+}
+
+/// Logout from OAuth provider
+/// Requirements: 4.4, 7.5
+#[tauri::command]
+pub async fn oauth_logout(
+    app_handle: AppHandle,
+    request: OAuthLogoutRequest,
+) -> Result<bool, String> {
+    // Emit event to frontend to handle logout
+    let _ = app_handle.emit("oauth-logout-requested", serde_json::json!({
+        "provider": request.provider,
+        "revoke_tokens": request.revoke_tokens.unwrap_or(false)
+    }));
+    
+    Ok(true)
+}
+
+/// Get list of available OAuth providers
+/// Requirements: 5.1
+#[tauri::command]
+pub async fn oauth_get_providers(
+    app_handle: AppHandle,
+) -> Result<Vec<OAuthProvider>, String> {
+    // Emit event to frontend to get providers
+    let _ = app_handle.emit("oauth-providers-requested", serde_json::json!({}));
+    
+    // Return empty vec - frontend will populate through events
+    Ok(vec![])
+}
+
+/// Refresh tokens for a provider
+/// Requirements: 4.2, 4.3
+#[tauri::command]
+pub async fn oauth_refresh_tokens(
+    app_handle: AppHandle,
+    provider: String,
+) -> Result<bool, String> {
+    // Emit event to frontend to refresh tokens
+    let _ = app_handle.emit("oauth-refresh-requested", serde_json::json!({
+        "provider": provider
+    }));
+    
+    Ok(true)
+}
+
+/// Get OAuth flow status
+#[tauri::command]
+pub async fn oauth_get_flow_status(
+    state: State<'_, OAuthManagerState>,
+    flow_id: String,
+) -> Result<Option<String>, String> {
+    let active_flows = state.active_flows.lock().unwrap();
+    
+    if let Some(flow) = active_flows.get(&flow_id) {
+        Ok(Some(flow.status.clone()))
+    } else {
+        Ok(None)
+    }
+}
+
+/// Update OAuth flow status (called by frontend)
+#[tauri::command]
+pub async fn oauth_update_flow_status(
+    state: State<'_, OAuthManagerState>,
+    flow_id: String,
+    status: String,
+) -> Result<(), String> {
+    let mut active_flows = state.active_flows.lock().unwrap();
+    
+    if let Some(flow) = active_flows.get_mut(&flow_id) {
+        flow.status = status;
+    }
+    
+    Ok(())
+}
+
+/// Complete OAuth flow (called by frontend when flow completes)
+#[tauri::command]
+pub async fn oauth_complete_flow(
+    app_handle: AppHandle,
+    state: State<'_, OAuthManagerState>,
+    flow_id: String,
+    result: OAuthResult,
+) -> Result<(), String> {
+    // Remove flow from active flows
+    {
+        let mut active_flows = state.active_flows.lock().unwrap();
+        active_flows.remove(&flow_id);
+    }
+    
+    // Emit completion event
+    let _ = app_handle.emit("oauth-flow-completed", serde_json::json!({
+        "flow_id": flow_id,
+        "result": result
+    }));
+    
+    Ok(())
+}
+
+/// Handle OAuth errors
+#[tauri::command]
+pub async fn oauth_handle_error(
+    app_handle: AppHandle,
+    state: State<'_, OAuthManagerState>,
+    flow_id: Option<String>,
+    error: String,
+    error_description: Option<String>,
+) -> Result<(), String> {
+    // Store last error
+    {
+        let mut last_error = state.last_error.lock().unwrap();
+        *last_error = Some(error.clone());
+    }
+    
+    // Remove flow if provided
+    if let Some(flow_id) = &flow_id {
+        let mut active_flows = state.active_flows.lock().unwrap();
+        active_flows.remove(flow_id);
+    }
+    
+    // Emit error event
+    let _ = app_handle.emit("oauth-error", serde_json::json!({
+        "flow_id": flow_id,
+        "error": error,
+        "error_description": error_description
+    }));
+    
+    Ok(())
+}
+
+/// Get last OAuth error
+#[tauri::command]
+pub async fn oauth_get_last_error(
+    state: State<'_, OAuthManagerState>,
+) -> Result<Option<String>, String> {
+    let last_error = state.last_error.lock().unwrap();
+    Ok(last_error.clone())
+}
+
+/// Clear OAuth errors
+#[tauri::command]
+pub async fn oauth_clear_errors(
+    state: State<'_, OAuthManagerState>,
+) -> Result<(), String> {
+    let mut last_error = state.last_error.lock().unwrap();
+    *last_error = None;
+    
+    Ok(())
+}
+
+/// Validate OAuth configuration
+#[tauri::command]
+pub async fn oauth_validate_config(
+    app_handle: AppHandle,
+) -> Result<bool, String> {
+    // Emit event to frontend to validate config
+    let _ = app_handle.emit("oauth-config-validation-requested", serde_json::json!({}));
+    
+    Ok(true)
+}
+
+/// Get OAuth configuration status
+#[tauri::command]
+pub async fn oauth_get_config_status(
+    app_handle: AppHandle,
+) -> Result<HashMap<String, bool>, String> {
+    // Emit event to frontend to get config status
+    let _ = app_handle.emit("oauth-config-status-requested", serde_json::json!({}));
+    
+    // Return empty map - frontend will populate through events
+    Ok(HashMap::new())
+}

@@ -1,0 +1,57 @@
+/**
+ * OAuth UI Main Component Styles
+ * Orchestrates all OAuth UI components
+ */
+
+.oauth-ui {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.oauth-ui-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Compact layout for smaller spaces */
+.oauth-ui.oauth-ui-compact {
+  gap: 12px;
+}
+
+.oauth-ui.oauth-ui-compact .oauth-ui-buttons {
+  gap: 8px;
+}
+
+/* Horizontal layout option */
+.oauth-ui.oauth-ui-horizontal .oauth-ui-buttons {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.oauth-ui.oauth-ui-horizontal .oauth-ui-buttons .oauth-button-container {
+  flex: 1;
+  min-width: 200px;
+  margin-bottom: 0;
+}
+
+/* Integration with existing app styles */
+.oauth-ui .oauth-button {
+  font-family: inherit;
+}
+
+.oauth-ui .oauth-status-indicator {
+  font-family: inherit;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .oauth-ui.oauth-ui-horizontal .oauth-ui-buttons {
+    flex-direction: column;
+  }
+  
+  .oauth-ui.oauth-ui-horizontal .oauth-ui-buttons .oauth-button-container {
+    flex: none;
+  }
+}

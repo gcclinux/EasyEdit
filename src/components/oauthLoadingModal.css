@@ -1,0 +1,263 @@
+/**
+ * OAuth Loading Modal Styles
+ * Provides visual feedback during OAuth authentication process
+ */
+
+.oauth-loading-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+}
+
+.oauth-loading-modal {
+  max-width: 500px;
+  min-width: 400px;
+  text-align: center;
+  padding: 32px;
+  background-color: var(--bg-dropdown);
+  border: 1px solid var(--border-secondary);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px var(--shadow-lg);
+}
+
+.oauth-loading-icon-container {
+  margin-bottom: 20px;
+  font-size: 48px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+}
+
+.oauth-loading-icon-primary {
+  color: var(--color-primary);
+}
+
+.oauth-loading-icon-success {
+  color: var(--color-success);
+}
+
+.oauth-loading-icon-error {
+  color: var(--color-error);
+}
+
+.oauth-loading-title {
+  margin: 0 0 16px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.oauth-loading-message {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.oauth-loading-instructions {
+  margin: 20px 0;
+  text-align: left;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-input);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.oauth-loading-instructions ol {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--color-text-primary);
+}
+
+.oauth-loading-instructions li {
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.oauth-loading-instructions li:last-child {
+  margin-bottom: 0;
+}
+
+.oauth-loading-progress {
+  margin: 24px 0;
+}
+
+.oauth-loading-manual-link {
+  margin: 24px 0;
+  padding: 16px;
+  background-color: var(--bg-warning-light);
+  border: 1px solid var(--color-warning);
+  border-radius: 8px;
+}
+
+.oauth-loading-help-text {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.oauth-loading-manual-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, var(--btn-menu-gradient-start) 0%, var(--btn-menu-gradient-end) 100%);
+  color: var(--color-text-button);
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.oauth-loading-manual-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px var(--shadow-md);
+}
+
+.oauth-loading-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.oauth-loading-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.oauth-loading-btn-cancel {
+  background-color: var(--bg-button-secondary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--border-secondary);
+}
+
+.oauth-loading-btn-cancel:hover {
+  background-color: var(--bg-button-hover);
+  border-color: var(--border-primary);
+}
+
+.oauth-loading-btn-retry {
+  background-color: var(--color-warning);
+  color: var(--color-text-button);
+}
+
+.oauth-loading-btn-retry:hover {
+  background-color: var(--color-warning-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px var(--shadow-md);
+}
+
+.oauth-loading-btn-primary {
+  background: linear-gradient(135deg, var(--btn-menu-gradient-start) 0%, var(--btn-menu-gradient-end) 100%);
+  color: var(--color-text-button);
+}
+
+.oauth-loading-btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px var(--shadow-md);
+}
+
+/* Animation for spinner */
+.fa-spin {
+  animation: fa-spin 1s infinite linear;
+}
+
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Pulse animation for waiting state */
+.oauth-loading-icon-primary:not(.fa-spin) {
+  animation: oauth-pulse 2s infinite ease-in-out;
+}
+
+@keyframes oauth-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+/* Success animation */
+.oauth-loading-icon-success {
+  animation: oauth-success-bounce 0.6s ease-out;
+}
+
+@keyframes oauth-success-bounce {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Error animation */
+.oauth-loading-icon-error {
+  animation: oauth-error-shake 0.6s ease-out;
+}
+
+@keyframes oauth-error-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .oauth-loading-modal {
+    min-width: 320px;
+    max-width: 90vw;
+    padding: 24px;
+    margin: 20px;
+  }
+  
+  .oauth-loading-title {
+    font-size: 20px;
+  }
+  
+  .oauth-loading-message {
+    font-size: 14px;
+  }
+  
+  .oauth-loading-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .oauth-loading-btn {
+    width: 100%;
+  }
+}

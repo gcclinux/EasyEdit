@@ -34,6 +34,9 @@ export default defineConfig({
     alias: {
       buffer: 'buffer',
       path: 'path-browserify',
+      // Use browser-safe stubs for Node.js-only OAuth components
+      './CallbackServer': './CallbackServer.browser',
+      './BrowserLauncher': './BrowserLauncher.browser',
     },
   },
   ssr: {
@@ -80,7 +83,18 @@ export default defineConfig({
     assetsDir: '.',
     emptyOutDir: true,
     rollupOptions: {
-      external: [],
+      external: [
+        '@tauri-apps/api/core',
+        '@tauri-apps/api/event',
+        '@tauri-apps/api/notification',
+        'crypto',
+        'http',
+        'url',
+        'os',
+        'fs/promises',
+        'child_process',
+        'util'
+      ],
     },
   }
 });

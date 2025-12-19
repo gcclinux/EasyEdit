@@ -1,6 +1,9 @@
 use tauri::Emitter;
 use std::env;
 
+mod oauth;
+use oauth::*;
+
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -36,7 +39,26 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
-        .invoke_handler(tauri::generate_handler![greet, get_command_line_args, open_file_from_args])
+        .manage(OAuthManagerState::default())
+        .invoke_handler(tauri::generate_handler![
+            greet, 
+            get_command_line_args, 
+            open_file_from_args,
+            oauth_authenticate,
+            oauth_get_status,
+            oauth_get_all_status,
+            oauth_logout,
+            oauth_get_providers,
+            oauth_refresh_tokens,
+            oauth_get_flow_status,
+            oauth_update_flow_status,
+            oauth_complete_flow,
+            oauth_handle_error,
+            oauth_get_last_error,
+            oauth_clear_errors,
+            oauth_validate_config,
+            oauth_get_config_status
+        ])
         .setup(|app| {
             // Handle file opening on startup
             let args: Vec<String> = env::args().collect();

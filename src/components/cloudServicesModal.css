@@ -1,0 +1,90 @@
+/**
+ * Cloud Services Modal Styles
+ * Modal for managing OAuth cloud service connections
+ */
+
+.cloud-services-modal {
+  max-width: 600px;
+  min-width: 500px;
+  text-align: left;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-secondary);
+}
+
+.modal-header h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.modal-header h2 svg {
+  color: var(--color-primary);
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-size: 18px;
+}
+
+.modal-close-btn:hover {
+  background-color: var(--bg-button-hover);
+  color: var(--color-text-primary);
+}
+
+.modal-body {
+  margin-bottom: 20px;
+}
+
+.modal-description {
+  margin: 0 0 24px 0;
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.modal-footer {
+  padding-top: 16px;
+  border-top: 1px solid var(--border-secondary);
+}
+
+.modal-footer-note {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  font-style: italic;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .cloud-services-modal {
+    min-width: 320px;
+    max-width: 90vw;
+    margin: 20px;
+  }
+  
+  .modal-header h2 {
+    font-size: 20px;
+  }
+  
+  .modal-description {
+    font-size: 14px;
+  }
+}
