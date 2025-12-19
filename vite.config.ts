@@ -74,7 +74,11 @@ export default defineConfig({
         '**/build-flathub/**',
         '**/build-*/**',
         '**/.flatpak-builder/**',
-        '**/build/**'
+        '**/build/**',
+        '**/stage/**',
+        '**/snap/**',
+        '**/parts/**',
+        '**/prime/**'
       ]
     }
   },

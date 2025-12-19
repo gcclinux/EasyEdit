@@ -7,16 +7,13 @@ import type { CloudProvider, NoteMetadata, SyncResult, ProviderMetadata } from '
 import { MetadataManager } from './MetadataManager';
 import { FileSynchronizer } from './FileSynchronizer';
 // CloudCredentialManager is used by individual providers, not directly by CloudManager
-import { GISGoogleDriveProvider } from '../providers/GISGoogleDriveProvider';
-import { TauriGoogleDriveProvider } from '../providers/TauriGoogleDriveProvider';
-// OAuth provider is imported conditionally to avoid loading OAuth system in web environment
-import { MockGoogleDriveProvider } from '../providers/MockGoogleDriveProvider';
-import { SimpleGoogleDriveProvider } from '../providers/SimpleGoogleDriveProvider';
+// Providers are imported dynamically to avoid loading when feature is disabled
 import { isTauriEnvironment } from '../../utils/environment';
 import { ErrorHandler } from '../utils/ErrorHandler';
 import { cloudToastService } from '../utils/CloudToastService';
 import { offlineManager } from '../utils/OfflineManager';
 import * as CryptoJS from 'crypto-js';
+import { FEATURES } from '../../config/features';
 
 export class CloudManager {
   private providers: Map<string, CloudProvider> = new Map();
@@ -29,6 +26,12 @@ export class CloudManager {
     this.fileSynchronizer = new FileSynchronizer();
     // Credential management is handled by individual providers
     
+    // Only register providers if the feature is enabled
+    if (!FEATURES.EASY_NOTES) {
+      console.log('[CloudManager] EASY_NOTES feature disabled, skipping provider registration');
+      return;
+    }
+    
     // Register providers based on environment
     if (isTauriEnvironment()) {
       console.log('[CloudManager] Detected Tauri environment, using OAuth provider');
@@ -37,11 +40,15 @@ export class CloudManager {
         this.registerProvider(new OAuthGoogleDriveProvider());
       }).catch(error => {
         console.error('[CloudManager] Failed to load OAuth provider, falling back to Tauri provider:', error);
-        this.registerProvider(new TauriGoogleDriveProvider());
+        import('../providers/TauriGoogleDriveProvider').then(({ TauriGoogleDriveProvider }) => {
+          this.registerProvider(new TauriGoogleDriveProvider());
+        });
       });
     } else {
       console.log('[CloudManager] Detected web environment, using GIS provider');
-      this.registerProvider(new GISGoogleDriveProvider());
+      import('../providers/GISGoogleDriveProvider').then(({ GISGoogleDriveProvider }) => {
+        this.registerProvider(new GISGoogleDriveProvider());
+      });
     }
     
     // Keep legacy providers available for fallback if needed
@@ -768,5 +775,5 @@ export class CloudManager {
   }
 }
 
-// Export singleton instance for global access
-export const cloudManager = new CloudManager();
+// Export singleton instance for global access - only when feature is enabled
+export const cloudManager = FEATURES.EASY_NOTES ? new CloudManager() : null;

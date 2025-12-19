@@ -100,6 +100,11 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
   }, [refreshTrigger, showEasyNotesSidebar]);
 
   const checkPostRedirectAuth = async () => {
+    if (!cloudManager) {
+      console.warn('[EasyNotesSidebar] CloudManager not available - feature disabled');
+      return;
+    }
+    
     try {
       console.log('[EasyNotesSidebar] Checking if user is authenticated after redirect...');
       
@@ -154,6 +159,11 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
   };
 
   const loadNotesAndProviders = async () => {
+    if (!cloudManager) {
+      console.warn('[EasyNotesSidebar] CloudManager not available - feature disabled');
+      return;
+    }
+    
     setLoading(true);
     try {
       // Load notes
@@ -192,6 +202,12 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
   };
 
   const handleConnectProvider = async (providerName: string) => {
+    if (!cloudManager) {
+      console.warn('[EasyNotesSidebar] CloudManager not available - feature disabled');
+      showToast('Cloud features are disabled', 'error');
+      return;
+    }
+    
     console.log('[EasyNotesSidebar] Connect button clicked for provider:', providerName);
     
     // Set specific loading state for this provider
@@ -236,6 +252,12 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
   };
 
   const handleDisconnectProvider = async (providerName: string) => {
+    if (!cloudManager) {
+      console.warn('[EasyNotesSidebar] CloudManager not available - feature disabled');
+      showToast('Cloud features are disabled', 'error');
+      return;
+    }
+    
     // Set specific loading state for disconnection
     setOperationStates(prev => ({
       ...prev,
@@ -259,6 +281,12 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
   };
 
   const handleCreateNote = async () => {
+    if (!cloudManager) {
+      console.warn('[EasyNotesSidebar] CloudManager not available - feature disabled');
+      showToast('Cloud features are disabled', 'error');
+      return;
+    }
+    
     if (!newNoteTitle.trim()) {
       showToast('Please enter a note title', 'warning');
       return;
@@ -294,6 +322,12 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
   };
 
   const handleOpenNote = async (note: NoteMetadata) => {
+    if (!cloudManager) {
+      console.warn('[EasyNotesSidebar] CloudManager not available - feature disabled');
+      showToast('Cloud features are disabled', 'error');
+      return;
+    }
+    
     // Set specific loading state for this note
     setOperationStates(prev => ({
       ...prev,
@@ -319,6 +353,12 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
   };
 
   const handleSyncNotes = async () => {
+    if (!cloudManager) {
+      console.warn('[EasyNotesSidebar] CloudManager not available - feature disabled');
+      showToast('Cloud features are disabled', 'error');
+      return;
+    }
+    
     setSyncing(true);
     try {
       const syncResult = await cloudManager.syncNotes();
@@ -348,6 +388,12 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
   };
 
   const confirmDeleteNote = async () => {
+    if (!cloudManager) {
+      console.warn('[EasyNotesSidebar] CloudManager not available - feature disabled');
+      showToast('Cloud features are disabled', 'error');
+      return;
+    }
+    
     const note = deleteConfirmModal.noteToDelete;
     if (!note) return;
     

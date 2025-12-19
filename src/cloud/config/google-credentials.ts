@@ -9,18 +9,19 @@
  * Safe environment variable access that works in both Vite and Jest environments
  */
 function getEnvVar(key: string): string | undefined {
-  // In Node.js/Jest environment (check first as it's more reliable)
-  if (typeof process !== 'undefined' && process.env) {
-    return process.env[key];
+  // In Vite environment (browser) - import.meta is available at build time
+  if (typeof window !== 'undefined') {
+    // Use Vite's import.meta.env which is available in browser builds
+    try {
+      return (import.meta as any).env[key];
+    } catch (e) {
+      // Fallback if import.meta is not available
+    }
   }
   
-  // In Vite environment (only when import.meta is available)
-  try {
-    if (typeof window !== 'undefined' && 'import' in window && (window as any).import?.meta?.env) {
-      return (window as any).import.meta.env[key];
-    }
-  } catch (e) {
-    // Ignore import.meta access errors in test environments
+  // In Node.js/Jest environment
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env[key];
   }
   
   return undefined;
@@ -30,18 +31,18 @@ function getEnvVar(key: string): string | undefined {
  * Get current build mode safely
  */
 function getBuildMode(): string {
-  // In Node.js/Jest environment (check first)
-  if (typeof process !== 'undefined' && process.env) {
-    return process.env.NODE_ENV || 'development';
+  // In Vite environment (browser)
+  if (typeof window !== 'undefined') {
+    try {
+      return (import.meta as any).env.MODE || 'development';
+    } catch (e) {
+      // Fallback if import.meta is not available
+    }
   }
   
-  // In Vite environment (only when import.meta is available)
-  try {
-    if (typeof window !== 'undefined' && 'import' in window && (window as any).import?.meta?.env) {
-      return (window as any).import.meta.env.MODE || 'development';
-    }
-  } catch (e) {
-    // Ignore import.meta access errors in test environments
+  // In Node.js/Jest environment
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env.NODE_ENV || 'development';
   }
   
   return 'development';
