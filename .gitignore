@@ -16,6 +16,7 @@ dist-web
 test-deploy
 *.local
 *.kiro
+.kiro/*
 
 # Editor directories and files
 .vscode/*

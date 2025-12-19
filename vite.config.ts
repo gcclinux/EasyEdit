@@ -57,6 +57,14 @@ export default defineConfig({
         cert: fs.readFileSync(certPath)
       }
     }),
+    headers: {
+      // Allow Google OAuth iframe and popup
+      'X-Frame-Options': 'SAMEORIGIN',
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+      'Cross-Origin-Embedder-Policy': 'unsafe-none',
+      // Remove restrictive CSP in development
+      'Content-Security-Policy': ''
+    },
     watch: {
       ignored: [
         '**/build-prebuilt/**',

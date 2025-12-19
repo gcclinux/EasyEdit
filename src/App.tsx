@@ -20,7 +20,9 @@ import {
   FaFileAlt,
   FaLock,
   FaPalette,
-  FaCodeBranch
+  FaCodeBranch,
+  FaCloud,
+  FaSave
 } from 'react-icons/fa';
 import { VscSymbolKeyword } from "react-icons/vsc";
 import { GoTasklist } from "react-icons/go";
@@ -137,6 +139,7 @@ import GitStatusIndicator from './components/GitStatusIndicator';
 import { getGitManager } from './gitManagerWrapper';
 import { gitCredentialManager } from './gitCredentialManager';
 import ToastContainer from './components/ToastContainer';
+import { isFeatureEnabled } from './config/features';
 
 const App = () => {
   const [documentHistory, setDocumentHistory] = useState<HistoryState[]>([]);
@@ -211,6 +214,18 @@ const App = () => {
   const [currentRepoPath, setCurrentRepoPath] = useState<string | null>(null);
   const [currentFilePath, setCurrentFilePath] = useState<string | null>(null);
   const [isGitRepo, setIsGitRepo] = useState(false);
+  
+  // Cloud note state
+  const [currentCloudNote, setCurrentCloudNote] = useState<{
+    noteId: string;
+    title: string;
+    provider: string;
+    providerDisplayName: string;
+    providerIcon: string;
+    lastSaved: Date;
+    hasUnsavedChanges: boolean;
+  } | null>(null);
+  const [sidebarRefreshTrigger, setSidebarRefreshTrigger] = useState(0);
   const [credentialsModalOpen, setCredentialsModalOpen] = useState(false);
   const [masterPasswordModalOpen, setMasterPasswordModalOpen] = useState(false);
   const [isMasterPasswordSetup, setIsMasterPasswordSetup] = useState(false);
@@ -442,41 +457,60 @@ const App = () => {
       // Ctrl+S or Cmd+S
       if ((event.ctrlKey || event.metaKey) && event.key === 's') {
         event.preventDefault();
-
-        // Priority 1: Git repo save (Electron or Web)
-        if (isGitRepo && currentFilePath) {
-          handleGitSave();
-          return;
-        }
-
-        // Priority 2: File System Access API save (Web)
-        const { saveToCurrentFile, getCurrentFileHandle } = await import('./insertSave');
-        const fileHandle = getCurrentFileHandle();
-
-        if (fileHandle) {
-          const success = await saveToCurrentFile(editorContent);
-          if (success) {
-            showToast('File saved successfully!', 'success');
-            return;
-          } else {
-            showToast('Failed to save file', 'error');
-            return;
-          }
-        }
-
-        // Fallback: Show info message
-        showToast('Use File menu to save, or open a file first to enable Ctrl+S', 'info');
+        await handleUniversalSave();
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isGitRepo, currentFilePath, editorContent, currentRepoPath]);
+  }, [isGitRepo, currentFilePath, editorContent, currentRepoPath, currentCloudNote]);
+
+  // Update document title with current filename
+  useEffect(() => {
+    const updateTitle = () => {
+      let title = 'EasyEdit';
+      
+      // Priority 1: Cloud note title
+      if (currentCloudNote) {
+        const unsavedIndicator = currentCloudNote.hasUnsavedChanges ? '• ' : '';
+        title = `${unsavedIndicator}${currentCloudNote.title} - EasyEdit`;
+      }
+      // Priority 2: Local/Git file path
+      else if (currentFilePath) {
+        // Extract filename from path (works for both Windows and Unix paths)
+        const filename = currentFilePath.split(/[/\\]/).pop() || currentFilePath;
+        title = `${filename} - EasyEdit`;
+      }
+      
+      // Update document title (works for both web and Tauri)
+      document.title = title;
+      
+      // For Tauri, also update the window title
+      if (typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__) {
+        (async () => {
+          try {
+            const { getCurrentWindow } = await import('@tauri-apps/api/window');
+            const appWindow = getCurrentWindow();
+            await appWindow.setTitle(title);
+          } catch (error) {
+            console.error('Failed to set Tauri window title:', error);
+          }
+        })();
+      }
+    };
+    
+    updateTitle();
+  }, [currentFilePath, currentCloudNote]);
 
   // Handle change function for the textarea
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     cursorPositionRef.current = e.target.selectionStart;
     setEditorContent(e.target.value);
+    
+    // Track changes for cloud notes
+    if (currentCloudNote && !currentCloudNote.hasUnsavedChanges) {
+      setCurrentCloudNote(prev => prev ? { ...prev, hasUnsavedChanges: true } : null);
+    }
   };
 
   // Web-only mode - no Electron API
@@ -1333,6 +1367,7 @@ const App = () => {
 
       setEditorContent(content);
       setCurrentFilePath(fullPath);
+      setCurrentCloudNote(null); // Clear cloud note state when opening git file
 
       showToast(`Opened: ${filePath}`, 'success');
     } catch (error) {
@@ -1581,6 +1616,74 @@ const App = () => {
     showToast('Repository initialization is not available in web mode. Use "Clone Repository" instead.', 'info');
   };
 
+  // Cloud note save handler
+  const handleCloudNoteSave = async () => {
+    if (!currentCloudNote) {
+      showToast('No cloud note is currently open.', 'warning');
+      return;
+    }
+
+    try {
+      // Import CloudManager dynamically to avoid circular dependencies
+      const { CloudManager } = await import('./cloud/managers/CloudManager');
+      const cloudManager = new CloudManager();
+      
+      await cloudManager.saveNote(currentCloudNote.noteId, editorContent);
+      
+      // Update cloud note state
+      setCurrentCloudNote(prev => prev ? {
+        ...prev,
+        lastSaved: new Date(),
+        hasUnsavedChanges: false
+      } : null);
+      
+      // Trigger sidebar refresh to update timestamps
+      setSidebarRefreshTrigger(prev => {
+        const newValue = prev + 1;
+        console.log('[App] Triggering sidebar refresh, new trigger value:', newValue);
+        return newValue;
+      });
+      
+      showToast(`Saved "${currentCloudNote.title}" to ${currentCloudNote.providerDisplayName}`, 'success');
+    } catch (error) {
+      console.error('Failed to save cloud note:', error);
+      showToast(`Failed to save cloud note: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
+    }
+  };
+
+  // Universal save handler - handles all file types (cloud, git, local)
+  const handleUniversalSave = async () => {
+    // Priority 1: Cloud note save
+    if (currentCloudNote) {
+      await handleCloudNoteSave();
+      return;
+    }
+
+    // Priority 2: Git repo save (Electron or Web)
+    if (isGitRepo && currentFilePath) {
+      handleGitSave();
+      return;
+    }
+
+    // Priority 3: File System Access API save (Web)
+    const { saveToCurrentFile, getCurrentFileHandle } = await import('./insertSave');
+    const fileHandle = getCurrentFileHandle();
+
+    if (fileHandle) {
+      const success = await saveToCurrentFile(editorContent);
+      if (success) {
+        showToast('File saved successfully!', 'success');
+        return;
+      } else {
+        showToast('Failed to save file', 'error');
+        return;
+      }
+    }
+
+    // Fallback: Show save as dialog
+    showToast('No file is currently open. Use "Save As" to save to a new file.', 'info');
+  };
+
   const handleSaveAsPDF = () => {
     saveAsPDF(editorContent);
   };
@@ -1605,6 +1708,7 @@ const App = () => {
     // 1. Clear content and state
     handleClear(setEditorContent);
     setCurrentFilePath(null);
+    setCurrentCloudNote(null); // Clear cloud note state
     setGitStatus({ branch: '', modifiedCount: 0, status: 'clean' });
 
     // 2. Immediately prompt to save
@@ -1722,6 +1826,7 @@ const App = () => {
                       // Set file path for both Electron and Web
                       if (filePath) {
                         setCurrentFilePath(filePath);
+                        setCurrentCloudNote(null); // Clear cloud note state when opening regular file
                         console.log('[App] File path set:', filePath);
 
                         // Show helpful message for web users about Git features
@@ -1772,6 +1877,17 @@ const App = () => {
               >
                 <div className="hdr-title"><BsFileEarmarkLockFill /> Open Encrypted</div>
                 <div className="hdr-desc">Open encrypted .sstp file</div>
+              </button>
+              <div className="hdr-sep" />
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  handleUniversalSave();
+                  setShowHelpDropdown(false);
+                }}
+              >
+                <div className="hdr-title"><FaSave /> Save</div>
+                <div className="hdr-desc">Save current file (Ctrl+S)</div>
               </button>
               <div className="hdr-sep" />
               <button className="dropdown-item" onClick={() => { setFeaturesOpen(true); setShowHelpDropdown(false); }}>
@@ -1845,21 +1961,24 @@ const App = () => {
             </div>, document.body
           )}
         </div>
-        <div className="dropdown-container">
-          <button
-            className="help-menubar-btn"
-            ref={el => { easyNotesButtonRef.current = el; }}
-            onClick={(e) => {
-              e.preventDefault();
-              closeAllDropdowns();
-              setShowEasyNotesSidebar(!showEasyNotesSidebar);
-            }}
-            title="EasyNotes"
-            style={{ backgroundColor: showEasyNotesSidebar ? '#4a5568' : undefined }}
-          >
-            <FaStickyNote /> &nbsp; EasyNotes
-          </button>
-        </div>
+        {/* EasyNotes Feature - Controlled by feature flag */}
+        {isFeatureEnabled('EASY_NOTES') && (
+          <div className="dropdown-container">
+            <button
+              className="help-menubar-btn"
+              ref={el => { easyNotesButtonRef.current = el; }}
+              onClick={(e) => {
+                e.preventDefault();
+                closeAllDropdowns();
+                setShowEasyNotesSidebar(!showEasyNotesSidebar);
+              }}
+              title="EasyNotes"
+              style={{ backgroundColor: showEasyNotesSidebar ? '#4a5568' : undefined }}
+            >
+              <FaStickyNote /> &nbsp; EasyNotes
+            </button>
+          </div>
+        )}
         <div className="dropdown-container">
           <button
             className="help-menubar-btn"
@@ -1919,6 +2038,9 @@ const App = () => {
             status={gitStatus.status}
           />
         )}
+{/* Cloud note display removed - note name now shown in title bar only */}
+        {/* Regular file display removed - filename now shown in title bar only */}
+        {/* If there was a display for currentFilePath here, it has been removed */}
         <button className="menu-item fixed-menubar-btn" onClick={toggleView}>
           <FaExchangeAlt /> &nbsp; {getCurrentViewMode()}
         </button>
@@ -2071,6 +2193,22 @@ const App = () => {
                 <div className="hdr-title"><FaLock /> Export Encrypted</div>
                 <div className="hdr-desc">Save as encrypted (.sstp) file</div>
               </button>
+              {currentCloudNote && (
+                <>
+                  <div className="hdr-sep" />
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      handleCloudNoteSave();
+                      setShowExportsDropdown(false);
+                      setExportsPos(null);
+                    }}
+                  >
+                    <div className="hdr-title"><FaCloud /> Save to Cloud</div>
+                    <div className="hdr-desc">Save to {currentCloudNote.providerDisplayName}</div>
+                  </button>
+                </>
+              )}
             </div>,
             document.body
           )}
@@ -2559,12 +2697,51 @@ const App = () => {
 
         <p></p>
 
-        {/* EasyNotes Sidebar */}
-        <EasyNotesSidebar
-          showEasyNotesSidebar={showEasyNotesSidebar}
-          setShowEasyNotesSidebar={setShowEasyNotesSidebar}
-          showToast={showToast}
-        />
+        {/* EasyNotes Sidebar - Feature flag controlled */}
+        {isFeatureEnabled('EASY_NOTES') && (
+          <EasyNotesSidebar
+            showEasyNotesSidebar={showEasyNotesSidebar}
+            setShowEasyNotesSidebar={setShowEasyNotesSidebar}
+            showToast={showToast}
+            currentCloudNote={currentCloudNote}
+            refreshTrigger={sidebarRefreshTrigger}
+            onNoteDelete={(noteId: string) => {
+              // If the deleted note is currently open, clear the editor
+              if (currentCloudNote?.noteId === noteId) {
+                setEditorContent('');
+                setCurrentCloudNote(null);
+                setCurrentFilePath(null);
+              }
+            }}
+            onNoteSelect={async (noteId: string, content: string, noteMetadata?: any) => {
+              setEditorContent(content);
+              
+              // Clear current file path since we're opening a cloud note
+              setCurrentFilePath(null);
+              
+              // Set cloud note state if metadata is provided
+              if (noteMetadata) {
+                // Import CloudManager to get provider metadata
+                const { CloudManager } = await import('./cloud/managers/CloudManager');
+                const cloudManager = new CloudManager();
+                const providerMetadata = await cloudManager.getProviderMetadata(noteMetadata.provider);
+                
+                setCurrentCloudNote({
+                  noteId,
+                  title: noteMetadata.title,
+                  provider: noteMetadata.provider,
+                  providerDisplayName: providerMetadata?.displayName || noteMetadata.provider,
+                  providerIcon: providerMetadata?.icon || '📄',
+                  lastSaved: new Date(noteMetadata.lastSynced),
+                  hasUnsavedChanges: false
+                });
+              }
+              
+              // Add to history for undo/redo functionality
+              addToHistory(content, cursorPositionRef.current, documentHistory, historyIndex, setDocumentHistory, setHistoryIndex);
+            }}
+          />
+        )}
 
         <div
           className={getEditorPreviewContainerClass()}

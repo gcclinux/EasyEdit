@@ -574,7 +574,7 @@ export const addToHistory = (
   setDocumentHistory: (history: HistoryState[]) => void,
   setHistoryIndex: (index: number) => void
 ): void => {
-  const newHistory = documentHistory.slice(0, historyIndex + 1);
+  const newHistory = Array.isArray(documentHistory) ? documentHistory.slice(0, historyIndex + 1) : [];
   setDocumentHistory([...newHistory, { content, cursorPosition: cursorPos }]);
   setHistoryIndex(newHistory.length);
 };
