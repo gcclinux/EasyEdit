@@ -8,8 +8,10 @@ import { MetadataManager } from './MetadataManager';
 import { FileSynchronizer } from './FileSynchronizer';
 // CloudCredentialManager is used by individual providers, not directly by CloudManager
 import { GISGoogleDriveProvider } from '../providers/GISGoogleDriveProvider';
+import { TauriGoogleDriveProvider } from '../providers/TauriGoogleDriveProvider';
 import { MockGoogleDriveProvider } from '../providers/MockGoogleDriveProvider';
 import { SimpleGoogleDriveProvider } from '../providers/SimpleGoogleDriveProvider';
+import { isTauriEnvironment } from '../../utils/environment';
 import { ErrorHandler } from '../utils/ErrorHandler';
 import { cloudToastService } from '../utils/CloudToastService';
 import { offlineManager } from '../utils/OfflineManager';
@@ -26,9 +28,16 @@ export class CloudManager {
     this.fileSynchronizer = new FileSynchronizer();
     // Credential management is handled by individual providers
     
-    // Register available providers
-    // Use the GIS-based provider for better OAuth compatibility
-    this.registerProvider(new GISGoogleDriveProvider());
+    // Register available providers based on environment
+    if (isTauriEnvironment()) {
+      // Use Tauri-specific provider that handles OAuth differently
+      console.log('[CloudManager] Detected Tauri environment, using TauriGoogleDriveProvider');
+      this.registerProvider(new TauriGoogleDriveProvider());
+    } else {
+      // Use the GIS-based provider for better OAuth compatibility in web browsers
+      console.log('[CloudManager] Detected web environment, using GISGoogleDriveProvider');
+      this.registerProvider(new GISGoogleDriveProvider());
+    }
     
     // Other providers available for testing if needed
     // this.registerProvider(new SimpleGoogleDriveProvider());
