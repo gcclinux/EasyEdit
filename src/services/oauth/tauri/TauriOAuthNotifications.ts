@@ -6,35 +6,9 @@
 
 import type { OAuthResult } from '../interfaces';
 
-// Conditional Tauri API imports
-let sendNotification: any;
-let isPermissionGranted: any;
-let requestPermission: any;
-
-// Check if running in Tauri environment
-const isTauriEnvironment = typeof window !== 'undefined' && (window as any).__TAURI__;
-
-// Lazy load Tauri APIs
-async function loadTauriNotificationAPI() {
-  if (!isTauriEnvironment) {
-    return false;
-  }
-
-  try {
-    // Try to import Tauri notification API, but don't fail if it's not available
-    const module = await import('@tauri-apps/api/notification').catch(() => null);
-    if (module) {
-      sendNotification = module.sendNotification;
-      isPermissionGranted = module.isPermissionGranted;
-      requestPermission = module.requestPermission;
-      return true;
-    }
-    return false;
-  } catch (error) {
-    console.warn('Failed to load Tauri notification API:', error);
-    return false;
-  }
-}
+// Static Tauri API imports
+import { sendNotification, isPermissionGranted, requestPermission } from '@tauri-apps/api/notification';
+import { isTauriEnvironment } from '../../../utils/environment';
 
 /**
  * OAuth notification types
@@ -89,16 +63,15 @@ export class TauriOAuthNotifications {
    * Initialize notification system
    */
   private async initializeNotifications(): Promise<void> {
-    const apiLoaded = await loadTauriNotificationAPI();
-    if (!apiLoaded) {
-      console.warn('Tauri notification API not available');
+    if (!isTauriEnvironment()) {
+      console.warn('Tauri notification notifications disabled (not in Tauri environment)');
       return;
     }
 
     try {
       // Check if notification permission is already granted
       this.permissionGranted = await isPermissionGranted();
-      
+
       if (!this.permissionGranted) {
         // Request notification permission
         const permission = await requestPermission();
@@ -122,7 +95,7 @@ export class TauriOAuthNotifications {
    * Send system notification
    */
   private async sendSystemNotification(data: OAuthNotificationData): Promise<void> {
-    if (!isTauriEnvironment || !sendNotification) {
+    if (!isTauriEnvironment()) {
       console.log(`OAuth Notification: ${data.title} - ${data.message}`);
       return;
     }
@@ -150,7 +123,7 @@ export class TauriOAuthNotifications {
    */
   async notifyAuthStarted(provider: string): Promise<void> {
     const providerName = this.getProviderDisplayName(provider);
-    
+
     const notification: OAuthNotificationData = {
       type: OAuthNotificationType.AUTH_STARTED,
       provider,
@@ -169,7 +142,7 @@ export class TauriOAuthNotifications {
    */
   async notifyAuthSuccess(provider: string, result: OAuthResult): Promise<void> {
     const providerName = this.getProviderDisplayName(provider);
-    
+
     const notification: OAuthNotificationData = {
       type: OAuthNotificationType.AUTH_SUCCESS,
       provider,
@@ -189,7 +162,7 @@ export class TauriOAuthNotifications {
   async notifyAuthFailed(provider: string, error: string, errorDescription?: string): Promise<void> {
     const providerName = this.getProviderDisplayName(provider);
     const message = errorDescription || error || 'Authentication failed';
-    
+
     const notification: OAuthNotificationData = {
       type: OAuthNotificationType.AUTH_FAILED,
       provider,
@@ -200,8 +173,8 @@ export class TauriOAuthNotifications {
       actionText: 'Retry',
       actionCallback: () => {
         // Emit event for retry
-        window.dispatchEvent(new CustomEvent('oauth-retry-requested', { 
-          detail: { provider } 
+        window.dispatchEvent(new CustomEvent('oauth-retry-requested', {
+          detail: { provider }
         }));
       }
     };
@@ -215,7 +188,7 @@ export class TauriOAuthNotifications {
    */
   async notifyTokenRefreshed(provider: string): Promise<void> {
     const providerName = this.getProviderDisplayName(provider);
-    
+
     const notification: OAuthNotificationData = {
       type: OAuthNotificationType.TOKEN_REFRESHED,
       provider,
@@ -234,20 +207,20 @@ export class TauriOAuthNotifications {
    */
   async notifyTokenExpired(provider: string, requiresReauth: boolean = true): Promise<void> {
     const providerName = this.getProviderDisplayName(provider);
-    
+
     const notification: OAuthNotificationData = {
       type: OAuthNotificationType.TOKEN_EXPIRED,
       provider,
       title: 'Authentication Expired',
-      message: requiresReauth 
+      message: requiresReauth
         ? `${providerName} authentication has expired. Please sign in again to continue using cloud features.`
         : `${providerName} authentication has expired but will be refreshed automatically.`,
       isError: true,
       requiresAction: requiresReauth,
       actionText: requiresReauth ? 'Sign In Again' : undefined,
       actionCallback: requiresReauth ? () => {
-        window.dispatchEvent(new CustomEvent('oauth-reauth-requested', { 
-          detail: { provider } 
+        window.dispatchEvent(new CustomEvent('oauth-reauth-requested', {
+          detail: { provider }
         }));
       } : undefined
     };
@@ -261,7 +234,7 @@ export class TauriOAuthNotifications {
    */
   async notifyLogoutSuccess(provider: string): Promise<void> {
     const providerName = this.getProviderDisplayName(provider);
-    
+
     const notification: OAuthNotificationData = {
       type: OAuthNotificationType.LOGOUT_SUCCESS,
       provider,
@@ -280,7 +253,7 @@ export class TauriOAuthNotifications {
    */
   async notifyConfigError(provider: string, error: string): Promise<void> {
     const providerName = this.getProviderDisplayName(provider);
-    
+
     const notification: OAuthNotificationData = {
       type: OAuthNotificationType.CONFIG_ERROR,
       provider,
@@ -290,8 +263,8 @@ export class TauriOAuthNotifications {
       requiresAction: true,
       actionText: 'Check Settings',
       actionCallback: () => {
-        window.dispatchEvent(new CustomEvent('oauth-config-requested', { 
-          detail: { provider } 
+        window.dispatchEvent(new CustomEvent('oauth-config-requested', {
+          detail: { provider }
         }));
       }
     };
@@ -303,9 +276,9 @@ export class TauriOAuthNotifications {
    * Show custom OAuth notification
    */
   async notifyCustom(
-    provider: string, 
-    title: string, 
-    message: string, 
+    provider: string,
+    title: string,
+    message: string,
     isError: boolean = false,
     actionText?: string,
     actionCallback?: () => void
@@ -335,8 +308,8 @@ export class TauriOAuthNotifications {
       'github': 'GitHub'
     };
 
-    return displayNames[provider.toLowerCase()] || 
-           provider.charAt(0).toUpperCase() + provider.slice(1);
+    return displayNames[provider.toLowerCase()] ||
+      provider.charAt(0).toUpperCase() + provider.slice(1);
   }
 
   /**
@@ -350,16 +323,14 @@ export class TauriOAuthNotifications {
    * Request notification permission
    */
   async requestNotificationPermission(): Promise<boolean> {
-    const apiLoaded = await loadTauriNotificationAPI();
-    if (!apiLoaded) {
-      console.warn('Tauri notification API not available');
+    if (!isTauriEnvironment()) {
       return false;
     }
 
     try {
       const permission = await requestPermission();
       this.permissionGranted = permission === 'granted';
-      
+
       // Process queued notifications if permission granted
       if (this.permissionGranted && this.notificationQueue.length > 0) {
         for (const notification of this.notificationQueue) {
@@ -367,7 +338,7 @@ export class TauriOAuthNotifications {
         }
         this.notificationQueue = [];
       }
-      
+
       return this.permissionGranted;
     } catch (error) {
       console.error('Failed to request notification permission:', error);

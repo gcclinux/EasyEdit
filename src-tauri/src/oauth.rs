@@ -3,6 +3,8 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 use tauri::{AppHandle, Emitter, State};
 use uuid::Uuid;
+use tokio::net::TcpListener;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 /// OAuth token structure for Tauri communication
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -318,4 +320,61 @@ pub async fn oauth_get_config_status(
     
     // Return empty map - frontend will populate through events
     Ok(HashMap::new())
+}
+
+/// Start a local HTTP server for OAuth callback
+#[tauri::command]
+pub async fn oauth_start_server(
+    app_handle: AppHandle,
+    port: u16,
+) -> Result<String, String> {
+    let addr = format!("127.0.0.1:{}", port);
+    
+    // Bind first to ensure port is available and to get the listener
+    // This allows us to return an error if the port is in use
+    let listener = tokio::net::TcpListener::bind(&addr).await
+        .map_err(|e| format!("Failed to bind to port {}: {}", port, e))?;
+        
+    // Spawn task to handle the connection
+    tauri::async_runtime::spawn(async move {
+        // Accept a single connection
+        if let Ok((mut socket, _)) = listener.accept().await {
+            let mut buffer = [0; 2048]; // Buffer for request
+            if let Ok(n) = tokio::io::AsyncReadExt::read(&mut socket, &mut buffer).await {
+                let request = String::from_utf8_lossy(&buffer[..n]);
+                
+                let url_part = request.lines().next().unwrap_or("");
+                
+                let mut callback_params = std::collections::HashMap::new();
+                
+                if let Some(idx) = url_part.find('?') {
+                    let query = &url_part[idx+1..];
+                    if let Some(end_idx) = query.find(' ') {
+                        let query_str = &query[..end_idx];
+                        for pair in query_str.split('&') {
+                            if let Some((key, value)) = pair.split_once('=') {
+                                callback_params.insert(key.to_string(), value.to_string());
+                            }
+                        }
+                    }
+                }
+                
+                // Send nice response
+                let response_body = "<html><body><h1>Authenticated!</h1><p>You can close this window now.</p><script>window.close()</script></body></html>";
+                let response = format!(
+                    "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}", 
+                    response_body.len(), 
+                    response_body
+                );
+                
+                let _ = tokio::io::AsyncWriteExt::write_all(&mut socket, response.as_bytes()).await;
+                
+                // Emit event with params
+                let _ = app_handle.emit("oauth-server-callback", callback_params);
+            }
+        }
+    });
+
+    // Use 127.0.0.1 to match bind address and avoid ambiguity
+    Ok(format!("http://127.0.0.1:{}/callback", port))
 }

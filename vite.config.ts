@@ -37,6 +37,13 @@ export default defineConfig({
       // Use browser-safe stubs for Node.js-only OAuth components
       './CallbackServer': './CallbackServer.browser',
       './BrowserLauncher': './BrowserLauncher.browser',
+      // Explicit aliases for Tauri API to ensure resolution
+      '@tauri-apps/api/event': path.resolve(__dirname, 'node_modules/@tauri-apps/api/event.js'),
+      '@tauri-apps/api/core': path.resolve(__dirname, 'node_modules/@tauri-apps/api/core.js'),
+      '@tauri-apps/api/notification': path.resolve(__dirname, 'src/stubs/tauri-notification.ts'),
+      '@tauri-apps/plugin-shell': path.resolve(__dirname, 'node_modules/@tauri-apps/plugin-shell/dist-js/index.js'),
+      '@tauri-apps/plugin-fs': path.resolve(__dirname, 'node_modules/@tauri-apps/plugin-fs/dist-js/index.js'),
+      '@tauri-apps/plugin-dialog': path.resolve(__dirname, 'node_modules/@tauri-apps/plugin-dialog/dist-js/index.js'),
     },
   },
   ssr: {
@@ -88,9 +95,6 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       external: [
-        '@tauri-apps/api/core',
-        '@tauri-apps/api/event',
-        '@tauri-apps/api/notification',
         'crypto',
         'http',
         'url',

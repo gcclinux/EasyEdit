@@ -4,40 +4,15 @@
  * Requirements: 1.1, 1.5, 6.1, 6.4
  */
 
-import type { 
-  OAuthTokens, 
-  OAuthResult, 
-  AuthenticationState 
+import type {
+  OAuthTokens,
+  OAuthResult
 } from '../interfaces';
 
-// Conditional Tauri API imports
-let invoke: any;
-let listen: any;
-type UnlistenFn = () => void;
-
-// Check if running in Tauri environment
-const isTauriEnvironment = typeof window !== 'undefined' && window.__TAURI__;
-
-// Lazy load Tauri APIs
-async function loadTauriAPIs() {
-  if (!isTauriEnvironment) {
-    return false;
-  }
-
-  try {
-    const [coreModule, eventModule] = await Promise.all([
-      import('@tauri-apps/api/core'),
-      import('@tauri-apps/api/event')
-    ]);
-    
-    invoke = coreModule.invoke;
-    listen = eventModule.listen;
-    return true;
-  } catch (error) {
-    console.warn('Failed to load Tauri APIs:', error);
-    return false;
-  }
-}
+// Static Tauri API imports
+import { invoke } from '@tauri-apps/api/core';
+import { listen, type UnlistenFn } from '@tauri-apps/api/event';
+import { isTauriEnvironment } from '../../../utils/environment';
 
 /**
  * Tauri-specific OAuth token structure
@@ -140,15 +115,13 @@ export class TauriOAuthBridge {
    * Check if Tauri APIs are available
    */
   private async checkTauriAvailability(): Promise<void> {
-    if (!isTauriEnvironment) {
+    if (!isTauriEnvironment()) {
       throw new Error('Tauri OAuth bridge not available in this environment');
     }
 
+    // Check mostly symbolic if static imports are used, but keeps bridge safe
     if (!invoke) {
-      const apiLoaded = await loadTauriAPIs();
-      if (!apiLoaded) {
-        throw new Error('Failed to load Tauri APIs');
-      }
+      console.error('Tauri APIs not available');
     }
   }
 
@@ -156,8 +129,7 @@ export class TauriOAuthBridge {
    * Setup event listeners for OAuth events from Tauri backend
    */
   private async setupEventListeners(): Promise<void> {
-    const apiLoaded = await loadTauriAPIs();
-    if (!apiLoaded) {
+    if (!isTauriEnvironment()) {
       console.warn('Tauri event API not available');
       return;
     }
@@ -174,7 +146,7 @@ export class TauriOAuthBridge {
       const flowCompletedUnlisten = await listen('oauth-flow-completed', (event: any) => {
         const { flow_id, result } = event.payload;
         const callback = this.flowCallbacks.get(flow_id);
-        
+
         if (callback) {
           const oauthResult: OAuthResult = {
             success: result.success,
@@ -183,13 +155,13 @@ export class TauriOAuthBridge {
             error: result.error,
             errorDescription: result.error_description
           };
-          
+
           if (result.success) {
             callback.resolve(oauthResult);
           } else {
             callback.reject(new Error(result.error || 'OAuth authentication failed'));
           }
-          
+
           this.flowCallbacks.delete(flow_id);
         }
       });
@@ -198,7 +170,7 @@ export class TauriOAuthBridge {
       // Listen for OAuth error events
       const errorUnlisten = await listen('oauth-error', (event: any) => {
         const { flow_id, error, error_description } = event.payload;
-        
+
         if (flow_id) {
           const callback = this.flowCallbacks.get(flow_id);
           if (callback) {
@@ -206,7 +178,7 @@ export class TauriOAuthBridge {
             this.flowCallbacks.delete(flow_id);
           }
         }
-        
+
         console.error('OAuth error:', error, error_description);
       });
       this.eventListeners.push(errorUnlisten);
@@ -256,11 +228,11 @@ export class TauriOAuthBridge {
       };
 
       const flowId = await invoke('oauth_authenticate', { request }) as string;
-      
+
       // Return a promise that will be resolved when the flow completes
       return new Promise<OAuthResult>((resolve, reject) => {
         this.flowCallbacks.set(flowId, { resolve, reject });
-        
+
         // Set a timeout for the authentication flow
         setTimeout(() => {
           if (this.flowCallbacks.has(flowId)) {
@@ -301,11 +273,11 @@ export class TauriOAuthBridge {
     try {
       const statusList = await invoke('oauth_get_all_status') as TauriOAuthStatus[];
       const statusMap: Record<string, boolean> = {};
-      
+
       for (const status of statusList) {
         statusMap[status.provider] = status.is_authenticated;
       }
-      
+
       return statusMap;
     } catch (error) {
       console.error('Failed to get OAuth status for all providers:', error);

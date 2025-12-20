@@ -3,9 +3,7 @@ import { CloudCredentials } from '../interfaces';
 import { GOOGLE_DRIVE_CONFIG } from '../config/google-credentials';
 
 // Check if we're in Tauri environment
-const isTauriEnvironment = () => {
-  return typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__;
-};
+import { isTauriEnvironment } from '../../utils/environment';
 
 interface StoredCloudCredentials {
   encrypted: string; // Base64 encoded encrypted data
@@ -20,7 +18,7 @@ const CLOUD_MASTER_KEY_STORAGE = 'easyedit_cloud_master_key';
 export class CloudCredentialManager {
   private masterKey: string | null = null;
   private oauthManager: any = null; // Will be initialized conditionally
-  
+
   constructor() {
     // Initialize OAuth manager only in Tauri environment
     if (isTauriEnvironment()) {
@@ -33,9 +31,9 @@ export class CloudCredentialManager {
       // Dynamically import OAuth components to avoid loading in web environment
       const { OAuthManager } = await import('../../services/oauth/core/OAuthManager');
       const { GoogleOAuthProvider } = await import('../../services/oauth/providers/GoogleOAuthProvider');
-      
+
       this.oauthManager = new OAuthManager();
-      
+
       // Register OAuth providers
       if (GOOGLE_DRIVE_CONFIG.CLIENT_ID) {
         const googleProvider = new GoogleOAuthProvider(GOOGLE_DRIVE_CONFIG.CLIENT_ID);
@@ -54,7 +52,7 @@ export class CloudCredentialManager {
     if (!password || password.length < 8) {
       throw new Error('Master password must be at least 8 characters long');
     }
-    
+
     this.masterKey = password;
     // Store a hash of the master key to verify it later
     const hash = await this.hashPassword(password);
@@ -69,7 +67,7 @@ export class CloudCredentialManager {
     if (!storedHash) {
       return false;
     }
-    
+
     const hash = await this.hashPassword(password);
     return hash === storedHash;
   }
@@ -98,7 +96,7 @@ export class CloudCredentialManager {
    */
   async saveCredentials(credentials: CloudCredentials): Promise<void> {
     console.log('[CloudCredentialManager] Saving credentials for provider:', credentials.provider, 'userId:', credentials.userId);
-    
+
     try {
       // Try to save to OAuth system first (only if available in Tauri environment)
       if (this.oauthManager) {
@@ -111,7 +109,7 @@ export class CloudCredentialManager {
             scope: credentials.scope || '',
             tokenType: 'Bearer'
           };
-          
+
           try {
             // Store in OAuth system using token storage directly
             const tokenStorage = (this.oauthManager as any).tokenStorage;
@@ -125,11 +123,11 @@ export class CloudCredentialManager {
           }
         }
       }
-      
+
       // Fallback to legacy storage
       console.log('[CloudCredentialManager] Using legacy credential storage');
       await this.saveLegacyCredentials(credentials);
-      
+
     } catch (error) {
       console.error('[CloudCredentialManager] Error saving to OAuth system, falling back to legacy:', error);
       // Fallback to legacy storage
@@ -151,7 +149,7 @@ export class CloudCredentialManager {
       // Get existing credentials
       const existingCredentials = await this.getAllStoredCredentials();
       console.log('[CloudCredentialManager] Existing legacy credentials count:', existingCredentials.length);
-      
+
       // Serialize credentials to JSON
       const jsonString = JSON.stringify({
         provider: credentials.provider,
@@ -163,7 +161,7 @@ export class CloudCredentialManager {
 
       // Encrypt the JSON string
       const encrypted = encryptTextToBytes(jsonString, this.masterKey);
-      
+
       // Convert to base64 for storage
       const base64 = this.uint8ArrayToBase64(encrypted);
 
@@ -183,11 +181,11 @@ export class CloudCredentialManager {
       console.log('[CloudCredentialManager] Saving to localStorage, total credentials:', updatedCredentials.length);
       localStorage.setItem(CLOUD_STORAGE_KEY, JSON.stringify(updatedCredentials));
       console.log('[CloudCredentialManager] Successfully saved legacy credentials to localStorage');
-      
+
       // Verify the save worked
       const verification = localStorage.getItem(CLOUD_STORAGE_KEY);
       console.log('[CloudCredentialManager] Verification - localStorage contains:', !!verification);
-      
+
     } catch (error) {
       console.error('[CloudCredentialManager] Failed to save legacy credentials:', error);
       throw new Error(`Failed to save credentials: ${(error as Error).message}`);
@@ -222,11 +220,11 @@ export class CloudCredentialManager {
           }
         }
       }
-      
+
       // Fallback to legacy credential storage
       console.log('[CloudCredentialManager] No OAuth credentials found, checking legacy storage for provider:', provider);
       return await this.getLegacyCredentials(provider, userId);
-      
+
     } catch (error) {
       console.error('[CloudCredentialManager] Error retrieving credentials:', error);
       // Fallback to legacy system on errors
@@ -249,14 +247,14 @@ export class CloudCredentialManager {
       const storedCredentials = await this.getAllStoredCredentials();
       console.log('[CloudCredentialManager] Looking for legacy credentials for provider:', provider, 'userId:', userId);
       console.log('[CloudCredentialManager] Available legacy credentials:', storedCredentials.map(c => ({ provider: c.provider, userId: c.userId, hasToken: !!c.encrypted })));
-      
+
       // Find credentials for the specified provider and user
       // If no userId is specified, find the first matching provider
-      const stored = storedCredentials.find(cred => 
-        cred.provider === provider && 
+      const stored = storedCredentials.find(cred =>
+        cred.provider === provider &&
         (userId === undefined || cred.userId === userId)
       );
-      
+
       console.log('[CloudCredentialManager] Found stored legacy credentials:', !!stored);
 
       if (!stored) {
@@ -276,9 +274,9 @@ export class CloudCredentialManager {
       // Decrypt credentials
       const encryptedBytes = this.base64ToUint8Array(stored.encrypted);
       const decryptedString = decryptBytesToText(encryptedBytes, this.masterKey);
-      
+
       const credentials = JSON.parse(decryptedString);
-      
+
       return {
         provider: credentials.provider,
         accessToken: credentials.accessToken,
@@ -336,8 +334,8 @@ export class CloudCredentialManager {
     }
 
     const storedCredentials = await this.getAllStoredCredentials();
-    return storedCredentials.some(cred => 
-      cred.provider === provider && 
+    return storedCredentials.some(cred =>
+      cred.provider === provider &&
       cred.userId === userId
     );
   }
@@ -367,7 +365,7 @@ export class CloudCredentialManager {
     // Also remove from legacy storage
     try {
       const storedCredentials = await this.getAllStoredCredentials();
-      const filteredCredentials = storedCredentials.filter(cred => 
+      const filteredCredentials = storedCredentials.filter(cred =>
         !(cred.provider === provider && cred.userId === userId)
       );
 
@@ -453,7 +451,7 @@ export class CloudCredentialManager {
 
     const storedCredentials = await this.getAllStoredCredentials();
     const now = new Date();
-    
+
     return storedCredentials
       .filter(cred => cred.expiresAt && new Date(cred.expiresAt) <= now)
       .map(cred => ({ provider: cred.provider, userId: cred.userId }));

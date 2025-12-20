@@ -57,7 +57,8 @@ pub fn run() {
             oauth_get_last_error,
             oauth_clear_errors,
             oauth_validate_config,
-            oauth_get_config_status
+            oauth_get_config_status,
+            oauth_start_server
         ])
         .setup(|app| {
             // Handle file opening on startup

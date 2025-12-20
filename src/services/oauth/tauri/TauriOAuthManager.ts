@@ -7,34 +7,16 @@
 import { OAuthManager } from '../core/OAuthManager';
 import { TauriOAuthBridge, tauriOAuthBridge } from './TauriOAuthBridge';
 import { tauriOAuthNotifications } from './TauriOAuthNotifications';
-import type { 
-  OAuthResult, 
-  OAuthConfig,
-  OAuthProvider
+import { TauriCallbackServer } from './TauriCallbackServer';
+import { TauriBrowserLauncher } from './TauriBrowserLauncher';
+import type {
+  OAuthResult,
+  OAuthConfig
 } from '../interfaces';
 
-// Conditional Tauri API imports
-let listen: any;
-type UnlistenFn = () => void;
-
-// Check if running in Tauri environment
-const isTauriEnvironment = typeof window !== 'undefined' && window.__TAURI__;
-
-// Lazy load Tauri event API
-async function loadTauriEventAPI() {
-  if (!isTauriEnvironment) {
-    return false;
-  }
-
-  try {
-    const module = await import('@tauri-apps/api/event');
-    listen = module.listen;
-    return true;
-  } catch (error) {
-    console.warn('Failed to load Tauri event API:', error);
-    return false;
-  }
-}
+// Static Tauri API imports
+import { listen, type UnlistenFn } from '@tauri-apps/api/event';
+import { isTauriEnvironment } from '../../../utils/environment';
 
 /**
  * Tauri-specific OAuth Manager that handles desktop OAuth flows
@@ -46,6 +28,9 @@ export class TauriOAuthManager extends OAuthManager {
 
   constructor(config?: Partial<OAuthConfig>) {
     super(config);
+    // Inject Tauri-specific callback server and browser launcher
+    (this as any).callbackServer = new TauriCallbackServer(config?.callbackServer);
+    (this as any).browserLauncher = new TauriBrowserLauncher();
     this.tauriBridge = tauriOAuthBridge;
     this.initializeTauriIntegration();
   }
@@ -71,8 +56,7 @@ export class TauriOAuthManager extends OAuthManager {
    * Setup event handlers for Tauri OAuth events
    */
   private async setupTauriEventHandlers(): Promise<void> {
-    const apiLoaded = await loadTauriEventAPI();
-    if (!apiLoaded) {
+    if (!isTauriEnvironment()) {
       console.warn('Tauri event API not available');
       return;
     }
@@ -80,42 +64,42 @@ export class TauriOAuthManager extends OAuthManager {
     try {
       // Handle OAuth flow start requests from Tauri
       const flowStartedUnlisten = await listen('oauth-flow-started', async (event: any) => {
-        const { flow_id, provider, force_reauth } = event.payload;
+        const { flow_id, provider } = event.payload;
         console.log(`Starting OAuth flow ${flow_id} for provider ${provider}`);
-        
+
         // Show authentication started notification
         await tauriOAuthNotifications.notifyAuthStarted(provider);
-        
+
         try {
           // Use the base OAuth manager to handle the actual authentication
           const result = await super.authenticate(provider);
-          
+
           // Show success or failure notification
           if (result.success) {
             await tauriOAuthNotifications.notifyAuthSuccess(provider, result);
           } else {
             await tauriOAuthNotifications.notifyAuthFailed(
-              provider, 
+              provider,
               result.error || 'Authentication failed',
               result.errorDescription
             );
           }
-          
+
           // Complete the flow through Tauri bridge
           await this.tauriBridge.completeFlow(flow_id, result);
-          
+
         } catch (error) {
           console.error(`OAuth flow ${flow_id} failed:`, error);
-          
+
           // Show failure notification
           await tauriOAuthNotifications.notifyAuthFailed(
             provider,
             'authentication_failed',
             error instanceof Error ? error.message : 'Unknown error'
           );
-          
+
           await this.tauriBridge.handleError(
-            flow_id, 
+            flow_id,
             'authentication_failed',
             error instanceof Error ? error.message : 'Unknown error'
           );
@@ -126,15 +110,15 @@ export class TauriOAuthManager extends OAuthManager {
       // Handle status requests from Tauri
       const statusRequestedUnlisten = await listen('oauth-status-requested', async (event: any) => {
         const { provider } = event.payload;
-        
+
         try {
           const isAuthenticated = await super.isAuthenticated(provider);
-          const tokens = await super.getValidTokens(provider);
-          
+          // const tokens = await super.getValidTokens(provider);
+
           // Update Tauri with status information
           // Note: In a real implementation, you'd emit this back to Tauri
           console.log(`OAuth status for ${provider}: ${isAuthenticated}`);
-          
+
         } catch (error) {
           console.error(`Failed to get OAuth status for ${provider}:`, error);
         }
@@ -146,7 +130,7 @@ export class TauriOAuthManager extends OAuthManager {
         try {
           const status = await super.getAuthenticationStatus();
           console.log('OAuth status for all providers:', status);
-          
+
         } catch (error) {
           console.error('Failed to get OAuth status for all providers:', error);
         }
@@ -155,13 +139,13 @@ export class TauriOAuthManager extends OAuthManager {
 
       // Handle logout requests from Tauri
       const logoutRequestedUnlisten = await listen('oauth-logout-requested', async (event: any) => {
-        const { provider, revoke_tokens } = event.payload;
-        
+        const { provider } = event.payload;
+
         try {
           await super.logout(provider);
           await tauriOAuthNotifications.notifyLogoutSuccess(provider);
           console.log(`Logged out from ${provider}`);
-          
+
         } catch (error) {
           console.error(`Failed to logout from ${provider}:`, error);
         }
@@ -173,7 +157,7 @@ export class TauriOAuthManager extends OAuthManager {
         try {
           const providers = super.getRegisteredProviders();
           console.log('Available OAuth providers:', providers);
-          
+
         } catch (error) {
           console.error('Failed to get OAuth providers:', error);
         }
@@ -183,18 +167,18 @@ export class TauriOAuthManager extends OAuthManager {
       // Handle token refresh requests from Tauri
       const refreshRequestedUnlisten = await listen('oauth-refresh-requested', async (event: any) => {
         const { provider } = event.payload;
-        
+
         try {
           const success = await super.refreshTokens(provider);
-          
+
           if (success) {
             await tauriOAuthNotifications.notifyTokenRefreshed(provider);
           } else {
             await tauriOAuthNotifications.notifyTokenExpired(provider, true);
           }
-          
+
           console.log(`Token refresh for ${provider}: ${success ? 'success' : 'failed'}`);
-          
+
         } catch (error) {
           console.error(`Failed to refresh tokens for ${provider}:`, error);
           await tauriOAuthNotifications.notifyTokenExpired(provider, true);
@@ -209,7 +193,7 @@ export class TauriOAuthManager extends OAuthManager {
           const config = configManager.getConfig();
           const isValid = Object.keys(config.providers).length > 0;
           console.log('OAuth configuration validation:', isValid);
-          
+
         } catch (error) {
           console.error('Failed to validate OAuth configuration:', error);
         }
@@ -222,13 +206,13 @@ export class TauriOAuthManager extends OAuthManager {
           const configManager = super.getConfigManager();
           const config = configManager.getConfig();
           const status: Record<string, boolean> = {};
-          
+
           for (const [providerName, providerConfig] of Object.entries(config.providers)) {
             status[providerName] = providerConfig.enabled && !!providerConfig.clientId;
           }
-          
+
           console.log('OAuth configuration status:', status);
-          
+
         } catch (error) {
           console.error('Failed to get OAuth configuration status:', error);
         }
@@ -254,7 +238,7 @@ export class TauriOAuthManager extends OAuthManager {
       return await this.tauriBridge.authenticate(providerName, false);
     } catch (error) {
       console.error(`Tauri OAuth authentication failed for ${providerName}:`, error);
-      
+
       // Fallback to base implementation if Tauri bridge fails
       return await super.authenticate(providerName);
     }
@@ -274,7 +258,7 @@ export class TauriOAuthManager extends OAuthManager {
       return await this.tauriBridge.getStatus(providerName);
     } catch (error) {
       console.error(`Tauri OAuth status check failed for ${providerName}:`, error);
-      
+
       // Fallback to base implementation
       return await super.isAuthenticated(providerName);
     }
@@ -294,7 +278,7 @@ export class TauriOAuthManager extends OAuthManager {
       return await this.tauriBridge.getAllStatus();
     } catch (error) {
       console.error('Tauri OAuth status check failed for all providers:', error);
-      
+
       // Fallback to base implementation
       return await super.getAuthenticationStatus();
     }
@@ -314,7 +298,7 @@ export class TauriOAuthManager extends OAuthManager {
       await this.tauriBridge.logout(providerName, false);
     } catch (error) {
       console.error(`Tauri OAuth logout failed for ${providerName}:`, error);
-      
+
       // Fallback to base implementation
       await super.logout(providerName);
     }
@@ -334,7 +318,7 @@ export class TauriOAuthManager extends OAuthManager {
       return await this.tauriBridge.refreshTokens(providerName);
     } catch (error) {
       console.error(`Tauri OAuth token refresh failed for ${providerName}:`, error);
-      
+
       // Fallback to base implementation
       return await super.refreshTokens(providerName);
     }
@@ -351,8 +335,8 @@ export class TauriOAuthManager extends OAuthManager {
    * Check if running in Tauri environment
    */
   static isTauriEnvironment(): boolean {
-    return typeof window !== 'undefined' && 
-           window.__TAURI__ !== undefined;
+    return typeof window !== 'undefined' &&
+      (window.__TAURI__ !== undefined || (window as any).__TAURI_INTERNALS__ !== undefined);
   }
 
   /**
@@ -398,21 +382,6 @@ export class TauriOAuthManager extends OAuthManager {
     }
   }
 
-  /**
-   * Cleanup Tauri OAuth manager
-   */
-  private async cleanupTauri(): Promise<void> {
-    // Cleanup event listeners
-    for (const unlisten of this.eventListeners) {
-      unlisten();
-    }
-    this.eventListeners = [];
-
-    // Cleanup Tauri bridge
-    await this.tauriBridge.cleanup();
-
-    this.isInitialized = false;
-  }
 }
 
 /**
