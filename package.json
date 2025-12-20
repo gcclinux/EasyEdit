@@ -14,8 +14,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "tauri": "tauri",
-    "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build"
+    "tauri:dev": "WEBKIT_DISABLE_DMABUF_RENDERER=1 WEBKIT_DISABLE_COMPOSITING_MODE=1 tauri dev",
+    "tauri:build": "WEBKIT_DISABLE_DMABUF_RENDERER=1 WEBKIT_DISABLE_COMPOSITING_MODE=1 tauri build"
   },
   "author": "Ricardo Wagemaker <wagemra@gmail.com>",
   "license": "MIT",

@@ -35,9 +35,18 @@ fn open_file_from_args(_app_handle: tauri::AppHandle) -> Option<String> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // Set WebKit environment variables for Linux to fix rendering issues
+    // with certain GPU drivers (especially on Wayland or with hardware acceleration)
+    #[cfg(target_os = "linux")]
+    {
+        env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+        env::set_var("WEBKIT_DISABLE_COMPOSITING_MODE", "1");
+    }
+
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_dialog::init())
         .manage(OAuthManagerState::default())
         .invoke_handler(tauri::generate_handler![
