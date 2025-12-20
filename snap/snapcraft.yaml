@@ -35,3 +35,6 @@ parts:
       mkdir -p $SNAPCRAFT_PART_INSTALL/bin
       cp src-tauri/target/release/easyedit $SNAPCRAFT_PART_INSTALL/bin/
       chmod +x $SNAPCRAFT_PART_INSTALL/bin/easyedit
+      mkdir -p $SNAPCRAFT_PART_INSTALL/snap/gui
+      cp snap/gui/easyedit.desktop $SNAPCRAFT_PART_INSTALL/snap/gui/
+      cp snap/gui/easyedit.png $SNAPCRAFT_PART_INSTALL/snap/gui/
