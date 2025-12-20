@@ -249,19 +249,8 @@ export class TauriOAuthManager extends OAuthManager {
    * Requirements: 1.5, 6.4
    */
   async isAuthenticated(providerName: string): Promise<boolean> {
-    if (!this.isInitialized) {
-      await this.initializeTauriIntegration();
-    }
-
-    try {
-      // Try Tauri bridge first
-      return await this.tauriBridge.getStatus(providerName);
-    } catch (error) {
-      console.error(`Tauri OAuth status check failed for ${providerName}:`, error);
-
-      // Fallback to base implementation
-      return await super.isAuthenticated(providerName);
-    }
+    // Use base implementation which checks stored tokens directly
+    return await super.isAuthenticated(providerName);
   }
 
   /**
