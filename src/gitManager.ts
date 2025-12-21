@@ -399,8 +399,13 @@ export class GitManager {
             await writable.close();
             console.log('  ✓ Synced:', fileName);
           }
-        } catch (e) {
-          console.error('  Error syncing file:', relativePath, e);
+        } catch (e: any) {
+          if (e.name === 'NoModificationAllowedError') {
+            // This is expected for some git objects/pack files that are read-only
+            console.warn(`  Read-only file detected (skipping): ${relativePath}`);
+          } else {
+            console.error('  Error syncing file:', relativePath, e);
+          }
         }
       }
 
@@ -495,6 +500,7 @@ export class GitManager {
           name: 'EasyEdit User',
           email: 'user@easyedit.app',
         },
+        corsProxy: 'https://cors.isomorphic-git.org', // Add CORS proxy
       };
 
       if (this.credentials) {
@@ -553,7 +559,31 @@ export class GitManager {
       }
 
       console.log('Calling git.push()...');
-      await git.push(pushOptions);
+      const pushResult = await git.push(pushOptions);
+      console.log('Push result:', pushResult);
+
+      if (pushResult.ok === false) {
+        throw new Error(`Push failed: ${pushResult.error || 'Unknown error'}`);
+      }
+
+      // Check individual refs for errors
+      if (pushResult.refs) {
+        for (const [ref, result] of Object.entries(pushResult.refs)) {
+          if (!result.ok) {
+            throw new Error(`Failed to push ref ${ref}: ${result.error}`);
+          }
+        }
+      }
+
+      // Sync the .git directory back to disk to update local status
+      if (this.dirHandle) {
+        console.log('Syncing .git directory back to disk...');
+        const gitPath = `${this.repoDir}/.git`;
+        // Sync .git content (repoName='.git' forces strict sync into .git folder)
+        await this.syncToFileSystem(gitPath, this.dirHandle, '.git');
+        console.log('.git directory synced back to disk');
+      }
+
       console.log('=== Git Push Completed Successfully ===');
     } catch (error: any) {
       console.error('=== Git Push Failed ===');
@@ -591,6 +621,7 @@ export class GitManager {
         http,
         dir: this.repoDir,
         remote: 'origin',
+        corsProxy: 'https://cors.isomorphic-git.org', // Add CORS proxy
       };
 
       if (this.credentials) {
@@ -600,6 +631,7 @@ export class GitManager {
         });
       }
 
+      // Fetch does not return a result with ok/error, it throws on failure
       await git.fetch(fetchOptions);
     } catch (error) {
       throw new Error(`Failed to fetch from remote: ${(error as Error).message}`);
@@ -704,11 +736,17 @@ export class GitManager {
         });
 
         if (status === 'modified') {
+          result.staged.push(filepath);
+        } else if (status === '*modified') {
           result.modified.push(filepath);
         } else if (status === 'added') {
           result.staged.push(filepath);
         } else if (status === '*added') {
           result.untracked.push(filepath);
+        } else if (status === 'deleted') {
+          result.staged.push(filepath);
+        } else if (status === '*deleted') {
+          result.modified.push(filepath);
         }
       }
 

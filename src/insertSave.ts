@@ -226,28 +226,6 @@ export const detectGitRepo = async (fileHandle: any): Promise<string | null> => 
       return null;
     } else {
       console.log('[GitDetection] getParent() not available - use "Git → Open Repository" for full Git features');
-      
-      // Fallback: Prompt user to select repository if they want Git features
-      const shouldPrompt = await new Promise<boolean>((resolve) => {
-        // Create a simple confirmation dialog
-        const result = confirm(
-          'Git features are not available when opening individual files.\n\n' +
-          'Would you like to open the entire repository instead to enable Git operations (save, stage, commit, push)?'
-        );
-        resolve(result);
-      });
-
-      if (shouldPrompt) {
-        // Trigger repository selection
-        const repoResult = await selectGitRepository();
-        if (repoResult && repoResult.isGitRepo) {
-          // Store the directory handle globally for later use
-          (window as any).selectedDirHandle = repoResult.dirHandle;
-          console.log('[GitDetection] Repository selected for Git features:', repoResult.path);
-          return repoResult.path;
-        }
-      }
-      
       return null;
     }
   } catch (error) {

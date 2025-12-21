@@ -1413,7 +1413,12 @@ const App = () => {
         showToast('Successfully pushed changes!', 'success');
         await updateGitStatus();
       } catch (error) {
-        showToast(`Failed to push changes: ${(error as Error).message}`, 'error');
+        const msg = (error as Error).message;
+        if (msg.includes('not a simple fast-forward') || msg.includes('Push rejected')) {
+          showToast('Push rejected: Remote has changes you don\'t have. Please Pull first.', 'error');
+        } else {
+          showToast(`Failed to push changes: ${msg}`, 'error');
+        }
         console.error('Push error:', error);
       }
     });
@@ -1424,7 +1429,12 @@ const App = () => {
         showToast('Successfully pushed changes!', 'success');
         await updateGitStatus();
       } catch (error) {
-        showToast(`Failed to push changes: ${(error as Error).message}`, 'error');
+        const msg = (error as Error).message;
+        if (msg.includes('not a simple fast-forward') || msg.includes('Push rejected')) {
+          showToast('Push rejected: Remote has changes you don\'t have. Please Pull first.', 'error');
+        } else {
+          showToast(`Failed to push changes: ${msg}`, 'error');
+        }
         console.error('Push error:', error);
       }
     }
