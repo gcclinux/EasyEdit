@@ -7,3 +7,10 @@ npm-debug.log
 .local
 .env
 docs-site
+src-tauri/target
+parts
+prime
+stage
+screenshots
+build
+docs
