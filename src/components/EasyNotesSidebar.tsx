@@ -129,7 +129,7 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
       }
       
       // Check if Google Drive provider is already authenticated
-      const availableProviders = cloudManager.getAvailableProviders();
+      const availableProviders = await cloudManager.getAvailableProviders();
       const googleProvider = availableProviders.find(p => p.name === 'googledrive');
       if (googleProvider) {
         const isAuth = await googleProvider.isAuthenticated();
@@ -172,7 +172,7 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
       setNotes(notesList);
 
       // Load provider metadata
-      const availableProviders = cloudManager.getAvailableProviders();
+      const availableProviders = await cloudManager.getAvailableProviders();
       const providerMetadata: Record<string, ProviderMetadata> = {};
       
       for (const provider of availableProviders) {

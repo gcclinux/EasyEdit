@@ -1624,9 +1624,12 @@ const App = () => {
     }
 
     try {
-      // Import CloudManager dynamically to avoid circular dependencies
-      const { CloudManager } = await import('./cloud/managers/CloudManager');
-      const cloudManager = new CloudManager();
+      // Import cloudManager singleton to avoid circular dependencies
+      const { cloudManager } = await import('./cloud/managers/CloudManager');
+      
+      if (!cloudManager) {
+        throw new Error('Cloud features are disabled');
+      }
       
       await cloudManager.saveNote(currentCloudNote.noteId, editorContent);
       
@@ -2721,9 +2724,14 @@ const App = () => {
               
               // Set cloud note state if metadata is provided
               if (noteMetadata) {
-                // Import CloudManager to get provider metadata
-                const { CloudManager } = await import('./cloud/managers/CloudManager');
-                const cloudManager = new CloudManager();
+                // Import cloudManager singleton to get provider metadata
+                const { cloudManager } = await import('./cloud/managers/CloudManager');
+                
+                if (!cloudManager) {
+                  console.warn('Cloud features are disabled, cannot load provider metadata');
+                  return;
+                }
+                
                 const providerMetadata = await cloudManager.getProviderMetadata(noteMetadata.provider);
                 
                 setCurrentCloudNote({

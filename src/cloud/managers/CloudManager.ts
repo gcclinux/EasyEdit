@@ -19,6 +19,7 @@ export class CloudManager {
   private providers: Map<string, CloudProvider> = new Map();
   private metadataManager: MetadataManager;
   private fileSynchronizer: FileSynchronizer;
+  private providersReady: Promise<void>;
   // Credential management is handled by individual providers
   
   constructor() {
@@ -29,32 +30,50 @@ export class CloudManager {
     // Only register providers if the feature is enabled
     if (!FEATURES.EASY_NOTES) {
       console.log('[CloudManager] EASY_NOTES feature disabled, skipping provider registration');
+      this.providersReady = Promise.resolve();
       return;
     }
     
-    // Register providers based on environment
-    if (isTauriEnvironment()) {
-      console.log('[CloudManager] Detected Tauri environment, using OAuth provider');
-      // Dynamically import OAuth provider to avoid loading OAuth system in web environment
-      import('../providers/OAuthGoogleDriveProvider').then(({ OAuthGoogleDriveProvider }) => {
-        this.registerProvider(new OAuthGoogleDriveProvider());
-      }).catch(error => {
-        console.error('[CloudManager] Failed to load OAuth provider, falling back to Tauri provider:', error);
-        import('../providers/TauriGoogleDriveProvider').then(({ TauriGoogleDriveProvider }) => {
+    // Initialize providers asynchronously but track completion
+    this.providersReady = this.initializeProviders();
+  }
+  
+  /**
+   * Initialize providers based on environment
+   */
+  private async initializeProviders(): Promise<void> {
+    try {
+      // Register providers based on environment
+      if (isTauriEnvironment()) {
+        console.log('[CloudManager] Detected Tauri environment, using OAuth provider');
+        // Dynamically import OAuth provider to avoid loading OAuth system in web environment
+        try {
+          const { OAuthGoogleDriveProvider } = await import('../providers/OAuthGoogleDriveProvider');
+          this.registerProvider(new OAuthGoogleDriveProvider());
+          console.log('[CloudManager] OAuth provider registered successfully');
+        } catch (error) {
+          console.error('[CloudManager] Failed to load OAuth provider, falling back to Tauri provider:', error);
+          const { TauriGoogleDriveProvider } = await import('../providers/TauriGoogleDriveProvider');
           this.registerProvider(new TauriGoogleDriveProvider());
-        });
-      });
-    } else {
-      console.log('[CloudManager] Detected web environment, using GIS provider');
-      import('../providers/GISGoogleDriveProvider').then(({ GISGoogleDriveProvider }) => {
+          console.log('[CloudManager] Tauri provider registered as fallback');
+        }
+      } else {
+        console.log('[CloudManager] Detected web environment, using GIS provider');
+        const { GISGoogleDriveProvider } = await import('../providers/GISGoogleDriveProvider');
         this.registerProvider(new GISGoogleDriveProvider());
-      });
+        console.log('[CloudManager] GIS provider registered successfully');
+      }
+    } catch (error) {
+      console.error('[CloudManager] Failed to initialize providers:', error);
+      // Don't throw - allow the manager to work without providers
     }
-    
-    // Keep legacy providers available for fallback if needed
-    // this.registerProvider(new TauriGoogleDriveProvider());
-    // this.registerProvider(new SimpleGoogleDriveProvider());
-    // this.registerProvider(new MockGoogleDriveProvider());
+  }
+  
+  /**
+   * Ensure providers are ready before operations
+   */
+  private async ensureProvidersReady(): Promise<void> {
+    await this.providersReady;
   }
   
   /**
@@ -67,7 +86,8 @@ export class CloudManager {
   /**
    * Get list of available providers
    */
-  getAvailableProviders(): CloudProvider[] {
+  async getAvailableProviders(): Promise<CloudProvider[]> {
+    await this.ensureProvidersReady();
     return Array.from(this.providers.values());
   }
   
@@ -76,6 +96,8 @@ export class CloudManager {
    * Requirements: 2.1, 3.1, 4.1, 5.1
    */
   async connectProvider(providerName: string): Promise<boolean> {
+    await this.ensureProvidersReady();
+    
     const provider = this.providers.get(providerName);
     if (!provider) {
       const error = new Error(`Provider ${providerName} not found`);
@@ -152,6 +174,8 @@ export class CloudManager {
    * Requirements: 6.4
    */
   async disconnectProvider(providerName: string): Promise<void> {
+    await this.ensureProvidersReady();
+    
     const provider = this.providers.get(providerName);
     if (!provider) {
       const error = new Error(`Provider ${providerName} not found`);
@@ -202,6 +226,8 @@ export class CloudManager {
    * Requirements: 2.1, 2.2, 2.3, 2.5
    */
   async createNote(providerName: string, title: string): Promise<NoteMetadata> {
+    await this.ensureProvidersReady();
+    
     const provider = this.providers.get(providerName);
     if (!provider) {
       const error = new Error(`Provider ${providerName} not found`);
@@ -337,6 +363,8 @@ export class CloudManager {
    * Requirements: 4.1, 4.2, 4.3, 4.5
    */
   async openNote(noteId: string): Promise<string> {
+    await this.ensureProvidersReady();
+    
     const operationId = `open_note_${noteId}_${Date.now()}`;
     
     try {
@@ -414,6 +442,8 @@ export class CloudManager {
    * Requirements: 5.1, 5.2, 5.4
    */
   async saveNote(noteId: string, content: string): Promise<void> {
+    await this.ensureProvidersReady();
+    
     const operationId = `save_note_${noteId}_${Date.now()}`;
     
     try {
@@ -499,6 +529,8 @@ export class CloudManager {
    * Delete a note from cloud storage and local metadata
    */
   async deleteNote(noteId: string): Promise<void> {
+    await this.ensureProvidersReady();
+    
     try {
       // Find note metadata
       const noteMetadata = await this.metadataManager.findNote(noteId);
@@ -534,6 +566,8 @@ export class CloudManager {
    * Synchronize notes with cloud storage, optionally for specific provider
    */
   async syncNotes(providerName?: string): Promise<SyncResult> {
+    await this.ensureProvidersReady();
+    
     const errors: string[] = [];
     let filesProcessed = 0;
     const operationId = `sync_${providerName || 'all'}_${Date.now()}`;
@@ -714,6 +748,8 @@ export class CloudManager {
    * Check if a provider is connected and authenticated
    */
   async isProviderConnected(providerName: string): Promise<boolean> {
+    await this.ensureProvidersReady();
+    
     try {
       const provider = this.providers.get(providerName);
       if (!provider) {

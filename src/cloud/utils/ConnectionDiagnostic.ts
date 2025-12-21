@@ -35,7 +35,7 @@ export class ConnectionDiagnostic {
       console.log('Is provider connected:', isConnected);
       
       // Check available providers
-      const availableProviders = cloudManager.getAvailableProviders();
+      const availableProviders = await cloudManager.getAvailableProviders();
       console.log('Available providers:', availableProviders.map(p => p.name));
       
     } catch (error) {
@@ -95,7 +95,7 @@ export class ConnectionDiagnostic {
     console.log('=== TESTING GIS AUTHENTICATION ===');
     
     // Get the Google Drive provider
-    const availableProviders = cloudManager.getAvailableProviders();
+    const availableProviders = await cloudManager.getAvailableProviders();
     const googleProvider = availableProviders.find(p => p.name === 'googledrive');
     
     if (!googleProvider) {
@@ -228,7 +228,7 @@ export class ConnectionDiagnostic {
     });
     
     // Check provider authentication
-    const availableProviders = cloudManager.getAvailableProviders();
+    const availableProviders = await cloudManager.getAvailableProviders();
     const googleProvider = availableProviders.find(p => p.name === 'googledrive');
     
     if (googleProvider) {
@@ -302,7 +302,7 @@ export class ConnectionDiagnostic {
     console.log('Application folder ID:', metadata.applicationFolderId);
     
     // Get the provider
-    const availableProviders = cloudManager.getAvailableProviders();
+    const availableProviders = await cloudManager.getAvailableProviders();
     const googleProvider = availableProviders.find(p => p.name === 'googledrive');
     
     if (!googleProvider) {
