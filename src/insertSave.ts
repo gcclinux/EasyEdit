@@ -185,50 +185,71 @@ export const selectGitRepository = async (): Promise<{ dirHandle: any; isGitRepo
   }
 };
 
-// Legacy: Detect if a file is in a Git repository (limited browser support)
+// Enhanced: Detect if a file is in a Git repository with fallback options
 export const detectGitRepo = async (fileHandle: any): Promise<string | null> => {
   if (!fileHandle) return null;
 
   try {
-    // Note: getParent() is not widely supported yet in browsers
-    // Chrome/Edge may support it in the future, but for now it's not available
+    // First try: Use getParent() if available (limited browser support)
     let dirHandle = await (fileHandle as any).getParent?.();
 
-    if (!dirHandle) {
-      console.log('[GitDetection] getParent() not available - use "Git → Open Repository" for full Git features');
-      return null;
-    }
+    if (dirHandle) {
+      // Walk up the directory tree looking for .git folder
+      let currentDir = dirHandle;
+      let depth = 0;
+      const maxDepth = 10;
 
-    // Walk up the directory tree looking for .git folder
-    let currentDir = dirHandle;
-    let depth = 0;
-    const maxDepth = 10;
-
-    while (currentDir && depth < maxDepth) {
-      try {
-        const gitDir = await currentDir.getDirectoryHandle('.git', { create: false });
-        if (gitDir) {
-          console.log('[GitDetection] Found .git directory at depth', depth);
-          return (currentDir as any).name || 'repository';
+      while (currentDir && depth < maxDepth) {
+        try {
+          const gitDir = await currentDir.getDirectoryHandle('.git', { create: false });
+          if (gitDir) {
+            console.log('[GitDetection] Found .git directory at depth', depth);
+            return (currentDir as any).name || 'repository';
+          }
+        } catch (e) {
+          // .git not found, continue
         }
-      } catch (e) {
-        // .git not found, continue
-      }
 
-      try {
-        const parent = await (currentDir as any).getParent?.();
-        if (!parent || parent === currentDir) {
+        try {
+          const parent = await (currentDir as any).getParent?.();
+          if (!parent || parent === currentDir) {
+            break;
+          }
+          currentDir = parent;
+          depth++;
+        } catch (e) {
           break;
         }
-        currentDir = parent;
-        depth++;
-      } catch (e) {
-        break;
       }
-    }
 
-    console.log('[GitDetection] No .git directory found after checking', depth, 'levels');
-    return null;
+      console.log('[GitDetection] No .git directory found after checking', depth, 'levels');
+      return null;
+    } else {
+      console.log('[GitDetection] getParent() not available - use "Git → Open Repository" for full Git features');
+      
+      // Fallback: Prompt user to select repository if they want Git features
+      const shouldPrompt = await new Promise<boolean>((resolve) => {
+        // Create a simple confirmation dialog
+        const result = confirm(
+          'Git features are not available when opening individual files.\n\n' +
+          'Would you like to open the entire repository instead to enable Git operations (save, stage, commit, push)?'
+        );
+        resolve(result);
+      });
+
+      if (shouldPrompt) {
+        // Trigger repository selection
+        const repoResult = await selectGitRepository();
+        if (repoResult && repoResult.isGitRepo) {
+          // Store the directory handle globally for later use
+          (window as any).selectedDirHandle = repoResult.dirHandle;
+          console.log('[GitDetection] Repository selected for Git features:', repoResult.path);
+          return repoResult.path;
+        }
+      }
+      
+      return null;
+    }
   } catch (error) {
     console.error('[GitDetection] Error detecting Git repo:', error);
     return null;
@@ -419,7 +440,9 @@ export const handleOpenClick = async (
       const repoPath = await detectGitRepo(fileHandle);
       if (repoPath && onGitRepoDetected) {
         console.log('[FileSystemAccess] Git repository detected:', repoPath);
-        onGitRepoDetected(repoPath, fileHandle);
+        // Use the stored directory handle if available
+        const dirHandle = (window as any).selectedDirHandle;
+        onGitRepoDetected(repoPath, dirHandle || fileHandle);
       }
 
       setEditorContent(content, filePath);

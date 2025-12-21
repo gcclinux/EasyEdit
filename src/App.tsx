@@ -74,7 +74,8 @@ import {
   saveToHTML,
   saveToFile,
   saveToTxT,
-  saveAsFile
+  saveAsFile,
+  writeFileToDirectory
 } from './insertSave.ts';
 import {
   insertBoldSyntax,
@@ -1664,11 +1665,39 @@ const App = () => {
 
     // Priority 2: Git repo save (Electron or Web)
     if (isGitRepo && currentFilePath) {
-      handleGitSave();
+      await handleGitSave();
       return;
     }
 
-    // Priority 3: File System Access API save (Web)
+    // Priority 3: Git repo save via directory handle (when file was opened individually but repo was detected)
+    if (currentDirHandle && currentFilePath) {
+      try {
+        // Try to save using directory handle
+        const fileName = currentFilePath.split(/[/\\]/).pop() || currentFilePath;
+        const success = await writeFileToDirectory(currentDirHandle, fileName, editorContent);
+        if (success) {
+          showToast('File saved successfully!', 'success');
+          
+          // If Git features are available, also stage the file
+          if (isGitRepo && gitManager) {
+            try {
+              await gitManager.add(fileName);
+              showToast(`File saved and staged: ${fileName}`, 'success');
+              await updateGitStatus();
+            } catch (gitError) {
+              console.warn('Failed to stage file:', gitError);
+              // File was saved, just couldn't stage it
+            }
+          }
+          return;
+        }
+      } catch (error) {
+        console.error('Failed to save via directory handle:', error);
+        // Fall through to next option
+      }
+    }
+
+    // Priority 4: File System Access API save (Web)
     const { saveToCurrentFile, getCurrentFileHandle } = await import('./insertSave');
     const fileHandle = getCurrentFileHandle();
 
@@ -1841,13 +1870,39 @@ const App = () => {
                       // Web mode - no automatic Git detection from file paths
                     },
                     // Git repo detection callback for File System Access API (web)
-                    async (repoPath: string, fileHandle: any) => {
+                    async (repoPath: string, dirHandle: any) => {
                       console.log('[App] Git repo detected via File System Access API:', repoPath);
-                      // Store the directory handle for web-based Git operations
-                      setCurrentDirHandle(fileHandle);
-                      // Note: Full Git integration in browser requires additional setup
-                      // For now, just show that we detected a repo
-                      showToast('Git repository detected! Use "File → Open Repository" for full Git features', 'info');
+                      
+                      if (dirHandle) {
+                        // Store the directory handle for web-based Git operations
+                        setCurrentDirHandle(dirHandle);
+                        setCurrentRepoPath(repoPath);
+                        setIsGitRepo(true);
+
+                        // Set repo directory in gitManager for web mode
+                        const lightningFSPath = `/${repoPath}`;
+
+                        // Sync the repo contents to LightningFS
+                        console.log('[App] Syncing repo to LightningFS:', lightningFSPath);
+                        try {
+                          await gitManager.openRepoFromHandle(dirHandle, lightningFSPath);
+                          console.log('[App] Repo sync complete');
+                        } catch (e) {
+                          console.error('[App] Repo sync failed:', e);
+                          // Fallback to basic setup if sync fails
+                          gitManager.setRepoDir(lightningFSPath);
+                          gitManager.setDirHandle(dirHandle);
+                        }
+
+                        showToast('Git repository detected! Git features are now available.', 'success');
+
+                        // Update Git status
+                        await updateGitStatus();
+                      } else {
+                        // Note: Full Git integration in browser requires additional setup
+                        // For now, just show that we detected a repo
+                        showToast('Git repository detected! Use "Git → Open Repository" for full Git features', 'info');
+                      }
                     }
                   );
                   setShowHelpDropdown(false);
