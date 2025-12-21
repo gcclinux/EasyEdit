@@ -1,5 +1,3 @@
-// Tauri-specific Git operations using shell commands
-import { invoke } from '@tauri-apps/api/core';
 import { Command } from '@tauri-apps/plugin-shell';
 
 export class TauriGitManager {
@@ -35,18 +33,18 @@ export class TauriGitManager {
       // Extract repo name from URL and append to target directory
       const repoName = url.split('/').pop()?.replace('.git', '') || 'repo';
       const fullTargetPath = `${targetDir}/${repoName}`;
-      
+
       // Build git clone command
       const args = ['clone'];
-      
+
       if (options?.depth) {
         args.push('--depth', options.depth.toString());
       }
-      
+
       if (options?.ref) {
         args.push('--branch', options.ref);
       }
-      
+
       args.push(url, fullTargetPath);
 
       console.log('Executing git command:', 'git', args.join(' '));
@@ -66,9 +64,9 @@ export class TauriGitManager {
     } catch (error: any) {
       console.error('=== Tauri Git Clone Failed ===');
       console.error('Error:', error);
-      
+
       let errorMessage = error.message || 'Unknown error';
-      
+
       if (errorMessage.includes('Authentication failed') || errorMessage.includes('401')) {
         errorMessage = 'Authentication failed: This repository requires credentials. Please set up Git credentials first.';
       } else if (errorMessage.includes('Repository not found') || errorMessage.includes('404')) {
@@ -76,7 +74,7 @@ export class TauriGitManager {
       } else if (errorMessage.includes('Permission denied')) {
         errorMessage = 'Permission denied: You may not have access to this repository.';
       }
-      
+
       throw new Error(`Failed to clone repository: ${errorMessage}`);
     }
   }
@@ -110,11 +108,11 @@ export class TauriGitManager {
       // Use path as-is if it's already absolute, otherwise prepend repoDir
       const fullPath = filePath.startsWith('/') ? filePath : `${this.repoDir}/${filePath}`.replace(/\/+/g, '/');
       const content = await readFileContent(fullPath);
-      
+
       if (content === null) {
         throw new Error('File not found or could not be read');
       }
-      
+
       return content;
     } catch (error) {
       throw new Error(`Failed to read file: ${(error as Error).message}`);
@@ -132,7 +130,7 @@ export class TauriGitManager {
       // Use path as-is if it's already absolute, otherwise prepend repoDir
       const fullPath = filePath.startsWith('/') ? filePath : `${this.repoDir}/${filePath}`.replace(/\/+/g, '/');
       const success = await writeFileContent(fullPath, content);
-      
+
       if (!success) {
         throw new Error('Failed to write file');
       }
@@ -171,7 +169,7 @@ export class TauriGitManager {
 
     try {
       const args = ['commit', '-m', message];
-      
+
       if (author) {
         args.push('--author', `${author.name} <${author.email}>`);
       }
@@ -199,7 +197,19 @@ export class TauriGitManager {
     }
 
     try {
-      const command = Command.create('git', ['push'], {
+      const remotes = await this.getRemotes();
+      const hasOrigin = remotes.includes('origin');
+      const branch = await this.getCurrentBranch();
+
+      const args = ['push'];
+      if (hasOrigin) {
+        console.log(`[TauriGitManager] Pushing to origin ${branch}...`);
+        args.push('origin', branch);
+      } else {
+        console.log('[TauriGitManager] Pushing (no origin remote found)...');
+      }
+
+      const command = Command.create('git', args, {
         cwd: this.repoDir
       });
       const output = await command.execute();
@@ -221,7 +231,19 @@ export class TauriGitManager {
     }
 
     try {
-      const command = Command.create('git', ['pull'], {
+      const remotes = await this.getRemotes();
+      const hasOrigin = remotes.includes('origin');
+      const branch = await this.getCurrentBranch();
+
+      const args = ['pull'];
+      if (hasOrigin) {
+        console.log(`[TauriGitManager] Pulling from origin ${branch}...`);
+        args.push('origin', branch);
+      } else {
+        console.log('[TauriGitManager] Pulling (no origin remote found)...');
+      }
+
+      const command = Command.create('git', args, {
         cwd: this.repoDir
       });
       const output = await command.execute();
@@ -233,6 +255,72 @@ export class TauriGitManager {
       console.log('[TauriGitManager] Pull successful');
     } catch (error) {
       throw new Error(`Failed to pull changes: ${(error as Error).message}`);
+    }
+  }
+
+  // Fetch changes from remote
+  async fetch(): Promise<void> {
+    if (!this.repoDir) {
+      throw new Error('No repository directory set');
+    }
+
+    try {
+      const remotes = await this.getRemotes();
+      const hasOrigin = remotes.includes('origin');
+
+      const args = ['fetch'];
+      if (hasOrigin) {
+        console.log('[TauriGitManager] Fetching from origin...');
+        args.push('origin');
+      } else {
+        console.log('[TauriGitManager] Fetching (no origin remote found)...');
+      }
+
+      const command = Command.create('git', args, {
+        cwd: this.repoDir
+      });
+      const output = await command.execute();
+
+      if (output.code !== 0) {
+        throw new Error(`Git fetch failed: ${output.stderr}`);
+      }
+
+      console.log('[TauriGitManager] Fetch successful');
+    } catch (error) {
+      throw new Error(`Failed to fetch updates: ${(error as Error).message}`);
+    }
+  }
+
+  // Get list of remotes
+  async getRemotes(): Promise<string[]> {
+    if (!this.repoDir) return [];
+    try {
+      const command = Command.create('git', ['remote'], {
+        cwd: this.repoDir
+      });
+      const output = await command.execute();
+      if (output.code !== 0) return [];
+      return output.stdout.trim().split('\n').map(r => r.trim()).filter(Boolean);
+    } catch (error) {
+      console.error('[TauriGitManager] Failed to get remotes:', error);
+      return [];
+    }
+  }
+
+  // Check if current directory is a Git repo
+  async isGitRepo(): Promise<boolean> {
+    if (!this.repoDir) return false;
+    try {
+      const command = Command.create('git', ['rev-parse', '--is-inside-work-tree'], {
+        cwd: this.repoDir
+      });
+      const output = await command.execute();
+      const isRepo = output.code === 0 && output.stdout.trim() === 'true';
+      console.log(`[TauriGitManager] Repo verification for ${this.repoDir}: ${isRepo}`);
+      return isRepo;
+    } catch (error) {
+      console.error('[TauriGitManager] Repo verification failed:', error);
+      return false;
     }
   }
 
@@ -252,9 +340,22 @@ export class TauriGitManager {
         throw new Error(`Git branch failed: ${output.stderr}`);
       }
 
-      return output.stdout.trim() || 'main';
+      const branch = output.stdout.trim();
+      if (branch) return branch;
+
+      // Fallback: Try rev-parse for older Git versions or detached HEAD
+      const fallbackCommand = Command.create('git', ['rev-parse', '--abbrev-ref', 'HEAD'], {
+        cwd: this.repoDir
+      });
+      const fallbackOutput = await fallbackCommand.execute();
+      if (fallbackOutput.code === 0) {
+        const fallbackBranch = fallbackOutput.stdout.trim();
+        if (fallbackBranch !== 'HEAD') return fallbackBranch;
+      }
+
+      return 'main';
     } catch (error) {
-      console.warn('Failed to get current branch, defaulting to main:', error);
+      console.warn('[TauriGitManager] Failed to get current branch, defaulting to main:', error);
       return 'main';
     }
   }
@@ -282,17 +383,28 @@ export class TauriGitManager {
       };
 
       const lines = output.stdout.trim().split('\n').filter(line => line.trim());
-      
+
       for (const line of lines) {
-        const status = line.substring(0, 2);
+        if (line.length < 4) continue;
+
+        const x = line[0];
+        const y = line[1];
         const file = line.substring(3);
-        
-        if (status.startsWith('M')) {
-          result.modified.push(file);
-        } else if (status.startsWith('A')) {
-          result.staged.push(file);
-        } else if (status.startsWith('??')) {
+
+        // ?? - Untracked
+        if (x === '?' && y === '?') {
           result.untracked.push(file);
+          continue;
+        }
+
+        // X column (Index/Staged)
+        if (x === 'M' || x === 'A' || x === 'D' || x === 'R' || x === 'C') {
+          result.staged.push(file);
+        }
+
+        // Y column (Worktree/Modified)
+        if (y === 'M' || y === 'D') {
+          result.modified.push(file);
         }
       }
 
@@ -310,8 +422,8 @@ export class TauriGitManager {
 
     try {
       const command = Command.create('git', [
-        'log', 
-        `--max-count=${count}`, 
+        'log',
+        `--max-count=${count}`,
         '--pretty=format:%H|%s|%an|%ae|%at'
       ], {
         cwd: this.repoDir
@@ -323,7 +435,7 @@ export class TauriGitManager {
       }
 
       const lines = output.stdout.trim().split('\n').filter(line => line.trim());
-      
+
       return lines.map(line => {
         const [oid, message, authorName, authorEmail, timestamp] = line.split('|');
         return {
@@ -341,8 +453,52 @@ export class TauriGitManager {
     }
   }
 
+  // List all branches
+  async listBranches(): Promise<string[]> {
+    if (!this.repoDir) {
+      throw new Error('No repository directory set');
+    }
+
+    try {
+      const command = Command.create('git', ['branch', '--format=%(refname:short)'], {
+        cwd: this.repoDir
+      });
+      const output = await command.execute();
+
+      if (output.code !== 0) {
+        throw new Error(`Git branch list failed: ${output.stderr}`);
+      }
+
+      return output.stdout.trim().split('\n').map(b => b.trim()).filter(Boolean);
+    } catch (error) {
+      throw new Error(`Failed to list branches: ${(error as Error).message}`);
+    }
+  }
+
+  // Checkout a branch
+  async checkout(ref: string): Promise<void> {
+    if (!this.repoDir) {
+      throw new Error('No repository directory set');
+    }
+
+    try {
+      const command = Command.create('git', ['checkout', ref], {
+        cwd: this.repoDir
+      });
+      const output = await command.execute();
+
+      if (output.code !== 0) {
+        throw new Error(`Git checkout failed: ${output.stderr}`);
+      }
+
+      console.log(`[TauriGitManager] Checked out branch: ${ref}`);
+    } catch (error) {
+      throw new Error(`Failed to checkout branch: ${(error as Error).message}`);
+    }
+  }
+
   // Placeholder methods for compatibility
-  setCredentials(credentials: any): void {
+  setCredentials(_credentials: any): void {
     // In Tauri, credentials are handled by the system Git
     console.log('[TauriGitManager] Credentials set (handled by system Git)');
   }

@@ -2,14 +2,15 @@ import { useState } from 'react';
 import './autoGenerator.css';
 
 interface TimelineGeneratorProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onInsert: (timelineText: string) => void;
+    isOpen: boolean;
+    onClose: () => void;
+    onInsert: (timelineText: string) => void;
+    showToast: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void;
 }
 
 interface Event {
-  id: number;
-  name: string;
+    id: number;
+    name: string;
 }
 
 interface TimelinePeriod {
@@ -44,9 +45,9 @@ const getNextMonthYear = (currentMonth: number, currentYear: number) => {
     return { month: currentMonth + 1, year: currentYear };
 };
 
-export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, onClose, onInsert }) => {
+export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, onClose, onInsert, showToast }) => {
     const [currentDate, setCurrentDate] = useState(getCurrentMonthYear());
-    
+
     const [sections, setSections] = useState<Section[]>([{
         id: 1,
         name: `Q${Math.floor(currentDate.month / 3) + 1} '${currentDate.year}`,
@@ -60,7 +61,7 @@ export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, on
     const addSection = () => {
         const nextDate = getNextMonthYear(currentDate.month, currentDate.year);
         setCurrentDate(nextDate);
-        
+
         const newSection = {
             id: sections.length + 1,
             name: `Q${Math.floor(nextDate.month / 3) + 1} '${nextDate.year}`,
@@ -76,85 +77,85 @@ export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, on
     const addTimeline = (sectionIndex: number) => {
         const nextDate = getNextMonthYear(currentDate.month, currentDate.year);
         setCurrentDate(nextDate);
-        
+
         const newTimeline = {
             id: sections[sectionIndex].timelines.length + 1,
             name: `${months[nextDate.month]} ${nextDate.year}`,
             events: [{ id: 1, name: 'Event Description' }]
         };
         const updatedSections = sections.map((section, i) => {
-        if (i === sectionIndex) {
-            return { ...section, timelines: [...section.timelines, newTimeline] };
-        }
-        return section;
+            if (i === sectionIndex) {
+                return { ...section, timelines: [...section.timelines, newTimeline] };
+            }
+            return section;
         });
         setSections(updatedSections);
     };
 
     const addEvent = (sectionIndex: number, timelineIndex: number) => {
         const newEvent = {
-        id: sections[sectionIndex].timelines[timelineIndex].events.length + 1,
-        name: `Event ${sections[sectionIndex].timelines[timelineIndex].events.length + 1}`
+            id: sections[sectionIndex].timelines[timelineIndex].events.length + 1,
+            name: `Event ${sections[sectionIndex].timelines[timelineIndex].events.length + 1}`
         };
         const updatedSections = sections.map((section, i) => {
-        if (i === sectionIndex) {
-            const updatedTimelines = section.timelines.map((timeline, j) => {
-            if (j === timelineIndex) {
-                return { ...timeline, events: [...timeline.events, newEvent] };
+            if (i === sectionIndex) {
+                const updatedTimelines = section.timelines.map((timeline, j) => {
+                    if (j === timelineIndex) {
+                        return { ...timeline, events: [...timeline.events, newEvent] };
+                    }
+                    return timeline;
+                });
+                return { ...section, timelines: updatedTimelines };
             }
-            return timeline;
-            });
-            return { ...section, timelines: updatedTimelines };
-        }
-        return section;
+            return section;
         });
         setSections(updatedSections);
     };
 
     const updateSection = (index: number, field: keyof Section, value: string) => {
         const updatedSections = sections.map((section, i) => {
-        if (i === index) {
-            return { ...section, [field]: value };
-        }
-        return section;
+            if (i === index) {
+                return { ...section, [field]: value };
+            }
+            return section;
         });
         setSections(updatedSections);
     };
 
     const updateTimeline = (sectionIndex: number, timelineIndex: number, field: keyof TimelinePeriod, value: string) => {
         const updatedSections = sections.map((section, i) => {
-        if (i === sectionIndex) {
-            const updatedTimelines = section.timelines.map((timeline, j) => {
-            if (j === timelineIndex) {
-                return { ...timeline, [field]: value };
+            if (i === sectionIndex) {
+                const updatedTimelines = section.timelines.map((timeline, j) => {
+                    if (j === timelineIndex) {
+                        return { ...timeline, [field]: value };
+                    }
+                    return timeline;
+                });
+                return { ...section, timelines: updatedTimelines };
             }
-            return timeline;
-            });
-            return { ...section, timelines: updatedTimelines };
-        }
-        return section;
+            return section;
         });
         setSections(updatedSections);
     };
 
     const updateEvent = (sectionIndex: number, timelineIndex: number, eventIndex: number, field: keyof Event, value: string) => {
         const updatedSections = sections.map((section, i) => {
-        if (i === sectionIndex) {
-            const updatedTimelines = section.timelines.map((timeline, j) => {
-            if (j === timelineIndex) {
-                const updatedEvents = timeline.events.map((event, k) => {
-                if (k === eventIndex) {
-                    return { ...event, [field]: value };
-                }
-                return event;
+            if (i === sectionIndex) {
+                const updatedTimelines = section.timelines.map((timeline, j) => {
+                    if (j === timelineIndex) {
+                        const updatedEvents = timeline.events.map((event, k) => {
+                            if (k === eventIndex) {
+                                return { ...event, [field]: value };
+                            }
+                            return event;
+                        });
+                        return { ...timeline, events: updatedEvents };
+                    }
+                    return timeline;
                 });
-                return { ...timeline, events: updatedEvents };
+                return { ...section, timelines: updatedTimelines };
             }
-            return timeline;
-            });
-            return { ...section, timelines: updatedTimelines };
-        }
-        return section;
+            return section;
         });
         setSections(updatedSections);
     };
@@ -178,7 +179,7 @@ export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, on
             });
             setSections(updatedSections);
         } else {
-            alert('You must have at least one event in a timeline');
+            showToast('You must have at least one event in a timeline', 'warning');
         }
     }
 
@@ -200,9 +201,9 @@ export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, on
 
     const createTimeline = () => {
         let timeline = '```mermaid\ntimeline\n';
-  
+
         sections.forEach((section) => {
-        timeline += `section ${section.name}\n`;
+            timeline += `section ${section.name}\n`;
 
             section.timelines.forEach((TimelinePeriod) => {
                 const eventTexts = TimelinePeriod.events.map(event => event.name).join(' : ');
@@ -250,7 +251,7 @@ export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, on
                                         ))}
                                     </div>
                                     <div className='time-right-column'>
-                                        {section.timelines.map((TimelinePeriod, j) => 
+                                        {section.timelines.map((TimelinePeriod, j) =>
                                             TimelinePeriod.events.map((event, k) => (
                                                 <div key={event.id} className='time-event-row'>
                                                     <textarea
@@ -272,13 +273,13 @@ export const TimelineGenerator: React.FC<TimelineGeneratorProps> = ({ isOpen, on
                         <button onClick={addSection}>New Section</button>
                         <button onClick={() => addTimeline(sections.length - 1)}>New Timeline</button>
                         <button onClick={() => addEvent(sections.length - 1, sections[sections.length - 1]?.timelines.length - 1)}>New Event</button>
-                        
+
                     </div>
                 </div>
                 <div className='time-generator-buttons botton-hover'>
                     <button onClick={onClose}>Cancel</button>
                     <button onClick={() => onInsert(createTimeline())}>Insert Timeline</button>
-                    </div>
+                </div>
             </div>
         </div>
     ) : null;

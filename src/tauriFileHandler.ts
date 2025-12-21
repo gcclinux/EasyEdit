@@ -1,5 +1,4 @@
 // Tauri-specific file operations
-import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { readTextFile, writeTextFile, readDir, exists } from '@tauri-apps/plugin-fs';
 
@@ -27,11 +26,11 @@ export const openDirectoryDialog = async (): Promise<string | null> => {
       multiple: false
     });
     console.log('[TauriFileHandler] Dialog result:', result);
-    
+
     if (typeof result === 'string') {
       return result;
     }
-    
+
     return null;
   } catch (error) {
     console.error('Failed to open directory dialog:', error);
@@ -43,15 +42,15 @@ export const openDirectoryDialog = async (): Promise<string | null> => {
 export const readDirectory = async (path: string): Promise<string[]> => {
   try {
     const files: string[] = [];
-    
+
     const scanDir = async (dirPath: string, basePath: string): Promise<void> => {
       const entries = await readDir(dirPath);
-      
+
       for (const entry of entries) {
         if (entry.isFile) {
           const fileName = entry.name;
           if (fileName.endsWith('.md') || fileName.endsWith('.markdown') || fileName.endsWith('.txt')) {
-            const relativePath = dirPath === basePath ? fileName : 
+            const relativePath = dirPath === basePath ? fileName :
               `${dirPath.replace(basePath, '').replace(/^\//, '')}/${fileName}`;
             files.push(relativePath);
           }
@@ -63,7 +62,7 @@ export const readDirectory = async (path: string): Promise<string[]> => {
         }
       }
     };
-    
+
     await scanDir(path, path);
     return files;
   } catch (error) {
@@ -84,7 +83,7 @@ export const checkGitRepo = async (path: string): Promise<boolean> => {
   } catch (error) {
     console.warn('Cannot access .git directory directly:', error);
   }
-  
+
   try {
     // Fallback: try to use git command to check if it's a repo
     const { Command } = await import('@tauri-apps/plugin-shell');
@@ -110,6 +109,20 @@ export const readFileContent = async (path: string): Promise<string | null> => {
   }
 };
 
+// Resolve a potentially relative path to absolute
+export const resolvePath = async (path: string, baseDir?: string): Promise<string> => {
+  if (path.startsWith('/') || path.includes(':')) {
+    return path;
+  }
+
+  if (baseDir) {
+    return `${baseDir}/${path}`.replace(/\/+/g, '/');
+  }
+
+  // If no baseDir, try to get current working directory or just return as is
+  return path;
+};
+
 // Write file content
 export const writeFileContent = async (path: string, content: string): Promise<boolean> => {
   try {
@@ -123,17 +136,16 @@ export const writeFileContent = async (path: string, content: string): Promise<b
 
 // Tauri-specific repository opener
 export const handleTauriOpenRepository = async (
-  setEditorContent: (content: string, filePath?: string | null) => void,
   onGitRepoDetected?: (repoPath: string, dirPath: string) => void,
   onFileListReady?: (files: string[], dirPath: string) => void
 ): Promise<void> => {
   try {
     console.log('[TauriFileHandler] Starting repository open process...');
-    
+
     // Open directory dialog
     const dirPath = await openDirectoryDialog();
     console.log('[TauriFileHandler] Directory dialog result:', dirPath);
-    
+
     if (!dirPath) {
       console.log('[TauriFileHandler] No directory selected, user cancelled');
       return; // User cancelled
@@ -145,7 +157,7 @@ export const handleTauriOpenRepository = async (
     console.log('[TauriFileHandler] Checking if directory is a Git repo...');
     const isGitRepo = await checkGitRepo(dirPath);
     console.log('[TauriFileHandler] Is Git repo:', isGitRepo);
-    
+
     if (isGitRepo && onGitRepoDetected) {
       console.log('[TauriFileHandler] Git repository detected, calling callback');
       await onGitRepoDetected(dirPath, dirPath);
@@ -176,7 +188,7 @@ export const readTauriFile = async (
     // Construct full path
     const fullPath = `${dirPath}/${filePath}`.replace(/\/+/g, '/');
     console.log('[TauriFileHandler] Reading file:', fullPath);
-    
+
     const content = await readFileContent(fullPath);
     if (content === null) {
       return null;
@@ -188,6 +200,58 @@ export const readTauriFile = async (
     };
   } catch (error) {
     console.error('[TauriFileHandler] Error reading file:', error);
+    return null;
+  }
+};
+
+// Open file dialog and read content
+export const handleTauriOpenFile = async (
+  setEditorContent: (content: string, filePath?: string | null) => void
+): Promise<void> => {
+  try {
+    await ensureTauriReady();
+    const result = await open({
+      multiple: false,
+      filters: [{
+        name: 'Markdown',
+        extensions: ['md', 'markdown', 'txt']
+      }]
+    });
+
+    if (typeof result === 'string') {
+      const content = await readFileContent(result);
+      if (content !== null) {
+        setEditorContent(content, result);
+      }
+    }
+  } catch (error) {
+    console.error('Failed to open file in Tauri:', error);
+  }
+};
+
+// Save As dialog and write content
+export const handleTauriSaveAs = async (
+  content: string,
+  defaultPath?: string
+): Promise<string | null> => {
+  try {
+    await ensureTauriReady();
+    const { save } = await import('@tauri-apps/plugin-dialog');
+    const result = await save({
+      defaultPath: defaultPath || 'easyedit.md',
+      filters: [{
+        name: 'Markdown',
+        extensions: ['md', 'markdown', 'txt']
+      }]
+    });
+
+    if (typeof result === 'string') {
+      const success = await writeFileContent(result, content);
+      return success ? result : null;
+    }
+    return null;
+  } catch (error) {
+    console.error('Failed to save file in Tauri:', error);
     return null;
   }
 };

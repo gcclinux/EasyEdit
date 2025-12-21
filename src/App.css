@@ -744,3 +744,104 @@ html,
 .context-menu-item:hover {
   background-color: var(--context-menu-hover);
 }
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-modal-overlay);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-dialog,
+.modal-content {
+  background-color: var(--bg-modal);
+  color: var(--color-text-modal);
+  padding: 28px;
+  border-radius: 12px;
+  box-shadow: 0 15px 35px var(--shadow-xl);
+  max-width: 500px;
+  width: 90%;
+  border: 1px solid var(--border-card);
+  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-dialog h2,
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+  color: var(--color-text-primary);
+}
+
+.modal-dialog p,
+.modal-content p {
+  line-height: 1.6;
+  opacity: 0.9;
+  margin-bottom: 24px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.modal-button {
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.modal-button.primary,
+.modal-button.submit-button {
+  background: linear-gradient(135deg, var(--btn-mermaid-gradient-start) 0%, var(--btn-mermaid-gradient-end) 100%);
+  color: white;
+}
+
+.modal-button.primary:hover,
+.modal-button.submit-button:hover {
+  background: linear-gradient(135deg, var(--btn-mermaid-hover-gradient-start) 0%, var(--btn-mermaid-hover-gradient-end) 100%);
+  transform: translateY(-1px);
+}
+
+.modal-button.cancel,
+.modal-button.cancel-button {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-modal);
+  border: 1px solid var(--border-secondary);
+}
+
+.modal-button.cancel:hover,
+.modal-button.cancel-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

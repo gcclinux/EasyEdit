@@ -5,9 +5,10 @@ interface CloneModalProps {
   open: boolean;
   onClose: () => void;
   onSubmit: (url: string, targetDir: string, branch?: string) => void;
+  showToast: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void;
 }
 
-const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit }) => {
+const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit, showToast }) => {
   const [url, setUrl] = useState('');
   const [targetDir, setTargetDir] = useState('');
   const [branch, setBranch] = useState('');
@@ -42,32 +43,32 @@ const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit }) => {
   };
 
   const handleSelectDirectory = async () => {
-    const isTauri = typeof window !== 'undefined' && 
-      ((window as any).__TAURI__ || (window as any).__TAURI_INTERNALS__ || 
-       typeof (window as any).__TAURI_INVOKE__ === 'function');
+    const isTauri = typeof window !== 'undefined' &&
+      ((window as any).__TAURI__ || (window as any).__TAURI_INTERNALS__ ||
+        typeof (window as any).__TAURI_INVOKE__ === 'function');
     console.log('[CloneModal] Tauri detection:', isTauri);
     console.log('[CloneModal] Window object:', typeof window);
     console.log('[CloneModal] __TAURI__ property:', (window as any).__TAURI__);
-    
+
     if (isTauri) {
       // Tauri version: Use Tauri dialog
       try {
         console.log('[CloneModal] Using Tauri directory dialog');
         const { openDirectoryDialog } = await import('../tauriFileHandler');
         console.log('[CloneModal] Imported openDirectoryDialog function');
-        
+
         const selectedPath = await openDirectoryDialog();
         console.log('[CloneModal] Directory dialog returned:', selectedPath);
-        
+
         if (selectedPath) {
           console.log('Selected directory (Tauri):', selectedPath);
           setTargetDir(selectedPath);
         } else {
           console.log('[CloneModal] No directory selected or dialog cancelled');
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Tauri directory selection error:', error);
-        alert(`Failed to select directory: ${error.message}`);
+        showToast(`Failed to select directory: ${error.message}`, 'error');
       }
     } else {
       // Web version: Use File System Access API
@@ -78,25 +79,25 @@ const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit }) => {
             mode: 'readwrite',
             startIn: 'downloads' // Start in downloads folder
           });
-          
+
           // Verify we can write to the directory
           try {
             const testFileName = '.easyedit-test';
             const testFileHandle = await dirHandle.getFileHandle(testFileName, { create: true });
             await testFileHandle.remove();
           } catch (permError) {
-            alert('Cannot write to this directory. Please choose a different folder or grant write permissions.');
+            showToast('Cannot write to this directory. Please choose a different folder or grant write permissions.', 'error');
             return;
           }
-          
+
           // Get the directory name (browser security prevents getting full path)
           // Store both name and handle
           const dirName = dirHandle.name;
-          
+
           // Try to build a more descriptive path
           // Note: Browser security limits what we can show
           let displayPath = dirName;
-          
+
           // Check if we can resolve any parent info (usually we can't due to security)
           try {
             // Most browsers don't allow this, but we can try
@@ -110,19 +111,19 @@ const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit }) => {
           } catch (e) {
             console.log('Cannot resolve full path (browser security):', e);
           }
-          
+
           console.log('Selected directory handle:', dirHandle);
           console.log('Directory name:', dirName);
           console.log('Display path:', displayPath);
-          
+
           setTargetDir(displayPath);
-          
+
           // Store the handle and additional info for later use
           (window as any).selectedDirHandle = dirHandle;
           (window as any).selectedDirName = dirName;
         } else {
           // Fallback: show input field with helpful message
-          alert('Your browser does not support directory selection.\n\nPlease type the full directory path in the input field.\n\nRecommended browsers: Chrome, Edge, or use the Electron app.');
+          showToast('Your browser does not support directory selection. Please type the full directory path.', 'warning');
         }
       } catch (error: any) {
         // User cancelled or error occurred
@@ -130,10 +131,10 @@ const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit }) => {
           // User cancelled - do nothing
           return;
         } else if (error.name === 'SecurityError') {
-          alert('Cannot access this folder due to browser security restrictions.\n\nPlease choose a different folder (avoid system folders like Program Files, Windows, etc.).\n\nRecommended: Create a new folder in your Documents or a custom location.');
+          showToast('Cannot access this folder due to browser security restrictions. Please choose a different folder.', 'error');
         } else {
           console.error('Directory selection error:', error);
-          alert('Failed to select directory. Please try a different folder.');
+          showToast('Failed to select directory. Please try a different folder.', 'error');
         }
       }
     }
@@ -144,7 +145,7 @@ const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit }) => {
       <div className="modal-content clone-modal">
         <h2>Clone Git Repository</h2>
         <p>Clone from GitHub, GitLab, Bitbucket, or any public Git repository</p>
-        
+
         <div className="clone-input-group">
           <label htmlFor="repo-url">Repository URL</label>
           <input
@@ -171,8 +172,8 @@ const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit }) => {
               onChange={(e) => setTargetDir(e.target.value)}
               placeholder="Select folder or enter directory name"
             />
-            <button 
-              onClick={handleSelectDirectory} 
+            <button
+              onClick={handleSelectDirectory}
               className="directory-select-btn"
               type="button"
             >
@@ -185,7 +186,7 @@ const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit }) => {
         </div>
 
         <div className="advanced-toggle">
-          <button 
+          <button
             onClick={() => setShowAdvanced(!showAdvanced)}
             className="toggle-button"
             type="button"
@@ -211,8 +212,8 @@ const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit }) => {
 
         <div className="modal-actions">
           <button onClick={onClose} className="modal-button cancel-button">Cancel</button>
-          <button 
-            onClick={handleSubmit} 
+          <button
+            onClick={handleSubmit}
             className={`modal-button submit-button ${isValid ? 'submit-button-active' : 'submit-button-disabled'}`}
             disabled={!isValid}
           >

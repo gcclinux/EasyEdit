@@ -215,7 +215,7 @@ const App = () => {
   const [currentRepoPath, setCurrentRepoPath] = useState<string | null>(null);
   const [currentFilePath, setCurrentFilePath] = useState<string | null>(null);
   const [isGitRepo, setIsGitRepo] = useState(false);
-  
+
   // Cloud note state
   const [currentCloudNote, setCurrentCloudNote] = useState<{
     noteId: string;
@@ -470,7 +470,7 @@ const App = () => {
   useEffect(() => {
     const updateTitle = () => {
       let title = 'EasyEdit';
-      
+
       // Priority 1: Cloud note title
       if (currentCloudNote) {
         const unsavedIndicator = currentCloudNote.hasUnsavedChanges ? '• ' : '';
@@ -482,10 +482,10 @@ const App = () => {
         const filename = currentFilePath.split(/[/\\]/).pop() || currentFilePath;
         title = `${filename} - EasyEdit`;
       }
-      
+
       // Update document title (works for both web and Tauri)
       document.title = title;
-      
+
       // For Tauri, also update the window title
       if (typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__) {
         (async () => {
@@ -499,7 +499,7 @@ const App = () => {
         })();
       }
     };
-    
+
     updateTitle();
   }, [currentFilePath, currentCloudNote]);
 
@@ -507,7 +507,7 @@ const App = () => {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     cursorPositionRef.current = e.target.selectionStart;
     setEditorContent(e.target.value);
-    
+
     // Track changes for cloud notes
     if (currentCloudNote && !currentCloudNote.hasUnsavedChanges) {
       setCurrentCloudNote(prev => prev ? { ...prev, hasUnsavedChanges: true } : null);
@@ -522,25 +522,25 @@ const App = () => {
     const setupTauriEventListeners = async () => {
       try {
         // Check if running in Tauri
-        const isTauri = typeof window !== 'undefined' && 
-          ((window as any).__TAURI__ || (window as any).__TAURI_INTERNALS__ || 
-           typeof (window as any).__TAURI_INVOKE__ === 'function');
-        
+        const isTauri = typeof window !== 'undefined' &&
+          ((window as any).__TAURI__ || (window as any).__TAURI_INTERNALS__ ||
+            typeof (window as any).__TAURI_INVOKE__ === 'function');
+
         if (isTauri) {
           console.log('Setting up Tauri event listeners...');
-          
+
           // Import Tauri event listener
           const { listen } = await import('@tauri-apps/api/event');
-          
+
           // Listen for file open events from command line
           const unlisten = await listen('open-file', (event) => {
             console.log('Received open-file event:', event.payload);
             const filePath = event.payload as string;
-            
+
             // Open the file
             handleOpenFileFromCommandLine(filePath);
           });
-          
+
           // Check for command line arguments on startup
           const { invoke } = await import('@tauri-apps/api/core');
           try {
@@ -552,7 +552,7 @@ const App = () => {
           } catch (error) {
             console.log('No file specified in command line args');
           }
-          
+
           // Cleanup function
           return () => {
             unlisten();
@@ -564,7 +564,7 @@ const App = () => {
         console.error('Failed to setup Tauri event listeners:', error);
       }
     };
-    
+
     setupTauriEventListeners();
   }, []);
 
@@ -980,7 +980,7 @@ const App = () => {
       showToast('Git manager not initialized yet. Please wait.', 'info');
       return false;
     }
-    
+
     // Check if we have stored credentials
     if (!gitCredentialManager.hasCredentials()) {
       // No stored credentials, prompt user to set them up
@@ -1030,13 +1030,13 @@ const App = () => {
         showToast('Git manager not initialized yet. Please wait.', 'error');
         return;
       }
-      
+
       try {
         // Show loading state
         showToast('Cloning repository... This may take a moment.', 'info');
 
         const isTauri = typeof window !== 'undefined' && (window as any).__TAURI__;
-        
+
         if (isTauri) {
           // Tauri mode: targetDir is the full path
           console.log('Using Tauri mode for clone');
@@ -1154,24 +1154,23 @@ const App = () => {
   // Open an existing repository
   const handleOpenRepositoryClick = async () => {
     // Check if running in Tauri
-    const isTauri = typeof window !== 'undefined' && 
-      ((window as any).__TAURI__ || (window as any).__TAURI_INTERNALS__ || 
-       typeof (window as any).__TAURI_INVOKE__ === 'function');
+    const isTauri = typeof window !== 'undefined' &&
+      ((window as any).__TAURI__ || (window as any).__TAURI_INTERNALS__ ||
+        typeof (window as any).__TAURI_INVOKE__ === 'function');
     console.log('[App] Tauri detection:', isTauri);
     console.log('[App] Window object:', typeof window);
     console.log('[App] __TAURI__ property:', (window as any).__TAURI__);
-    
+
     if (isTauri) {
       // Tauri: Use Tauri file operations
       const { handleTauriOpenRepository } = await import('./tauriFileHandler');
       handleTauriOpenRepository(
-        setEditorContent,
         // onGitRepoDetected
         async (repoPath: string, dirPath: string) => {
           console.log('[App] Repository opened:', repoPath);
           setCurrentRepoPath(dirPath);
           setIsGitRepo(true);
-          
+
           // Set the repository directory in gitManager
           gitManager.setRepoDir(dirPath);
           console.log('[App] Set repo dir in gitManager:', dirPath);
@@ -1186,7 +1185,7 @@ const App = () => {
           console.log('[App] Files found:', files.length);
           setRepoFiles(files);
           setCurrentRepoPath(dirPath);
-          
+
           // Set the repository directory in gitManager
           gitManager.setRepoDir(dirPath);
           console.log('[App] Set repo dir in gitManager for file list:', dirPath);
@@ -1255,20 +1254,25 @@ const App = () => {
   const handleOpenFileFromCommandLine = async (filePath: string) => {
     try {
       console.log('Opening file from command line:', filePath);
-      
-      // Read the file content
-      const { readFileContent } = await import('./tauriFileHandler');
-      const content = await readFileContent(filePath);
-      
+      const isTauri = typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__;
+      let targetPath = filePath;
+
+      const { readFileContent, resolvePath } = await import('./tauriFileHandler');
+      if (isTauri) {
+        targetPath = await resolvePath(filePath);
+      }
+
+      const content = await readFileContent(targetPath);
+
       if (content !== null) {
         setEditorContent(content);
-        setCurrentFilePath(filePath);
-        
+        setCurrentFilePath(targetPath);
+
         // Extract directory path to check if it's a Git repo
         const dirPath = filePath.substring(0, filePath.lastIndexOf('/'));
         const { checkGitRepo } = await import('./tauriFileHandler');
         const isGitRepo = await checkGitRepo(dirPath);
-        
+
         if (isGitRepo) {
           setCurrentRepoPath(dirPath);
           setIsGitRepo(true);
@@ -1300,26 +1304,26 @@ const App = () => {
 
       console.log('[App] Opening file:', filePath);
       console.log('[App] Current repo path:', currentRepoPath);
-      
+
       const isTauri = typeof window !== 'undefined' && (window as any).__TAURI__;
-      
+
       if (isTauri) {
         // Tauri mode: read file directly from filesystem
         console.log('[App] Reading file via Tauri:', filePath);
         const { readTauriFile } = await import('./tauriFileHandler');
         const result = await readTauriFile(currentRepoPath, filePath);
-        
+
         if (result) {
           content = result.content;
           fullPath = result.path;
           console.log('[App] File content loaded from Tauri, length:', content.length);
-          
+
           // Set the repository directory in gitManager for Tauri
           if (currentRepoPath) {
             gitManager.setRepoDir(currentRepoPath);
             console.log('[App] Set repo dir in gitManager:', currentRepoPath);
           }
-          
+
           // For Tauri, we need to store the relative path for Git operations
           // but the full path for file operations
           setCurrentFilePath(result.path); // Store full path
@@ -1355,7 +1359,7 @@ const App = () => {
           console.log('[App] Reading file via Tauri file handler:', filePath);
           const { readTauriFile } = await import('./tauriFileHandler');
           const result = await readTauriFile(currentRepoPath, filePath);
-          
+
           if (result) {
             content = result.content;
             fullPath = result.path;
@@ -1382,7 +1386,7 @@ const App = () => {
       showToast('Git manager not initialized yet. Please wait.', 'info');
       return;
     }
-    
+
     if (!isGitRepo) {
       showToast('No active Git repository. Please clone a repository first.', 'info');
       return;
@@ -1407,6 +1411,7 @@ const App = () => {
       try {
         await gitManager.push();
         showToast('Successfully pushed changes!', 'success');
+        await updateGitStatus();
       } catch (error) {
         showToast(`Failed to push changes: ${(error as Error).message}`, 'error');
         console.error('Push error:', error);
@@ -1417,6 +1422,7 @@ const App = () => {
       try {
         await gitManager.push();
         showToast('Successfully pushed changes!', 'success');
+        await updateGitStatus();
       } catch (error) {
         showToast(`Failed to push changes: ${(error as Error).message}`, 'error');
         console.error('Push error:', error);
@@ -1498,24 +1504,29 @@ const App = () => {
       console.log('[App] Is Electron:', !!(window as any).electronAPI);
 
       // Extract relative path from full path
-      relativePath = currentFilePath.startsWith(repoPath) 
-        ? currentFilePath.substring(repoPath.length).replace(/^\//, '')
-        : currentFilePath;
+      const normalizedFilePath = currentFilePath.replace(/\\/g, '/');
+      const normalizedRepoPath = repoPath.replace(/\\/g, '/');
+
+      relativePath = normalizedFilePath.startsWith(normalizedRepoPath)
+        ? normalizedFilePath.substring(normalizedRepoPath.length).replace(/^\//, '')
+        : normalizedFilePath;
 
       const isTauri = typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__;
-      
+
       if (isTauri) {
-        // Tauri mode: currentFilePath is already the full path
-        console.log('[App] Writing via Tauri gitManager:', currentFilePath);
-        const { writeTauriFile } = await import('./tauriFileHandler');
-        const success = await writeTauriFile(currentFilePath, editorContent);
-        
+        // Ensure we have an absolute path for Tauri
+        const { resolvePath, writeTauriFile } = await import('./tauriFileHandler');
+        const absolutePath = await resolvePath(currentFilePath, repoPath);
+
+        console.log('[App] Writing via Tauri:', absolutePath);
+        const success = await writeTauriFile(absolutePath, editorContent);
+
         if (!success) {
           throw new Error('Failed to write file');
         }
-        
+
         console.log('[App] File saved successfully via Tauri');
-        
+
         console.log('[App] Staging file via Tauri:', relativePath);
         await gitManager.add(relativePath);
         console.log('[App] File staged successfully via Tauri');
@@ -1567,7 +1578,7 @@ const App = () => {
   };
 
   // Phase 4: Git status update
-  const updateGitStatus = async () => {
+  const updateGitStatus = useCallback(async () => {
     if (!isGitRepo || !currentRepoPath) {
       setGitStatus({ branch: '', modifiedCount: 0, status: 'clean' });
       return;
@@ -1588,7 +1599,26 @@ const App = () => {
       // Set default status on error
       setGitStatus({ branch: '', modifiedCount: 0, status: 'clean' });
     }
-  };
+  }, [isGitRepo, currentRepoPath, gitManager]);
+
+  // Auto-refresh Git status every 30 seconds
+  useEffect(() => {
+    if (!isGitRepo || !currentRepoPath || !gitManager) return;
+
+    const intervalId = setInterval(async () => {
+      // Skip if document is hidden to save resources
+      if (document.hidden) return;
+
+      try {
+        await gitManager.fetch();
+        await updateGitStatus();
+      } catch (error) {
+        // Silent failure in background
+      }
+    }, 30000);
+
+    return () => clearInterval(intervalId);
+  }, [isGitRepo, currentRepoPath, gitManager, updateGitStatus]);
 
   // Phase 4: View commit history
   const handleViewHistory = async () => {
@@ -1596,7 +1626,7 @@ const App = () => {
       showToast('Git manager not initialized yet. Please wait.', 'info');
       return;
     }
-    
+
     if (!isGitRepo) {
       showToast('No active Git repository. Please clone a repository first.', 'info');
       return;
@@ -1627,27 +1657,27 @@ const App = () => {
     try {
       // Import cloudManager singleton to avoid circular dependencies
       const { cloudManager } = await import('./cloud/managers/CloudManager');
-      
+
       if (!cloudManager) {
         throw new Error('Cloud features are disabled');
       }
-      
+
       await cloudManager.saveNote(currentCloudNote.noteId, editorContent);
-      
+
       // Update cloud note state
       setCurrentCloudNote(prev => prev ? {
         ...prev,
         lastSaved: new Date(),
         hasUnsavedChanges: false
       } : null);
-      
+
       // Trigger sidebar refresh to update timestamps
       setSidebarRefreshTrigger(prev => {
         const newValue = prev + 1;
         console.log('[App] Triggering sidebar refresh, new trigger value:', newValue);
         return newValue;
       });
-      
+
       showToast(`Saved "${currentCloudNote.title}" to ${currentCloudNote.providerDisplayName}`, 'success');
     } catch (error) {
       console.error('Failed to save cloud note:', error);
@@ -1677,7 +1707,7 @@ const App = () => {
         const success = await writeFileToDirectory(currentDirHandle, fileName, editorContent);
         if (success) {
           showToast('File saved successfully!', 'success');
-          
+
           // If Git features are available, also stage the file
           if (isGitRepo && gitManager) {
             try {
@@ -1743,8 +1773,16 @@ const App = () => {
     setCurrentCloudNote(null); // Clear cloud note state
     setGitStatus({ branch: '', modifiedCount: 0, status: 'clean' });
 
+    const isTauri = typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__;
+
     // 2. Immediately prompt to save
-    const savedPath = await saveAsFile('');
+    let savedPath: string | null = null;
+    if (isTauri) {
+      const { handleTauriSaveAs } = await import('./tauriFileHandler');
+      savedPath = await handleTauriSaveAs('', 'new-file.md');
+    } else {
+      savedPath = await saveAsFile('');
+    }
 
     // 3. If saved successfully, update state
     if (savedPath) {
@@ -1767,7 +1805,7 @@ const App = () => {
         'Enter a password to encrypt the file (min 8 characters):',
         onSubmit
       );
-    });
+    }, showToast);
   };
 
   // Update effect to include cursor position
@@ -1850,61 +1888,79 @@ const App = () => {
             <div className="header-dropdown format-dropdown" style={{ position: 'absolute', top: helpPos.top + 'px', left: helpPos.left + 'px', zIndex: 999999, minWidth: helpPos.width + 'px' }}>
               <button
                 className="dropdown-item"
-                onClick={() => {
-                  handleOpenClick(
-                    async (content: string, filePath?: string | null) => {
-                      setEditorContent(content);
+                onClick={async () => {
+                  const isTauri = typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__;
 
-                      // Set file path for both Electron and Web
+                  if (isTauri) {
+                    const { handleTauriOpenFile } = await import('./tauriFileHandler');
+                    await handleTauriOpenFile(async (content: string, filePath?: string | null) => {
+                      setEditorContent(content);
                       if (filePath) {
                         setCurrentFilePath(filePath);
-                        setCurrentCloudNote(null); // Clear cloud note state when opening regular file
+                        setCurrentCloudNote(null);
                         console.log('[App] File path set:', filePath);
 
-                        // Show helpful message for web users about Git features
+                        // If it's a new file not in the current repo, we might want to update repo info
+                        // but stay simple for now.
                         if (!isGitRepo) {
-                          showToast('File opened! For Git features, use "File → Open Repository"', 'info');
+                          showToast('File opened!', 'info');
                         }
                       }
+                    });
+                  } else {
+                    handleOpenClick(
+                      async (content: string, filePath?: string | null) => {
+                        setEditorContent(content);
 
-                      // Web mode - no automatic Git detection from file paths
-                    },
-                    // Git repo detection callback for File System Access API (web)
-                    async (repoPath: string, dirHandle: any) => {
-                      console.log('[App] Git repo detected via File System Access API:', repoPath);
-                      
-                      if (dirHandle) {
-                        // Store the directory handle for web-based Git operations
-                        setCurrentDirHandle(dirHandle);
-                        setCurrentRepoPath(repoPath);
-                        setIsGitRepo(true);
+                        // Set file path for both Electron and Web
+                        if (filePath) {
+                          setCurrentFilePath(filePath);
+                          setCurrentCloudNote(null); // Clear cloud note state when opening regular file
+                          console.log('[App] File path set:', filePath);
 
-                        // Set repo directory in gitManager for web mode
-                        const lightningFSPath = `/${repoPath}`;
-
-                        // Sync the repo contents to LightningFS
-                        console.log('[App] Syncing repo to LightningFS:', lightningFSPath);
-                        try {
-                          await gitManager.openRepoFromHandle(dirHandle, lightningFSPath);
-                          console.log('[App] Repo sync complete');
-                        } catch (e) {
-                          console.error('[App] Repo sync failed:', e);
-                          // Fallback to basic setup if sync fails
-                          gitManager.setRepoDir(lightningFSPath);
-                          gitManager.setDirHandle(dirHandle);
+                          // Show helpful message for web users about Git features
+                          if (!isGitRepo) {
+                            showToast('File opened! For Git features, use "File → Open Repository"', 'info');
+                          }
                         }
+                      },
+                      // Git repo detection callback for File System Access API (web)
+                      async (repoPath: string, dirHandle: any) => {
+                        console.log('[App] Git repo detected via File System Access API:', repoPath);
 
-                        showToast('Git repository detected! Git features are now available.', 'success');
+                        if (dirHandle) {
+                          // Store the directory handle for web-based Git operations
+                          setCurrentDirHandle(dirHandle);
+                          setCurrentRepoPath(repoPath);
+                          setIsGitRepo(true);
 
-                        // Update Git status
-                        await updateGitStatus();
-                      } else {
-                        // Note: Full Git integration in browser requires additional setup
-                        // For now, just show that we detected a repo
-                        showToast('Git repository detected! Use "Git → Open Repository" for full Git features', 'info');
+                          // Set repo directory in gitManager for web mode
+                          const lightningFSPath = `/${repoPath}`;
+
+                          // Sync the repo contents to LightningFS
+                          console.log('[App] Syncing repo to LightningFS:', lightningFSPath);
+                          try {
+                            await gitManager.openRepoFromHandle(dirHandle, lightningFSPath);
+                            console.log('[App] Repo sync complete');
+                          } catch (e) {
+                            console.error('[App] Repo sync failed:', e);
+                            // Fallback to basic setup if sync fails
+                            gitManager.setRepoDir(lightningFSPath);
+                            gitManager.setDirHandle(dirHandle);
+                          }
+
+                          showToast('Git repository detected! Git features are now available.', 'success');
+
+                          // Update Git status
+                          await updateGitStatus();
+                        } else {
+                          // Note: Full Git integration in browser requires additional setup
+                          // For now, just show that we detected a repo
+                          showToast('Git repository detected! Use "Git → Open Repository" for full Git features', 'info');
+                        }
                       }
-                    }
-                  );
+                    );
+                  }
                   setShowHelpDropdown(false);
                 }}
               >
@@ -1929,7 +1985,7 @@ const App = () => {
                 onClick={() => {
                   const showPrompt = (onSubmit: (password: string) => void) =>
                     showPasswordPrompt('Decrypt File', 'Enter the password for the .sstp file.', onSubmit);
-                  decryptFile(setEditorContent, showPrompt);
+                  decryptFile(setEditorContent, showPrompt, showToast);
                   setShowHelpDropdown(false);
                 }}
               >
@@ -2096,7 +2152,7 @@ const App = () => {
             status={gitStatus.status}
           />
         )}
-{/* Cloud note display removed - note name now shown in title bar only */}
+        {/* Cloud note display removed - note name now shown in title bar only */}
         {/* Regular file display removed - filename now shown in title bar only */}
         {/* If there was a display for currentFilePath here, it has been removed */}
         <button className="menu-item fixed-menubar-btn" onClick={toggleView}>
@@ -2298,6 +2354,7 @@ const App = () => {
           open={cloneModalOpen}
           onClose={() => setCloneModalOpen(false)}
           onSubmit={handleCloneSubmit}
+          showToast={showToast}
         />
         <FileBrowserModal
           open={fileBrowserModalOpen}
@@ -2319,6 +2376,7 @@ const App = () => {
           onClose={() => setMasterPasswordModalOpen(false)}
           onSubmit={handleMasterPasswordSubmit}
           isSetup={isMasterPasswordSetup}
+          showToast={showToast}
         />
         <CommitModal
           open={commitModalOpen}
@@ -2750,6 +2808,7 @@ const App = () => {
             setEditorContent(editorContent + timelineText);
             setTimelineModalOpen(false);
           }}
+          showToast={showToast}
         />
 
 
@@ -2773,22 +2832,22 @@ const App = () => {
             }}
             onNoteSelect={async (noteId: string, content: string, noteMetadata?: any) => {
               setEditorContent(content);
-              
+
               // Clear current file path since we're opening a cloud note
               setCurrentFilePath(null);
-              
+
               // Set cloud note state if metadata is provided
               if (noteMetadata) {
                 // Import cloudManager singleton to get provider metadata
                 const { cloudManager } = await import('./cloud/managers/CloudManager');
-                
+
                 if (!cloudManager) {
                   console.warn('Cloud features are disabled, cannot load provider metadata');
                   return;
                 }
-                
+
                 const providerMetadata = await cloudManager.getProviderMetadata(noteMetadata.provider);
-                
+
                 setCurrentCloudNote({
                   noteId,
                   title: noteMetadata.title,
@@ -2799,7 +2858,7 @@ const App = () => {
                   hasUnsavedChanges: false
                 });
               }
-              
+
               // Add to history for undo/redo functionality
               addToHistory(content, cursorPositionRef.current, documentHistory, historyIndex, setDocumentHistory, setHistoryIndex);
             }}
@@ -2860,12 +2919,14 @@ const App = () => {
               <h2>{confirmModalConfig.title}</h2>
               <p style={{ whiteSpace: 'pre-wrap' }}>{confirmModalConfig.message}</p>
               <div className="modal-actions">
-                <button
-                  className="modal-button cancel"
-                  onClick={() => setConfirmModalConfig(prev => ({ ...prev, open: false }))}
-                >
-                  {confirmModalConfig.cancelLabel || 'Cancel'}
-                </button>
+                {confirmModalConfig.cancelLabel !== null && (
+                  <button
+                    className="modal-button cancel"
+                    onClick={() => setConfirmModalConfig(prev => ({ ...prev, open: false }))}
+                  >
+                    {confirmModalConfig.cancelLabel || 'Cancel'}
+                  </button>
+                )}
                 <button
                   className="modal-button primary"
                   onClick={async () => {

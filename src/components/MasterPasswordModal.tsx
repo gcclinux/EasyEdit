@@ -6,13 +6,15 @@ interface MasterPasswordModalProps {
   onClose: () => void;
   onSubmit: (password: string) => void;
   isSetup: boolean; // true if creating new master password, false if unlocking
+  showToast: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void;
 }
 
-const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({ 
-  open, 
-  onClose, 
-  onSubmit, 
-  isSetup 
+const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
+  open,
+  onClose,
+  onSubmit,
+  isSetup,
+  showToast
 }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -32,18 +34,18 @@ const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
 
   const handleSubmit = () => {
     if (!password.trim()) {
-      alert('Please enter a password');
+      showToast('Please enter a password', 'warning');
       return;
     }
 
     if (password.length < 8) {
-      alert('Password must be at least 8 characters long');
+      showToast('Password must be at least 8 characters long', 'warning');
       return;
     }
 
     if (isSetup) {
       if (password !== confirmPassword) {
-        alert('Passwords do not match');
+        showToast('Passwords do not match', 'error');
         return;
       }
     }
@@ -62,7 +64,7 @@ const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
       <div className="modal-content master-password-modal">
         <h2>{isSetup ? 'Create Master Password' : 'Unlock Git Credentials'}</h2>
         <p className="modal-description">
-          {isSetup 
+          {isSetup
             ? 'Create a master password to encrypt your Git credentials. You\'ll need this password to access your saved credentials.'
             : 'Enter your master password to unlock saved Git credentials.'}
         </p>
@@ -81,8 +83,8 @@ const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
               placeholder="Enter password (min 8 characters)"
               autoFocus
             />
-            <button 
-              onClick={() => setShowPassword(!showPassword)} 
+            <button
+              onClick={() => setShowPassword(!showPassword)}
               className="password-toggle-btn"
               type="button"
               title={showPassword ? 'Hide password' : 'Show password'}
@@ -110,7 +112,7 @@ const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
 
         {isSetup && (
           <div className="warning-box">
-            <strong>⚠️ Important:</strong> Remember this password! If you forget it, 
+            <strong>⚠️ Important:</strong> Remember this password! If you forget it,
             you'll need to clear your saved credentials and set them up again.
           </div>
         )}

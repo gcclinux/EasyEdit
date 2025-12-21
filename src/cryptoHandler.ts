@@ -2,11 +2,12 @@ import { encryptTextToBytes, decryptBytesToText } from './stpFileCrypter';
 
 export const encryptContent = async (
   content: string,
-  showPasswordPrompt: (onSubmit: (password: string) => void) => void
+  showPasswordPrompt: (onSubmit: (password: string) => void) => void,
+  showToast: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void
 ): Promise<void> => {
   showPasswordPrompt((password) => {
     if (!password || password.length < 8) {
-      alert('Password must be at least 8 characters long');
+      showToast('Password must be at least 8 characters long', 'warning');
       return;
     }
 
@@ -21,20 +22,22 @@ export const encryptContent = async (
       a.download = 'document.sstp';
       a.click();
       URL.revokeObjectURL(url);
+      showToast('File encrypted and download started', 'success');
     } catch (error) {
-      alert('Encryption failed: ' + (error as Error).message);
+      showToast('Encryption failed: ' + (error as Error).message, 'error');
     }
   });
 };
 
 export const decryptFile = async (
   setEditorContent: (content: string) => void,
-  showPasswordPrompt: (onSubmit: (password: string) => void) => void
+  showPasswordPrompt: (onSubmit: (password: string) => void) => void,
+  showToast: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void
 ): Promise<void> => {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = '.sstp';
-  
+
   input.onchange = async (e: Event) => {
     const file = (e.target as HTMLInputElement).files?.[0];
     if (!file) return;
@@ -47,8 +50,9 @@ export const decryptFile = async (
         const encrypted = new Uint8Array(arrayBuffer);
         const decrypted = decryptBytesToText(encrypted, password);
         setEditorContent(decrypted);
+        showToast('File decrypted successfully', 'success');
       } catch (error) {
-        alert('Decryption failed: ' + (error as Error).message);
+        showToast('Decryption failed: ' + (error as Error).message, 'error');
       }
     });
   };
