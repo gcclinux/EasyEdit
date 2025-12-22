@@ -14,6 +14,9 @@ jobs:
   build-windows:
     name: Build Windows Packages
     runs-on: windows-latest
+    env:
+      WEBKIT_DISABLE_DMABUF_RENDERER: 1
+      WEBKIT_DISABLE_COMPOSITING_MODE: 1
 
     steps:
       - name: Checkout repository
