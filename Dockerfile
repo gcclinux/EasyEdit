@@ -9,11 +9,6 @@ RUN npm ci --silent
 COPY . .
 RUN npm run build
 
-# Make sure metadata files are included in the served 'dist' folder for the About Modal
-RUN cp package.json dist/ && \
-    mkdir -p dist/release && \
-    cp release/latest.json dist/release/
-
 # Runtime stage: minimal image to serve the compiled app
 FROM node:20-alpine AS runtime
 WORKDIR /app
