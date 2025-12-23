@@ -3,14 +3,18 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { loadTheme, getCurrentTheme, isCurrentThemeCustom } from './themeLoader';
 import { Buffer } from 'buffer';
+import LicenseManager from './premium/LicenseManager';
+
+// Initialize the LicenseManager
+LicenseManager.initialize();
 
 // Environment Variables Check
-console.log('=== Environment Variables Check ===');
-console.log('VITE_GOOGLE_CLIENT_ID:', import.meta.env.VITE_GOOGLE_CLIENT_ID ? 'SET' : 'NOT SET');
-console.log('VITE_GOOGLE_CLIENT_APP:', import.meta.env.VITE_GOOGLE_CLIENT_APP ? 'SET' : 'NOT SET');
-console.log('VITE_GOOGLE_CLIENT_SECRET:', import.meta.env.VITE_GOOGLE_CLIENT_SECRET ? 'SET' : 'NOT SET');
-console.log('VITE_GOOGLE_API_KEY:', import.meta.env.VITE_GOOGLE_API_KEY ? 'SET' : 'NOT SET');
-console.log('===================================');
+// console.log('=== Environment Variables Check ===');
+// console.log('VITE_GOOGLE_CLIENT_ID:', import.meta.env.VITE_GOOGLE_CLIENT_ID ? 'SET' : 'NOT SET');
+// console.log('VITE_GOOGLE_CLIENT_APP:', import.meta.env.VITE_GOOGLE_CLIENT_APP ? 'SET' : 'NOT SET');
+// console.log('VITE_GOOGLE_CLIENT_SECRET:', import.meta.env.VITE_GOOGLE_CLIENT_SECRET ? 'SET' : 'NOT SET');
+// console.log('VITE_GOOGLE_API_KEY:', import.meta.env.VITE_GOOGLE_API_KEY ? 'SET' : 'NOT SET');
+// console.log('===================================');
 
 // Polyfill Buffer for browser environment
 if (typeof window !== 'undefined') {
