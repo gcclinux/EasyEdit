@@ -4,7 +4,7 @@ class LicenseManager {
   private static instance: LicenseManager;
   private activeLicense: boolean = false;
   private checking: boolean = false;
-  private API_ENDPOINT = 'https://easyeditor.uk/check-license'; // Placeholder
+  private API_ENDPOINT = 'https://easyeditor-premium.web.app/api/check-license'; // Placeholder
 
   private constructor() {}
 
