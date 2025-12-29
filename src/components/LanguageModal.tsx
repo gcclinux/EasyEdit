@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { FaGlobe, FaPlus } from 'react-icons/fa';
+import { FaGlobe, FaPlus, FaDownload } from 'react-icons/fa';
 import { useLanguage } from '../i18n/LanguageContext';
+import enTranslations from '../i18n/locales/en.json'; // Import English as template
 import './themeModal.css'; // Reuse theme modal styles for consistency
 
 interface LanguageModalProps {
@@ -29,6 +30,50 @@ const LanguageModal: React.FC<LanguageModalProps> = ({ open, onClose }) => {
             alert(t('language_modal.invalid_json'));
         }
     }
+
+    const handleDownloadTemplate = async (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent selecting the language
+        const jsonString = JSON.stringify(enTranslations, null, 4);
+
+        // Check if running in Tauri
+        const isTauri = typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__;
+
+        if (isTauri) {
+            try {
+                // Dynamic import for Tauri APIs
+                const { save } = await import('@tauri-apps/plugin-dialog');
+                const { writeTextFile } = await import('@tauri-apps/plugin-fs');
+
+                const filePath = await save({
+                    defaultPath: 'easyedit_template_en.json',
+                    filters: [{
+                        name: 'JSON',
+                        extensions: ['json']
+                    }]
+                });
+
+                if (filePath) {
+                    await writeTextFile(filePath, jsonString);
+                    // access t via LanguageContext, assuming it's available or use alert fallback
+                    alert('Template saved successfully!');
+                }
+            } catch (err) {
+                console.error('Failed to save file via Tauri:', err);
+                alert('Failed to save template file.');
+            }
+        } else {
+            // Web fallback
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'easyedit_template_en.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    };
 
     if (importMode) {
         return (
@@ -86,12 +131,22 @@ const LanguageModal: React.FC<LanguageModalProps> = ({ open, onClose }) => {
                                 setLanguage(lang.code);
                                 onClose();
                             }}
+                            style={{ position: 'relative' }}
                         >
                             <div className="theme-card-header">
                                 <h3>{lang.label}</h3>
                                 <div className="theme-badges">
                                     {language === lang.code && <span className="theme-badge">{t('language_modal.active')}</span>}
-                                    {/* Custom language deletion could be added here */}
+                                    {lang.code === 'en' && (
+                                        <div
+                                            className="theme-badge"
+                                            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', background: '#4a5568' }}
+                                            onClick={handleDownloadTemplate}
+                                            title="Download English Template"
+                                        >
+                                            <FaDownload size={10} /> Template
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <p className="theme-card-desc">{lang.name}</p>

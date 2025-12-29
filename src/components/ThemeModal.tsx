@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './themeModal.css';
-import { FaPalette, FaPlus, FaTrash } from 'react-icons/fa';
+import { FaPalette, FaPlus, FaTrash, FaDownload } from 'react-icons/fa';
 import { getCustomThemes, deleteCustomTheme, CustomTheme } from '../customThemeManager';
 import { useLanguage } from '../i18n/LanguageContext';
+import defaultThemeCss from '../themes/default.css?inline';
 
 interface ThemeModalProps {
   open: boolean;
@@ -36,6 +37,47 @@ const ThemeModal: React.FC<ThemeModalProps> = ({ open, onClose, onSelectTheme, c
     if (confirm(t('modals.theme.delete_confirm'))) {
       deleteCustomTheme(id);
       setCustomThemes(getCustomThemes());
+    }
+  };
+
+  const handleDownloadTemplate = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    // Check if running in Tauri
+    const isTauri = typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__;
+
+    if (isTauri) {
+      try {
+        const { save } = await import('@tauri-apps/plugin-dialog');
+        const { writeTextFile } = await import('@tauri-apps/plugin-fs');
+
+        const filePath = await save({
+          defaultPath: 'easyedit_template_theme.css',
+          filters: [{
+            name: 'CSS',
+            extensions: ['css']
+          }]
+        });
+
+        if (filePath) {
+          await writeTextFile(filePath, defaultThemeCss);
+          alert('Template saved successfully!');
+        }
+      } catch (err) {
+        console.error('Failed to save file via Tauri:', err);
+        alert('Failed to save template file.');
+      }
+    } else {
+      // Web fallback
+      const blob = new Blob([defaultThemeCss], { type: 'text/css' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'easyedit_template_theme.css';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
   };
 
@@ -73,11 +115,22 @@ const ThemeModal: React.FC<ThemeModalProps> = ({ open, onClose, onSelectTheme, c
                 onSelectTheme(theme.id, !theme.isBuiltIn);
                 onClose();
               }}
+              style={{ position: 'relative' }}
             >
               <div className="theme-card-header">
                 <h3>{theme.name}</h3>
                 <div className="theme-badges">
                   {currentTheme === theme.id && <span className="theme-badge">{t('modals.theme.active')}</span>}
+                  {theme.id === 'default' && (
+                    <div
+                      className="theme-badge"
+                      style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', background: '#4a5568' }}
+                      onClick={handleDownloadTemplate}
+                      title="Download Theme Template"
+                    >
+                      <FaDownload size={10} /> Template
+                    </div>
+                  )}
                   {!theme.isBuiltIn && (
                     <button
                       className="theme-delete"
