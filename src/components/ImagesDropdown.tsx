@@ -1,31 +1,33 @@
-// React import not required with the new JSX transform
+import { useLanguage } from '../i18n/LanguageContext';
 
 type Props = {
   onInsertTemplate: (template: string) => void;
   onClose: () => void;
 };
 
-const templates: Array<{ title: string; desc: string; tpl: string }> = [
-  { title: 'Image', desc: 'Inline image', tpl: '![EasyEdit](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png)\n\n' },
-  { title: 'Image (link)', desc: 'Image wrapped in a link', tpl: '[![EasyEdit](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png)](https://github.com/gcclinux/easyedit)\n\n' },
-  { title: 'Figure with caption', desc: 'Image with caption below', tpl: '![](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png)\n\n*Figure: caption*\n\n' },
-  { title: 'Image + Link (new tab)', desc: 'Image linking to URL', tpl: '[![EasyEdit](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png)](https://github.com/gcclinux/easyedit "EasyEdit HomePage")\n\n' },
-];
-
 export default function ImagesDropdown({ onInsertTemplate, onClose }: Props) {
+  const { t } = useLanguage();
+
+  const templates: Array<{ title: string; desc: string; tpl: string }> = [
+    { title: t('images.image'), desc: t('images.inline'), tpl: '![EasyEdit](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png)\n\n' },
+    { title: t('images.image_link'), desc: t('images.image_link_desc'), tpl: '[![EasyEdit](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png)](https://github.com/gcclinux/easyedit)\n\n' },
+    { title: t('images.figure'), desc: t('images.figure_desc'), tpl: '![](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png)\n\n*Figure: caption*\n\n' },
+    { title: t('images.link_new_tab'), desc: t('images.link_new_tab_desc'), tpl: '[![EasyEdit](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png)](https://github.com/gcclinux/easyedit "EasyEdit HomePage")\n\n' },
+  ];
+
   return (
     <div className="header-dropdown format-dropdown">
-      {templates.map((t) => (
+      {templates.map((tpl) => (
         <button
-          key={t.title}
+          key={tpl.title}
           className="dropdown-item"
           onClick={() => {
-            onInsertTemplate(t.tpl);
+            onInsertTemplate(tpl.tpl);
             onClose();
           }}
         >
-          <div className="hdr-title">{t.title}</div>
-          <div className="hdr-desc"><em>{t.desc}</em></div>
+          <div className="hdr-title">{tpl.title}</div>
+          <div className="hdr-desc"><em>{tpl.desc}</em></div>
           <div className="hdr-sep" />
         </button>
       ))}

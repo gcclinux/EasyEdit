@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './themeModal.css';
 import { FaPalette, FaPlus, FaTrash } from 'react-icons/fa';
 import { getCustomThemes, deleteCustomTheme, CustomTheme } from '../customThemeManager';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ThemeModalProps {
   open: boolean;
@@ -21,6 +22,7 @@ const builtInThemes = [
 ];
 
 const ThemeModal: React.FC<ThemeModalProps> = ({ open, onClose, onSelectTheme, currentTheme, onOpenImport }) => {
+  const { t } = useLanguage();
   const [customThemes, setCustomThemes] = useState<CustomTheme[]>([]);
 
   useEffect(() => {
@@ -31,7 +33,7 @@ const ThemeModal: React.FC<ThemeModalProps> = ({ open, onClose, onSelectTheme, c
 
   const handleDelete = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('Delete this custom theme?')) {
+    if (confirm(t('modals.theme.delete_confirm'))) {
       deleteCustomTheme(id);
       setCustomThemes(getCustomThemes());
     }
@@ -45,20 +47,20 @@ const ThemeModal: React.FC<ThemeModalProps> = ({ open, onClose, onSelectTheme, c
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content theme-modal" onClick={(e) => e.stopPropagation()}>
         <button className="theme-close" onClick={onClose}>✕</button>
-        
+
         <div className="theme-hero">
           <div className="theme-hero-icon">
             <FaPalette size={48} />
           </div>
           <div>
-            <h2 className="theme-title">Select Theme</h2>
-            <p className="theme-subtitle">Choose a color scheme for EasyEdit</p>
+            <h2 className="theme-title">{t('modals.theme.title')}</h2>
+            <p className="theme-subtitle">{t('modals.theme.subtitle')}</p>
           </div>
         </div>
 
         <div className="theme-actions">
           <button className="btn-import" onClick={() => { onOpenImport(); onClose(); }}>
-            <FaPlus /> Import Custom Theme
+            <FaPlus /> {t('modals.theme.import')}
           </button>
         </div>
 
@@ -75,12 +77,12 @@ const ThemeModal: React.FC<ThemeModalProps> = ({ open, onClose, onSelectTheme, c
               <div className="theme-card-header">
                 <h3>{theme.name}</h3>
                 <div className="theme-badges">
-                  {currentTheme === theme.id && <span className="theme-badge">Active</span>}
+                  {currentTheme === theme.id && <span className="theme-badge">{t('modals.theme.active')}</span>}
                   {!theme.isBuiltIn && (
-                    <button 
-                      className="theme-delete" 
+                    <button
+                      className="theme-delete"
                       onClick={(e) => handleDelete(theme.id, e)}
-                      title="Delete theme"
+                      title={t('modals.theme.delete_tooltip')}
                     >
                       <FaTrash />
                     </button>
@@ -93,7 +95,7 @@ const ThemeModal: React.FC<ThemeModalProps> = ({ open, onClose, onSelectTheme, c
         </div>
 
         <div className="modal-actions">
-          <button className="btn primary" onClick={onClose}>Close</button>
+          <button className="btn primary" onClick={onClose}>{t('actions.close')}</button>
         </div>
       </div>
     </div>

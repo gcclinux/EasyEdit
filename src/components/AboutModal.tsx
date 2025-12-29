@@ -2,6 +2,7 @@ import React from 'react';
 import './aboutModal.css';
 import { createPortal } from 'react-dom';
 import logo from '../assets/logo.png';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface AboutModalProps {
   open: boolean;
@@ -9,6 +10,7 @@ interface AboutModalProps {
 }
 
 export function AboutModal({ open, onClose }: AboutModalProps) {
+  const { t } = useLanguage();
   if (!open) return null;
 
   const lastUpdated = 'Sun Dec 7 2025';
@@ -32,7 +34,7 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
 
       // Try fetching package.json (works if app serves it) and also try to fetch
       // the latest available version info (local release/latest.json or remote fallback).
-      
+
       try {
         const resp = await fetch('/package.json');
         if (resp.ok) {
@@ -94,79 +96,69 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
             <img src={logo} alt="EasyEdit" />
           </div>
           <div className="about-hero-text">
-            <h2 id="about-title" className="about-title">EasyEdit</h2>
-            <div className="about-subtitle">Simple. Fast. Markdown-first notes with live preview.</div>
+            <h2 id="about-title" className="about-title">{t('about.title')}</h2>
+            <div className="about-subtitle">{t('about.subtitle')}</div>
             <div className="about-badges">
-              <span className="badge">Markdown</span>
-              <span className="badge">Templates</span>
-              <span className="badge">Mermaid</span>
-              <span className="badge">Export</span>
-              <span className="badge">Standalone or Hosted</span>
+              <span className="badge">{t('about.badge_markdown')}</span>
+              <span className="badge">{t('about.badge_templates')}</span>
+              <span className="badge">{t('about.badge_mermaid')}</span>
+              <span className="badge">{t('about.badge_export')}</span>
+              <span className="badge">{t('about.badge_hosted')}</span>
             </div>
           </div>
         </div>
-        <button className="icon-btn about-close" aria-label="Close about" title="Close" onClick={onClose}>✕</button>
+        <button className="icon-btn about-close" aria-label={t('actions.close')} title={t('actions.close')} onClick={onClose}>✕</button>
         <div className="about-grid">
           <div className="about-card">
-            <h3>What it is</h3>
+            <h3>{t('about.what_it_is')}</h3>
             <p>
-              <strong>EasyEdit</strong> is an easy Markdown editor that lets you write Markdown and
-              preview it in real-time. You can save and load .md files, export your notes to PDF,
-              and quickly share or copy rendered output. It’s lightweight, works offline, and
-              stays out of the way so you can focus on writing.
+              {t('about.what_it_is_desc')}
             </p>
             <p>
-              Support & discussions: <a href="https://github.com/gcclinux/EasyEdit/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a>
+              {t('about.support')} <a href="https://github.com/gcclinux/EasyEdit/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a>
             </p>
           </div>
           <div className="about-card">
-            <h3>What it does</h3>
+            <h3>{t('about.what_it_does')}</h3>
             <ul>
-              <li>Use ready-made templates for meetings, projects, study, travel, and workouts.</li>
-              <li>Insert tables, icons, images, links, tasks, footnotes, and Mermaid diagrams.</li>
-              <li>Export to <strong>Markdown</strong> or <strong>TXT</strong>, or print the rendered preview.</li>
-              <li>Resize the editor/preview split and switch themes on the fly.</li>
-              <li>Small, offline-first footprint — works standalone or hosted</li>
+              <li>{t('about.what_it_does_li1')}</li>
+              <li>{t('about.what_it_does_li2')}</li>
+              <li>{t('about.what_it_does_li3')}</li>
+              <li>{t('about.what_it_does_li4')}</li>
+              <li>{t('about.what_it_does_li5')}</li>
             </ul>
           </div>
           <div className="about-card">
-            <h3>Why you’ll like it</h3>
+            <h3>{t('about.why_like')}</h3>
             <p>
-              EasyEdit focuses on speed and simplicity while giving you the tools you need to
-              capture, structure, and export notes quickly. It combines a lightweight editor with
-              a live preview, reusable templates, and one-click exports so you can stay productive
-              without distraction.
+              {t('about.why_like_desc1')}
             </p>
-            <p>Great for journaling, meeting notes, planning, and any quick-capture workflow.</p>
+            <p>{t('about.why_like_desc2')}</p>
           </div>
           <div className="about-card">
-            <h3>Customizable Themes</h3>
+            <h3>{t('about.custom_themes')}</h3>
             <p>
-              Choose from a variety of <strong>slick, modern themes</strong> with different color schemes
-              to match your style and reduce eye strain. Switch themes instantly to find the perfect
-              look for your workflow — whether you prefer light, dark, or vibrant color palettes.
+              {t('about.custom_themes_desc1')}
             </p>
-            <p>Personalize your editing experience with beautiful, carefully crafted designs.</p>
+            <p>{t('about.custom_themes_desc2')}</p>
           </div>
           <div className="about-card">
-            <h3>Git Integration</h3>
+            <h3>{t('about.git_integration')}</h3>
             <p>
-              <strong>Basic Git features</strong> built right in — clone repositories, edit Markdown files,
-              stage changes, commit, and push directly to Git servers. Perfect for managing documentation,
-              notes, and content stored in Git repositories without leaving the editor.
+              {t('about.git_integration_desc1')}
             </p>
-            <p>Seamlessly work with GitHub, GitLab, and other Git hosting services.</p>
+            <p>{t('about.git_integration_desc2')}</p>
           </div>
           <div className="about-card">
-            <h3>Credits</h3>
-            <p>Built with care by <strong>Ricardo Wagemaker</strong>.<br />
-              <span className="muted">Last updated: {lastUpdated}</span>
-            </p>        
-            <p>License: MIT<br />Running Version: <strong>{version || '...'}</strong><br />Available Version: <strong>{availableVersion || '...'}</strong></p>
+            <h3>{t('about.credits')}</h3>
+            <p>{t('about.built_by')}<br />
+              <span className="muted">{t('about.last_updated')} {lastUpdated}</span>
+            </p>
+            <p>{t('about.license')}<br />{t('about.running_version')} <strong>{version || '...'}</strong><br />{t('about.available_version')} <strong>{availableVersion || '...'}</strong></p>
           </div>
         </div>
         <div className="modal-actions">
-          <button className="btn primary" onClick={onClose}>Close</button>
+          <button className="btn primary" onClick={onClose}>{t('about.close')}</button>
         </div>
       </div>
     </div>

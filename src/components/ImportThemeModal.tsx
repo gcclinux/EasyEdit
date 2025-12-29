@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import './importThemeModal.css';
 import { FaUpload, FaExclamationTriangle, FaFileUpload } from 'react-icons/fa';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ImportThemeModalProps {
   open: boolean;
@@ -9,6 +10,7 @@ interface ImportThemeModalProps {
 }
 
 const ImportThemeModal: React.FC<ImportThemeModalProps> = ({ open, onClose, onImport }) => {
+  const { t } = useLanguage();
   const [themeName, setThemeName] = useState('');
   const [themeDesc, setThemeDesc] = useState('');
   const [themeCss, setThemeCss] = useState('');
@@ -20,7 +22,7 @@ const ImportThemeModal: React.FC<ImportThemeModalProps> = ({ open, onClose, onIm
     if (!file) return;
 
     if (!file.name.endsWith('.css')) {
-      setError('Please select a .css file');
+      setError(t('modals.import_theme.error_file_type'));
       return;
     }
 
@@ -28,17 +30,17 @@ const ImportThemeModal: React.FC<ImportThemeModalProps> = ({ open, onClose, onIm
     reader.onload = (event) => {
       const css = event.target?.result as string;
       setThemeCss(css);
-      
+
       // Auto-fill name from filename if empty
       if (!themeName) {
         const name = file.name.replace('.css', '').replace(/-/g, ' ');
         setThemeName(name.charAt(0).toUpperCase() + name.slice(1));
       }
-      
+
       setError('');
     };
     reader.onerror = () => {
-      setError('Failed to read file');
+      setError(t('modals.import_theme.error_read'));
     };
     reader.readAsText(file);
   };
@@ -58,20 +60,20 @@ const ImportThemeModal: React.FC<ImportThemeModalProps> = ({ open, onClose, onIm
 
   const handleImport = () => {
     setError('');
-    
+
     if (!themeName.trim()) {
-      setError('Theme name is required');
+      setError(t('modals.import_theme.error_name'));
       return;
     }
-    
+
     if (!themeCss.trim()) {
-      setError('Theme CSS is required');
+      setError(t('modals.import_theme.error_css'));
       return;
     }
 
     // Basic validation - check if it looks like CSS
     if (!themeCss.includes(':root') && !themeCss.includes('--')) {
-      setError('Invalid CSS: Must contain CSS variables (:root and --)');
+      setError(t('modals.import_theme.error_invalid_css'));
       return;
     }
 
@@ -83,49 +85,49 @@ const ImportThemeModal: React.FC<ImportThemeModalProps> = ({ open, onClose, onIm
     <div className="modal-overlay" onClick={handleClose}>
       <div className="modal-content import-theme-modal" onClick={(e) => e.stopPropagation()}>
         <button className="theme-close" onClick={handleClose}>✕</button>
-        
+
         <div className="theme-hero">
           <div className="theme-hero-icon">
             <FaUpload size={48} />
           </div>
           <div>
-            <h2 className="theme-title">Import Custom Theme</h2>
-            <p className="theme-subtitle">Paste theme CSS code to install</p>
+            <h2 className="theme-title">{t('modals.import_theme.title')}</h2>
+            <p className="theme-subtitle">{t('modals.import_theme.subtitle')}</p>
           </div>
         </div>
 
         <div className="import-form">
           <div className="form-group">
-            <label>Theme Name *</label>
+            <label>{t('modals.import_theme.name')} *</label>
             <input
               type="text"
               value={themeName}
               onChange={(e) => setThemeName(e.target.value)}
-              placeholder="My Custom Theme"
+              placeholder={t('modals.import_theme.name_placeholder')}
               className="theme-input"
             />
           </div>
 
           <div className="form-group">
-            <label>Description</label>
+            <label>{t('modals.import_theme.description')}</label>
             <input
               type="text"
               value={themeDesc}
               onChange={(e) => setThemeDesc(e.target.value)}
-              placeholder="A beautiful custom theme"
+              placeholder={t('modals.import_theme.description_placeholder')}
               className="theme-input"
             />
           </div>
 
           <div className="form-group">
-            <label>Theme CSS Code *</label>
+            <label>{t('modals.import_theme.css_label')} *</label>
             <div className="file-upload-section">
-              <button 
+              <button
                 type="button"
-                className="btn-file-upload" 
+                className="btn-file-upload"
                 onClick={() => fileInputRef.current?.click()}
               >
-                <FaFileUpload /> Load from .css file
+                <FaFileUpload /> {t('modals.import_theme.load_file')}
               </button>
               <input
                 ref={fileInputRef}
@@ -138,7 +140,7 @@ const ImportThemeModal: React.FC<ImportThemeModalProps> = ({ open, onClose, onIm
             <textarea
               value={themeCss}
               onChange={(e) => setThemeCss(e.target.value)}
-              placeholder=":root {&#10;  --bg-root: #1a1a1a;&#10;  --color-text-primary: #ffffff;&#10;  ...&#10;}"
+              placeholder={t('modals.import_theme.css_placeholder')}
               className="theme-textarea"
               rows={12}
             />
@@ -152,8 +154,8 @@ const ImportThemeModal: React.FC<ImportThemeModalProps> = ({ open, onClose, onIm
         </div>
 
         <div className="modal-actions">
-          <button className="btn secondary" onClick={handleClose}>Cancel</button>
-          <button className="btn primary" onClick={handleImport}>Import Theme</button>
+          <button className="btn secondary" onClick={handleClose}>{t('actions.cancel')}</button>
+          <button className="btn primary" onClick={handleImport}>{t('modals.import_theme.submit')}</button>
         </div>
       </div>
     </div>

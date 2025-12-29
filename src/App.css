@@ -67,7 +67,8 @@ html,
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-variant-emoji: text;
-  letter-spacing: 0px; /* Adjust this value: negative to compress, positive to expand */
+  letter-spacing: 0px;
+  /* Adjust this value: negative to compress, positive to expand */
   word-spacing: 0;
 }
 
@@ -89,7 +90,7 @@ html,
   box-sizing: border-box;
   font-family: "DejaVu Sans Mono", monospace;
   font-variant-emoji: text;
-  
+
   /* Container styles */
   display: flex;
   flex-direction: column;
@@ -119,11 +120,12 @@ html,
 .preview-horizontal,
 .preview-parallel,
 .preview-horizontal-full {
-  line-height: 1.5; /* Normal line height */
+  line-height: 1.5;
+  /* Normal line height */
   font-family: monospace;
   letter-spacing: normal;
   word-spacing: normal;
-  
+
   /* Font rendering improvements */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -147,19 +149,34 @@ html,
 
 
 /* Header spacing */
-.preview-horizontal h1, .preview-horizontal h2, .preview-horizontal h3, 
-.preview-horizontal h4, .preview-horizontal h5, .preview-horizontal h6,
-.preview-parallel h1, .preview-parallel h2, .preview-parallel h3, 
-.preview-parallel h4, .preview-parallel h5, .preview-parallel h6,
-.preview-horizontal-full h1, .preview-horizontal-full h2, .preview-horizontal-full h3,
-.preview-horizontal-full h4, .preview-horizontal-full h5, .preview-horizontal-full h6 {
+.preview-horizontal h1,
+.preview-horizontal h2,
+.preview-horizontal h3,
+.preview-horizontal h4,
+.preview-horizontal h5,
+.preview-horizontal h6,
+.preview-parallel h1,
+.preview-parallel h2,
+.preview-parallel h3,
+.preview-parallel h4,
+.preview-parallel h5,
+.preview-parallel h6,
+.preview-horizontal-full h1,
+.preview-horizontal-full h2,
+.preview-horizontal-full h3,
+.preview-horizontal-full h4,
+.preview-horizontal-full h5,
+.preview-horizontal-full h6 {
   margin: 0.5em 0;
 }
 
 /* List spacing */
-.preview-horizontal ul, .preview-horizontal ol,
-.preview-parallel ul, .preview-parallel ol,
-.preview-horizontal-full ul, .preview-horizontal-full ol {
+.preview-horizontal ul,
+.preview-horizontal ol,
+.preview-parallel ul,
+.preview-parallel ol,
+.preview-horizontal-full ul,
+.preview-horizontal-full ol {
   margin: 0.5em 0;
   padding-left: 1.5em;
 }
@@ -217,7 +234,8 @@ html,
   background-color: var(--bg-editor);
   color: var(--color-text-editor);
   resize: none;
-  overflow: auto; /* Enable scrolling */
+  overflow: auto;
+  /* Enable scrolling */
   box-sizing: border-box;
   font-variant-emoji: text;
 }
@@ -229,11 +247,15 @@ html,
   text-align: left;
   font-family: Arial, sans-serif, "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 16px;
-  overflow-y: auto;    /* Vertical scrolling */
-  overflow-x: hidden;  /* Hide horizontal scrollbar */
+  overflow-y: auto;
+  /* Vertical scrolling */
+  overflow-x: hidden;
+  /* Hide horizontal scrollbar */
   box-sizing: border-box;
-  word-break: break-word; /* Better handling of long words */
-  max-width: 100%;     /* Ensure content stays within container */
+  word-break: break-word;
+  /* Better handling of long words */
+  max-width: 100%;
+  /* Ensure content stays within container */
 }
 
 .textarea-parallel,
@@ -249,7 +271,7 @@ html,
 /* Fixed menubar button size for uniform buttons */
 .fixed-menubar-btn {
   width: 188px;
-  height: 35px;
+  height: 43px;
   box-sizing: border-box;
   padding: 4px 4px;
   display: inline-flex;
@@ -286,7 +308,7 @@ html,
 /* Help button: half the fixed size and light green */
 .help-menubar-btn {
   width: 125px;
-  height: 36px;
+  height: 43px;
   box-sizing: border-box;
   padding: 4px 4px;
   display: inline-flex;
@@ -317,16 +339,17 @@ html,
   width: 98%;
   max-width: 98%;
   padding: 10px;
-  margin: 1px 0; 
+  margin: 1px 0;
   font-size: 16px;
   border: 1px solid var(--border-primary);
   border-radius: 4px;
   background-color: var(--bg-editor);
   color: var(--color-text-editor);
-  resize: block; 
-  flex-grow: 1; 
+  resize: block;
+  flex-grow: 1;
   height: 37.5vh;
-  overflow: auto; /* Enable scrolling */
+  overflow: auto;
+  /* Enable scrolling */
   box-sizing: border-box;
   font-family: "DejaVu Sans Mono", monospace;
   font-variant-emoji: text;
@@ -338,7 +361,8 @@ html,
   max-width: 98%;
   border: 1px solid var(--border-dark);
   padding: 10px;
-  margin: 1px 0; /* Adjust margins to be consistent */
+  margin: 1px 0;
+  /* Adjust margins to be consistent */
   text-align: left;
   font-family: Arial, sans-serif, "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   font-size: 16px;
@@ -347,7 +371,8 @@ html,
   text-decoration: none;
   flex-grow: 1;
   height: 37.5vh;
-  overflow: auto; /* Enable scrolling */
+  overflow: auto;
+  /* Enable scrolling */
   box-sizing: border-box;
 }
 
@@ -366,7 +391,8 @@ html,
 .preview-horizontal table,
 .preview-parallel table {
   width: 95%;
-  margin: 10px 0; /* Align table to the left */
+  margin: 10px 0;
+  /* Align table to the left */
   border-collapse: collapse;
 }
 
@@ -422,7 +448,7 @@ html,
   text-decoration: none;
 }
 
-.button-mermaid { 
+.button-mermaid {
   margin-top: 4px;
   margin-bottom: 2px;
   height: 32px;
@@ -455,7 +481,7 @@ html,
   box-shadow: 0 2px 4px var(--shadow-sm);
 }
 
-.button-auto { 
+.button-auto {
   margin-top: 4px;
   margin-bottom: 2px;
   height: 32px;
@@ -469,7 +495,7 @@ html,
   text-decoration: none;
 }
 
-.button-html { 
+.button-html {
   margin-top: 2px;
   height: 32px;
   line-height: 12px;
@@ -482,7 +508,7 @@ html,
   text-decoration: none;
 }
 
-.button-format { 
+.button-format {
   margin-top: 2px;
   height: 32px;
   line-height: 12px;
@@ -505,7 +531,8 @@ html,
 
 /* Compact four-column layout for symbols dropdown */
 .symbols-dropdown {
-  width: 720px; /* wide enough to hold four columns */
+  width: 720px;
+  /* wide enough to hold four columns */
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0;
@@ -513,7 +540,8 @@ html,
 }
 
 .symbols-dropdown .dropdown-item {
-  padding: 6px 10px; /* slightly smaller padding for denser layout */
+  padding: 6px 10px;
+  /* slightly smaller padding for denser layout */
 }
 
 .symbols-dropdown .hdr-title {
@@ -574,13 +602,15 @@ html,
   align-items: center;
   justify-content: center;
   text-align: center;
-  width: auto; /* allow grid to size columns */
+  width: auto;
+  /* allow grid to size columns */
   padding: 6px 8px;
   box-sizing: border-box;
 }
 
 .icons-grid .icon-label {
-  white-space: normal; /* allow label to wrap under glyph */
+  white-space: normal;
+  /* allow label to wrap under glyph */
   max-width: 100%;
 }
 
@@ -649,7 +679,8 @@ html,
 .dropdown-container {
   position: relative;
   display: inline-block;
-  z-index: 2000; /* ensure dropdown container sits above other elements */
+  z-index: 2000;
+  /* ensure dropdown container sits above other elements */
 }
 
 .header-dropdown {
@@ -659,7 +690,8 @@ html,
   background-color: var(--bg-dropdown);
   border: 1px solid var(--border-secondary);
   border-radius: 4px;
-  z-index: 9999; /* raise dropdown above other UI rows */
+  z-index: 9999;
+  /* raise dropdown above other UI rows */
   width: 210px;
 }
 
@@ -683,8 +715,10 @@ html,
 
 .hdr-desc {
   /* Use a fixed size (matches header4 button size) so descriptions don't scale with parent button font-size */
-  font-size: 0.800rem; /* 14px when root is 16px */
-  font-weight: 300; /* normal weight, not bold */
+  font-size: 0.800rem;
+  /* 14px when root is 16px */
+  font-weight: 300;
+  /* normal weight, not bold */
   font-style: italic;
   color: var(--color-text-light);
   margin-top: 2px;
@@ -708,18 +742,23 @@ html,
 .header1-button {
   font-size: 24px;
 }
+
 .header2-button {
   font-size: 20px;
 }
+
 .header3-button {
   font-size: 16px;
 }
+
 .header4-button {
   font-size: 14px;
 }
+
 .header5-button {
   font-size: 12px;
 }
+
 .header6-button {
   font-size: 10px;
 }
@@ -831,16 +870,22 @@ html,
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideIn {
-  from { 
+  from {
     opacity: 0;
     transform: translateY(20px);
   }
-  to { 
+
+  to {
     opacity: 1;
     transform: translateY(0);
   }

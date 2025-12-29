@@ -20,6 +20,7 @@ import {
   FaFileAlt,
   FaLock,
   FaPalette,
+  FaGlobe,
   FaCodeBranch,
   FaCloud,
   FaSave
@@ -28,8 +29,8 @@ import { VscSymbolKeyword } from "react-icons/vsc";
 import { GoTasklist } from "react-icons/go";
 import { GrDocumentText } from "react-icons/gr";
 import { AiOutlineLayout } from "react-icons/ai";
-import { BsFileEarmarkLockFill, BsJournalBookmarkFill, BsKanban, BsClipboard2Check, BsPersonWorkspace, BsTropicalStorm, BsFillBugFill, BsDiagram3 } from "react-icons/bs";
-import { GiJourney } from "react-icons/gi";
+import { BsFileEarmarkLockFill, BsJournalBookmarkFill, BsKanban, BsClipboard2Check, BsDiagram3, BsBook, BsMap, BsActivity, BsBug, BsCodeSquare } from "react-icons/bs";
+// import { GiJourney } from "react-icons/gi";
 import { SiMermaid } from "react-icons/si";
 import { CgFormatText, CgFormatHeading } from "react-icons/cg";
 import { MdAutoAwesome, MdOutlineInsertChartOutlined } from "react-icons/md";
@@ -141,8 +142,11 @@ import { getGitManager } from './gitManagerWrapper';
 import { gitCredentialManager } from './gitCredentialManager';
 import ToastContainer from './components/ToastContainer';
 import { isFeatureEnabled } from './config/features';
+import { useLanguage } from './i18n/LanguageContext';
+import LanguageModal from './components/LanguageModal';
 
 const App = () => {
+  const { t } = useLanguage();
   const [documentHistory, setDocumentHistory] = useState<HistoryState[]>([]);
   const [editorContent, setEditorContent] = useState<string>('');
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
@@ -179,6 +183,7 @@ const App = () => {
   const [featuresOpen, setFeaturesOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
   const [importThemeOpen, setImportThemeOpen] = useState(false);
+  const [languageOpen, setLanguageOpen] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(getCurrentTheme());
 
   const handleImportTheme = (name: string, description: string, css: string) => {
@@ -197,7 +202,7 @@ const App = () => {
   const easyNotesButtonRef = useRef<HTMLButtonElement | null>(null);
   const [isEditFull, setIsEditFull] = useState<boolean>(false);
   const [isPreviewFull, setIsPreviewFull] = useState<boolean>(false);
-  const lineHeightValue = useRef<number>(1);
+
   const [passwordModalConfig, setPasswordModalConfig] = useState<{
     open: boolean;
     title: string;
@@ -514,8 +519,7 @@ const App = () => {
     }
   };
 
-  // Web-only mode - no Electron API
-  const electronAPI = undefined;
+
 
   // Handle file opening from command line arguments (Tauri)
   useEffect(() => {
@@ -596,9 +600,13 @@ const App = () => {
 
   // Get current view mode for button text
   const getCurrentViewMode = () => {
-    if (isEditFull && !isPreviewFull) return "Toggled Edit";
-    if (!isEditFull && isPreviewFull) return "Toggled Preview";
-    return "Toggled Split";
+    if (isEditFull && !isPreviewFull) {
+      return t('menu.view_edit');
+    }
+    if (!isEditFull && isPreviewFull) {
+      return t('menu.view_preview');
+    }
+    return t('menu.view_split');
   };
 
   // insertSymbol function inserts a symbol into the textarea
@@ -777,10 +785,14 @@ const App = () => {
     const textarea = textareaRef.current;
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
-    const newText = editorContent.substring(0, start) + markdownTemplate + editorContent.substring(end);
+    const newText =
+      editorContent.substring(0, start) +
+      markdownTemplate +
+      editorContent.substring(end);
+
     setEditorContent(newText);
-    // Place cursor after inserted template
-    cursorPositionRef.current = start + markdownTemplate.length;
+    cursorPositionRef.current = start + markdownTemplate.length; // Update cursor position ref
+
     setTimeout(() => {
       textarea.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
       textarea.focus();
@@ -1848,11 +1860,7 @@ const App = () => {
     }
   }, [isGitRepo, currentRepoPath]);
 
-  // Web-only mode - no file path detection
-  const detectRepoFromFilePath = async (filePath: string) => {
-    // Not available in web mode
-    console.log('[App] File path Git detection not available in web mode');
-  };
+
 
   // Add this function near other utility functions
   const getEditorPreviewContainerClass = () => {
@@ -1890,9 +1898,9 @@ const App = () => {
                 setHelpPos(null);
               }
             }}
-            title="Help"
+            title={t('menu.file')}
           >
-            <FaFileImport /> &nbsp; File ▾
+            <FaFileImport /> &nbsp; {t('menu.file')} ▾
           </button>
           {showHelpDropdown && helpPos && createPortal(
             <div className="header-dropdown format-dropdown" style={{ position: 'absolute', top: helpPos.top + 'px', left: helpPos.left + 'px', zIndex: 999999, minWidth: helpPos.width + 'px' }}>
@@ -1974,8 +1982,8 @@ const App = () => {
                   setShowHelpDropdown(false);
                 }}
               >
-                <div className="hdr-title"><FaFileImport /> Open MarkDown</div>
-                <div className="hdr-desc">Open markdown .md file</div>
+                <div className="hdr-title"><FaFileImport /> {t('menu.open_markdown')}</div>
+                <div className="hdr-desc">{t('menu.open_markdown_desc')}</div>
               </button>
               <div className="hdr-sep" />
               <button
@@ -1985,8 +1993,8 @@ const App = () => {
                   setShowHelpDropdown(false);
                 }}
               >
-                <div className="hdr-title"><FaFileImport /> Open TXT</div>
-                <div className="hdr-desc">Open plain text .txt file</div>
+                <div className="hdr-title"><FaFileImport /> {t('menu.open_txt')}</div>
+                <div className="hdr-desc">{t('menu.open_txt_desc')}</div>
               </button>
 
               <div className="hdr-sep" />
@@ -1994,13 +2002,13 @@ const App = () => {
                 className="dropdown-item"
                 onClick={() => {
                   const showPrompt = (onSubmit: (password: string) => void) =>
-                    showPasswordPrompt('Decrypt File', 'Enter the password for the .sstp file.', onSubmit);
+                    showPasswordPrompt(t('menu.decrypt_file_title'), t('menu.decrypt_file_prompt'), onSubmit);
                   decryptFile(setEditorContent, showPrompt, showToast);
                   setShowHelpDropdown(false);
                 }}
               >
-                <div className="hdr-title"><BsFileEarmarkLockFill /> Open Encrypted</div>
-                <div className="hdr-desc">Open encrypted .sstp file</div>
+                <div className="hdr-title"><BsFileEarmarkLockFill /> {t('menu.open_encrypted')}</div>
+                <div className="hdr-desc">{t('menu.open_encrypted_desc')}</div>
               </button>
               <div className="hdr-sep" />
               <button
@@ -2010,13 +2018,13 @@ const App = () => {
                   setShowHelpDropdown(false);
                 }}
               >
-                <div className="hdr-title"><FaSave /> Save</div>
-                <div className="hdr-desc">Save current file (Ctrl+S)</div>
+                <div className="hdr-title"><FaSave /> {t('menu.save')}</div>
+                <div className="hdr-desc">{t('menu.save_desc')}</div>
               </button>
               <div className="hdr-sep" />
               <button className="dropdown-item" onClick={() => { setFeaturesOpen(true); setShowHelpDropdown(false); }}>
-                <div className="hdr-title"><FaStar /> Features</div>
-                <div className="hdr-desc">View latest features</div>
+                <div className="hdr-title"><FaStar /> {t('menu.features')}</div>
+                <div className="hdr-desc">{t('menu.features_desc')}</div>
               </button>
               <div className="hdr-sep" />
               <button className="dropdown-item" onClick={async () => {
@@ -2042,8 +2050,8 @@ const App = () => {
 
                 setShowHelpDropdown(false);
               }}>
-                <div className="hdr-title"><FaGithub /> Support</div>
-                <div className="hdr-desc">Support & Discussion</div>
+                <div className="hdr-title"><FaGithub /> {t('menu.support')}</div>
+                <div className="hdr-desc">{t('menu.support_desc')}</div>
               </button>
               <div className="hdr-sep" />
               <button className="dropdown-item" onClick={async () => {
@@ -2069,18 +2077,23 @@ const App = () => {
 
                 setShowHelpDropdown(false);
               }}>
-                <div className="hdr-title"><FaHeart /> Buy me a coffee</div>
-                <div className="hdr-desc">Sponsor the project</div>
+                <div className="hdr-title"><FaHeart /> {t('menu.buy_coffee')}</div>
+                <div className="hdr-desc">{t('menu.sponsor')}</div>
               </button>
               <div className="hdr-sep" />
               <button className="dropdown-item" onClick={() => { setThemeOpen(true); setShowHelpDropdown(false); }}>
-                <div className="hdr-title"><FaPalette /> Select Theme</div>
-                <div className="hdr-desc">Choose color scheme</div>
+                <div className="hdr-title"><FaPalette /> {t('menu.select_theme')}</div>
+                <div className="hdr-desc">{t('menu.choose_theme')}</div>
+              </button>
+              <div className="hdr-sep" />
+              <button className="dropdown-item" onClick={() => { setLanguageOpen(true); setShowHelpDropdown(false); }}>
+                <div className="hdr-title"><FaGlobe /> {t('menu.select_language')}</div>
+                <div className="hdr-desc">{t('menu.choose_language')}</div>
               </button>
               <div className="hdr-sep" />
               <button className="dropdown-item" onClick={() => { setAboutOpen(true); setShowHelpDropdown(false); }}>
-                <div className="hdr-title"><FaInfoCircle /> About</div>
-                <div className="hdr-desc">EasyEdit version and info</div>
+                <div className="hdr-title"><FaInfoCircle /> {t('menu.about')}</div>
+                <div className="hdr-desc">{t('menu.version_info')}</div>
               </button>
             </div>, document.body
           )}
@@ -2165,28 +2178,35 @@ const App = () => {
         {/* Cloud note display removed - note name now shown in title bar only */}
         {/* Regular file display removed - filename now shown in title bar only */}
         {/* If there was a display for currentFilePath here, it has been removed */}
-        <button className="menu-item fixed-menubar-btn" onClick={toggleView}>
+        <button
+          className="menu-item fixed-menubar-btn"
+          onClick={toggleView}
+          title={getCurrentViewMode()}
+        >
           <FaExchangeAlt /> &nbsp; {getCurrentViewMode()}
         </button>
         <button
           className="menu-item fixed-menubar-btn"
           onClick={() => handleUndo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
           disabled={historyIndex <= 0}
+          title={t('menu.undo')}
         >
-          <FaUndo /> &nbsp; Undo
+          <FaUndo /> &nbsp; {t('menu.undo')}
         </button>
         <button
           className="menu-item fixed-menubar-btn"
           onClick={handleNewFile}
+          title={t('menu.new_file')}
         >
-          <GrDocumentText /> &nbsp; New File
+          <GrDocumentText /> &nbsp; {t('menu.new_file')}
         </button>
         <button
           className="menu-item fixed-menubar-btn"
           onClick={() => handleRedo(historyIndex, documentHistory, setHistoryIndex, setEditorContent, cursorPositionRef)}
           disabled={historyIndex >= documentHistory.length - 1}
+          title={t('menu.redo')}
         >
-          <FaRedo /> &nbsp; Redo
+          <FaRedo /> &nbsp; {t('menu.redo')}
         </button>
         <div className="dropdown-container">
           <button
@@ -2204,27 +2224,27 @@ const App = () => {
                 setTasksPos(null);
               }
             }}
-            title="Tasks"
+            title={t('menu.tasks')}
           >
-            <GoTasklist /> &nbsp; Tasks ▾
+            <GoTasklist /> &nbsp; {t('menu.tasks')} ▾
           </button>
           {showTasksDropdown && tasksPos && createPortal(
             <div
               className="header-dropdown format-dropdown"
               style={{ position: 'absolute', top: tasksPos.top + 'px', left: tasksPos.left + 'px', zIndex: 999999, minWidth: tasksPos.width + 'px' }}
             >
-              {taskTemplates.map((t, idx) => (
+              {taskTemplates.map((tpl, idx) => (
                 <div key={idx}>
                   <button
                     className="dropdown-item"
                     onClick={() => {
-                      handleInsertImageTemplate(t.markdown + '\n\n');
+                      handleInsertImageTemplate(tpl.markdown + '\n\n');
                       setShowTasksDropdown(false);
                       setTasksPos(null);
                     }}
                   >
-                    <div className="hdr-title"><GoTasklist /> {t.label}</div>
-                    <div className="hdr-desc">{t.description}</div>
+                    <div className="hdr-title"><GoTasklist /> {t(`templates.tasks.${tpl.id}`)}</div>
+                    <div className="hdr-desc">{t(`templates.tasks.${tpl.id}_desc`)}</div>
                   </button>
                   <div className="hdr-sep" />
                 </div>
@@ -2249,9 +2269,9 @@ const App = () => {
                 setExportsPos(null);
               }
             }}
-            title="Exports"
+            title={t('menu.exports')}
           >
-            <FaDownload /> &nbsp; Exports ▾
+            <FaDownload /> &nbsp; {t('menu.exports')} ▾
           </button>
           {showExportsDropdown && exportsPos && createPortal(
             <div
@@ -2266,8 +2286,8 @@ const App = () => {
                   setExportsPos(null);
                 }}
               >
-                <div className="hdr-title"><FaFilePdf /> Export to PDF</div>
-                <div className="hdr-desc">Save as a PDF file</div>
+                <div className="hdr-title"><FaFilePdf /> {t('exports.pdf')}</div>
+                <div className="hdr-desc">{t('exports.pdf_desc')}</div>
               </button>
               <div className="hdr-sep" />
               <button
@@ -2278,8 +2298,8 @@ const App = () => {
                   setExportsPos(null);
                 }}
               >
-                <div className="hdr-title"><FaFileCode /> Export to HTML</div>
-                <div className="hdr-desc">Save as an HTML file</div>
+                <div className="hdr-title"><FaFileCode /> {t('exports.html')}</div>
+                <div className="hdr-desc">{t('exports.html_desc')}</div>
               </button>
               <div className="hdr-sep" />
               <button
@@ -2290,8 +2310,8 @@ const App = () => {
                   setExportsPos(null);
                 }}
               >
-                <div className="hdr-title"><FaFileAlt /> Export to Markdown</div>
-                <div className="hdr-desc">Save as a Markdown (.md) file</div>
+                <div className="hdr-title"><FaFileAlt /> {t('exports.markdown')}</div>
+                <div className="hdr-desc">{t('exports.markdown_desc')}</div>
               </button>
               <div className="hdr-sep" />
               <button
@@ -2302,8 +2322,8 @@ const App = () => {
                   setExportsPos(null);
                 }}
               >
-                <div className="hdr-title"><FaFileAlt /> Export to TXT</div>
-                <div className="hdr-desc">Save as a plain text (.txt) file</div>
+                <div className="hdr-title"><FaFileAlt /> {t('exports.txt')}</div>
+                <div className="hdr-desc">{t('exports.txt_desc')}</div>
               </button>
               <div className="hdr-sep" />
               <button
@@ -2314,8 +2334,8 @@ const App = () => {
                   setExportsPos(null);
                 }}
               >
-                <div className="hdr-title"><FaLock /> Export Encrypted</div>
-                <div className="hdr-desc">Save as encrypted (.sstp) file</div>
+                <div className="hdr-title"><FaLock /> {t('exports.encrypted')}</div>
+                <div className="hdr-desc">{t('exports.encrypted_desc')}</div>
               </button>
               {currentCloudNote && (
                 <>
@@ -2328,8 +2348,8 @@ const App = () => {
                       setExportsPos(null);
                     }}
                   >
-                    <div className="hdr-title"><FaCloud /> Save to Cloud</div>
-                    <div className="hdr-desc">Save to {currentCloudNote.providerDisplayName}</div>
+                    <div className="hdr-title"><FaCloud /> {t('exports.cloud')}</div>
+                    <div className="hdr-desc">{t('exports.cloud_desc')} {currentCloudNote.providerDisplayName}</div>
                   </button>
                 </>
               )}
@@ -2339,7 +2359,16 @@ const App = () => {
         </div>
 
         {/* About & Features Modals */}
-        <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
+        <AboutModal
+          open={aboutOpen}
+          onClose={() => setAboutOpen(false)}
+        />
+
+        <LanguageModal
+          open={languageOpen}
+          onClose={() => setLanguageOpen(false)}
+        />
+
         <FeaturesModal open={featuresOpen} onClose={() => setFeaturesOpen(false)} />
         <ThemeModal
           open={themeOpen}
@@ -2403,7 +2432,7 @@ const App = () => {
 
         <div className="menubar-bottom">
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowHeaderDropdown(true); }} title="Headers"><CgFormatHeading />Headers</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowHeaderDropdown(true); }} title={t('toolbar.headers')}><CgFormatHeading />{t('toolbar.headers')}</button>
             {showHeaderDropdown && (
               <HeaderDropdown
                 onInsertH1={handlerinserth1Syntax}
@@ -2418,7 +2447,7 @@ const App = () => {
           </div>
           &#8741;
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowFormatDropdown(true); }} title="Text Formatting"><CgFormatText />&nbsp;Formatting</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowFormatDropdown(true); }} title={t('toolbar.formatting')}><CgFormatText />&nbsp;{t('toolbar.formatting')}</button>
             {showFormatDropdown && (
               <FormatDropdown
                 onBold={handleBoldSyntax}
@@ -2433,7 +2462,7 @@ const App = () => {
           </div>
           &#8741;
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowInsertDropdown(true); }} title="Insert Elements"><MdOutlineInsertChartOutlined />&nbsp;Insert</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowInsertDropdown(true); }} title={t('toolbar.insert')}><MdOutlineInsertChartOutlined />&nbsp;{t('toolbar.insert')}</button>
             {showInsertDropdown && (
               <InsertDropdown
                 onRuler={handlerinsertRulerSyntax}
@@ -2448,7 +2477,7 @@ const App = () => {
           </div>
           &#8741;
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowLinksDropdown(true); }} title="Insert Links"><FaLink />&nbsp;Links</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowLinksDropdown(true); }} title={t('toolbar.links')}><FaLink />&nbsp;{t('toolbar.links')}</button>
             {showLinksDropdown && (
               <LinksDropdown
                 onInsertTemplate={handleInsertImageTemplate}
@@ -2458,7 +2487,7 @@ const App = () => {
           </div>
           &#8741;
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowImagesDropdown(true); }} title="Insert Images"><FaImage />&nbsp;Images</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowImagesDropdown(true); }} title={t('toolbar.images')}><FaImage />&nbsp;{t('toolbar.images')}</button>
             {showImagesDropdown && (
               <ImagesDropdown
                 onInsertTemplate={handleInsertImageTemplate}
@@ -2468,7 +2497,7 @@ const App = () => {
           </div>
           &#8741;
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowTablesDropdown(true); }} title="Insert Tables"><FaTable />&nbsp;Tables</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowTablesDropdown(true); }} title={t('toolbar.tables')}><FaTable />&nbsp;{t('toolbar.tables')}</button>
             {showTablesDropdown && (
               <TablesDropdown
                 onInsertTemplate={handleInsertImageTemplate}
@@ -2478,7 +2507,7 @@ const App = () => {
           </div>
           &#8741;
           <div className="dropdown-container">
-            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowFooterDropdown(true); }} title="Insert Footnotes"><FaStickyNote />&nbsp;FootNote</button>
+            <button className="button-mermaid" onMouseDown={() => { cacheSelection(); closeAllDropdowns(); setShowFooterDropdown(true); }} title={t('toolbar.footnotes')}><FaStickyNote />&nbsp;{t('toolbar.footnotes')}</button>
             {showFooterDropdown && (
               <FooterDropdown
                 onInsertTemplate={handleInsertImageTemplate}
@@ -2496,9 +2525,9 @@ const App = () => {
                 closeAllDropdowns();
                 setShowAutoDropdown(true);
               }}
-              title="Auto Generate Options"
+              title={t('toolbar.auto')}
             >
-              <MdAutoAwesome /> &nbsp; Auto ▾
+              <MdAutoAwesome /> &nbsp; {t('toolbar.auto')} ▾
             </button>
             {showAutoDropdown && (
               <AutoDropdown
@@ -2526,9 +2555,9 @@ const App = () => {
                   setTemplatesPos(null);
                 }
               }}
-              title="Templates"
+              title={t('menu.templates')}
             >
-              <GrDocumentText /> &nbsp; Templates ▾
+              <GrDocumentText /> &nbsp; {t('menu.templates')} ▾
             </button>
             {showTemplatesDropdown && templatesPos && createPortal(
               <div
@@ -2544,8 +2573,8 @@ const App = () => {
                     setTemplatesPos(null);
                   }}
                 >
-                  <div className="hdr-title"><BsJournalBookmarkFill />  Daily Journal</div>
-                  <div className="hdr-desc">Start a daily journal</div>
+                  <div className="hdr-title"><BsJournalBookmarkFill />  {t('templates.daily_journal')}</div>
+                  <div className="hdr-desc">{t('templates.daily_journal_desc')}</div>
                 </button>
                 <div className="hdr-sep" />
                 <button
@@ -2557,8 +2586,8 @@ const App = () => {
                     setTemplatesPos(null);
                   }}
                 >
-                  <div className="hdr-title"><BsKanban /> Meeting Notes</div>
-                  <div className="hdr-desc">Structured meeting notes</div>
+                  <div className="hdr-title"><BsKanban /> {t('templates.meeting_notes')}</div>
+                  <div className="hdr-desc">{t('templates.meeting_notes_desc')}</div>
                 </button>
                 <div className="hdr-sep" />
                 <button
@@ -2570,8 +2599,8 @@ const App = () => {
                     setTemplatesPos(null);
                   }}
                 >
-                  <div className="hdr-title"><BsClipboard2Check /> Project Plan</div>
-                  <div className="hdr-desc">High-level project plan</div>
+                  <div className="hdr-title"><BsClipboard2Check /> {t('templates.project_plan')}</div>
+                  <div className="hdr-desc">{t('templates.project_plan_desc')}</div>
                 </button>
                 <div className="hdr-sep" />
                 <button
@@ -2583,8 +2612,8 @@ const App = () => {
                     setTemplatesPos(null);
                   }}
                 >
-                  <div className="hdr-title"><BsPersonWorkspace /> Study Notes</div>
-                  <div className="hdr-desc">Organized study template</div>
+                  <div className="hdr-title"><BsBook /> {t('templates.study_notes')}</div>
+                  <div className="hdr-desc">{t('templates.study_notes_desc')}</div>
                 </button>
                 <div className="hdr-sep" />
                 <button
@@ -2596,8 +2625,8 @@ const App = () => {
                     setTemplatesPos(null);
                   }}
                 >
-                  <div className="hdr-title"><GiJourney /> Travel Log</div>
-                  <div className="hdr-desc">Capture trip itineraries</div>
+                  <div className="hdr-title"><BsMap /> {t('templates.travel_log')}</div>
+                  <div className="hdr-desc">{t('templates.travel_log_desc')}</div>
                 </button>
                 <div className="hdr-sep" />
                 <button
@@ -2609,8 +2638,8 @@ const App = () => {
                     setTemplatesPos(null);
                   }}
                 >
-                  <div className="hdr-title"><BsTropicalStorm /> Workout Log</div>
-                  <div className="hdr-desc">Log workouts notes</div>
+                  <div className="hdr-title"><BsActivity /> {t('templates.workout_log')}</div>
+                  <div className="hdr-desc">{t('templates.workout_log_desc')}</div>
                 </button>
                 <div className="hdr-sep" />
                 <button
@@ -2622,8 +2651,8 @@ const App = () => {
                     setTemplatesPos(null);
                   }}
                 >
-                  <div className="hdr-title"><BsFillBugFill /> Bug Report</div>
-                  <div className="hdr-desc">Report issues tracker</div>
+                  <div className="hdr-title"><BsBug /> {t('templates.bug_report')}</div>
+                  <div className="hdr-desc">{t('templates.bug_report_desc')}</div>
                 </button>
                 <div className="hdr-sep" />
                 <button
@@ -2635,8 +2664,8 @@ const App = () => {
                     setTemplatesPos(null);
                   }}
                 >
-                  <div className="hdr-title"><BsDiagram3 /> Diagram Example</div>
-                  <div className="hdr-desc">UML & Mermaid diagram</div>
+                  <div className="hdr-title"><BsDiagram3 /> {t('templates.diagram_examples')}</div>
+                  <div className="hdr-desc">{t('templates.diagram_examples_desc')}</div>
                 </button>
                 <div className="hdr-sep" />
                 <button
@@ -2648,8 +2677,8 @@ const App = () => {
                     setTemplatesPos(null);
                   }}
                 >
-                  <div className="hdr-title"><BsDiagram3 /> ASCII Diagram</div>
-                  <div className="hdr-desc">Markdown ASCII art diagram</div>
+                  <div className="hdr-title"><BsCodeSquare /> {t('templates.ascii_diagram')}</div>
+                  <div className="hdr-desc">{t('templates.ascii_diagram_desc')}</div>
                 </button>
                 <div className="hdr-sep" />
               </div>,
@@ -2955,7 +2984,7 @@ const App = () => {
         )}
 
       </div>
-    </div>
+    </div >
   );
 };
 

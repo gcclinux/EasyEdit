@@ -4,6 +4,7 @@ import App from './App';
 import { loadTheme, getCurrentTheme, isCurrentThemeCustom } from './themeLoader';
 import { Buffer } from 'buffer';
 import LicenseManager from './premium/LicenseManager';
+import { LanguageProvider } from './i18n/LanguageContext';
 
 // Initialize the LicenseManager
 LicenseManager.initialize();
@@ -52,6 +53,8 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 root.render(
   <React.StrictMode>
-    <App />
+    <LanguageProvider>
+      <App />
+    </LanguageProvider>
   </React.StrictMode>
 );

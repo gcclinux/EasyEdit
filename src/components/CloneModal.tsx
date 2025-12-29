@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './cloneModal.css';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface CloneModalProps {
   open: boolean;
@@ -9,6 +10,7 @@ interface CloneModalProps {
 }
 
 const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit, showToast }) => {
+  const { t } = useLanguage();
   const [url, setUrl] = useState('');
   const [targetDir, setTargetDir] = useState('');
   const [branch, setBranch] = useState('');
@@ -68,7 +70,7 @@ const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit, showTo
         }
       } catch (error: any) {
         console.error('Tauri directory selection error:', error);
-        showToast(`Failed to select directory: ${error.message}`, 'error');
+        showToast(`${t('modals.clone.error_generic')}: ${error.message}`, 'error');
       }
     } else {
       // Web version: Use File System Access API
@@ -86,7 +88,7 @@ const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit, showTo
             const testFileHandle = await dirHandle.getFileHandle(testFileName, { create: true });
             await testFileHandle.remove();
           } catch (permError) {
-            showToast('Cannot write to this directory. Please choose a different folder or grant write permissions.', 'error');
+            showToast(t('modals.clone.error_permission'), 'error');
             return;
           }
 
@@ -123,7 +125,7 @@ const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit, showTo
           (window as any).selectedDirName = dirName;
         } else {
           // Fallback: show input field with helpful message
-          showToast('Your browser does not support directory selection. Please type the full directory path.', 'warning');
+          showToast(t('modals.clone.error_browser_support'), 'warning');
         }
       } catch (error: any) {
         // User cancelled or error occurred
@@ -131,10 +133,10 @@ const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit, showTo
           // User cancelled - do nothing
           return;
         } else if (error.name === 'SecurityError') {
-          showToast('Cannot access this folder due to browser security restrictions. Please choose a different folder.', 'error');
+          showToast(t('modals.clone.error_security'), 'error');
         } else {
           console.error('Directory selection error:', error);
-          showToast('Failed to select directory. Please try a different folder.', 'error');
+          showToast(t('modals.clone.error_generic'), 'error');
         }
       }
     }
@@ -143,45 +145,45 @@ const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit, showTo
   return (
     <div className="modal-overlay">
       <div className="modal-content clone-modal">
-        <h2>Clone Git Repository</h2>
-        <p>Clone from GitHub, GitLab, Bitbucket, or any public Git repository</p>
+        <h2>{t('modals.clone.title')}</h2>
+        <p>{t('modals.clone.subtitle')}</p>
 
         <div className="clone-input-group">
-          <label htmlFor="repo-url">Repository URL</label>
+          <label htmlFor="repo-url">{t('modals.clone.repo_url')}</label>
           <input
             id="repo-url"
             type="text"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="https://github.com/username/repository.git"
+            placeholder={t('modals.clone.repo_url_placeholder')}
             autoFocus
           />
           <small style={{ color: 'var(--color-text-secondary)', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
-            Note: Public repositories work best in web mode
+            {t('modals.clone.repo_url_note')}
           </small>
         </div>
 
         <div className="clone-input-group">
-          <label htmlFor="target-dir">Target Directory</label>
+          <label htmlFor="target-dir">{t('modals.clone.target_dir')}</label>
           <div className="directory-input-container">
             <input
               id="target-dir"
               type="text"
               value={targetDir}
               onChange={(e) => setTargetDir(e.target.value)}
-              placeholder="Select folder or enter directory name"
+              placeholder={t('modals.clone.target_dir_placeholder')}
             />
             <button
               onClick={handleSelectDirectory}
               className="directory-select-btn"
               type="button"
             >
-              Browse...
+              {t('actions.browse')}
             </button>
           </div>
           <small style={{ color: 'var(--color-text-secondary)', fontSize: '0.85em', marginTop: '4px', display: 'block' }}>
-            {targetDir ? `Selected: ${targetDir}` : 'Click Browse to select a folder'}
+            {targetDir ? `${t('modals.clone.target_dir_selected')}${targetDir}` : t('modals.clone.target_dir_note')}
           </small>
         </div>
 
@@ -191,33 +193,33 @@ const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit, showTo
             className="toggle-button"
             type="button"
           >
-            {showAdvanced ? '▼' : '▶'} Advanced Options
+            {showAdvanced ? '▼' : '▶'} {t('modals.clone.advanced')}
           </button>
         </div>
 
         {showAdvanced && (
           <div className="advanced-options">
             <div className="clone-input-group">
-              <label htmlFor="branch">Branch (optional)</label>
+              <label htmlFor="branch">{t('modals.clone.branch')}</label>
               <input
                 id="branch"
                 type="text"
                 value={branch}
                 onChange={(e) => setBranch(e.target.value)}
-                placeholder="main (leave empty for default)"
+                placeholder={t('modals.clone.branch_placeholder')}
               />
             </div>
           </div>
         )}
 
         <div className="modal-actions">
-          <button onClick={onClose} className="modal-button cancel-button">Cancel</button>
+          <button onClick={onClose} className="modal-button cancel-button">{t('actions.cancel')}</button>
           <button
             onClick={handleSubmit}
             className={`modal-button submit-button ${isValid ? 'submit-button-active' : 'submit-button-disabled'}`}
             disabled={!isValid}
           >
-            Clone
+            {t('modals.clone.submit')}
           </button>
         </div>
       </div>

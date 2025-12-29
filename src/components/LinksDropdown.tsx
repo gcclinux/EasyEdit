@@ -1,4 +1,4 @@
-// React import not required with the new JSX transform
+import { useLanguage } from '../i18n/LanguageContext';
 
 type LinkTemplate = {
   name: string;
@@ -11,55 +11,57 @@ type Props = {
   onClose: () => void;
 };
 
-const linkTemplates: LinkTemplate[] = [
-  {
-    name: 'Inline Link',
-    markdown: '[Link text](https://example.com)\n\n',
-    description: 'Standard inline markdown link',
-  },
-  {
-    name: 'Link with Title',
-    markdown: '[Link text](https://example.com "Link title")\n\n',
-    description: 'Inline link that includes a title (tooltip)',
-  },
-  {
-    name: 'Reference Style Link',
-    markdown: '[Link text][ref-name]\n\n[ref-name]: https://example.com "Optional title"\n\n',
-    description: 'Reference-style link with separate definition block',
-  },
-  {
-    name: 'Auto Link',
-    markdown: '<https://example.com>\n\n',
-    description: 'Angle-bracket autolink',
-  },
-  {
-    name: 'Email Link',
-    markdown: '[Contact me](mailto:user@example.com)\n\n',
-    description: 'Mailto link that opens the email client',
-  },
-  {
-    name: 'Phone Link',
-    markdown: '[Call us](tel:+1234567890)\n\n',
-    description: 'Telephone link for clickable dialing on supported devices',
-  },
-  {
-    name: 'Internal Link',
-    markdown: '[Go to section](#section-name)\n\n',
-    description: 'Anchor link to a heading within the current document',
-  },
-  {
-    name: 'Download Link',
-    markdown: '[Download file](./path/to/file.pdf)\n\n',
-    description: 'Relative path link for downloadable assets',
-  },
-  {
-    name: 'Markdown Img URL',
-    markdown: '#### *Markdown Image URL Example*\n\n[![GitHub Project](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png "EasyEdit")](https://github.com/gcclinux/EasyEdit)\n\n',
-    description: 'Embed an image that links to the EasyEdit project',
-  },
-];
-
 export default function LinksDropdown({ onInsertTemplate, onClose }: Props) {
+  const { t } = useLanguage();
+
+  const linkTemplates: LinkTemplate[] = [
+    {
+      name: t('links.inline'),
+      markdown: '[Link text](https://example.com)\n\n',
+      description: t('links.inline_desc'),
+    },
+    {
+      name: t('links.title'),
+      markdown: '[Link text](https://example.com "Link title")\n\n',
+      description: t('links.title_desc'),
+    },
+    {
+      name: t('links.reference'),
+      markdown: '[Link text][ref-name]\n\n[ref-name]: https://example.com "Optional title"\n\n',
+      description: t('links.reference_desc'),
+    },
+    {
+      name: t('links.autolink'),
+      markdown: '<https://example.com>\n\n',
+      description: t('links.autolink_desc'),
+    },
+    {
+      name: t('links.email'),
+      markdown: '[Contact me](mailto:user@example.com)\n\n',
+      description: t('links.email_desc'),
+    },
+    {
+      name: t('links.phone'),
+      markdown: '[Call us](tel:+1234567890)\n\n',
+      description: t('links.phone_desc'),
+    },
+    {
+      name: t('links.internal'),
+      markdown: '[Go to section](#section-name)\n\n',
+      description: t('links.internal_desc'),
+    },
+    {
+      name: t('links.download'),
+      markdown: '[Download file](./path/to/file.pdf)\n\n',
+      description: t('links.download_desc'),
+    },
+    {
+      name: t('links.markdown_img'),
+      markdown: '#### *Markdown Image URL Example*\n\n[![GitHub Project](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png "EasyEdit")](https://github.com/gcclinux/EasyEdit)\n\n',
+      description: t('links.markdown_img_desc'),
+    },
+  ];
+
   return (
     <div className="header-dropdown format-dropdown">
       {linkTemplates.map((tpl) => (

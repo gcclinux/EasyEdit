@@ -1,4 +1,4 @@
-// React import not required with the new JSX transform
+import { useLanguage } from '../i18n/LanguageContext';
 
 type IconItem = { icon: string; label: string; };
 
@@ -7,54 +7,56 @@ type Props = {
   onClose: () => void;
 };
 
+// We keep the structure but labels are keys now or used to generate keys
 const iconCategories: { name: string; icons: IconItem[] }[] = [
   {
-    name: "Status",
+    name: "status",
     icons: [
-      { icon: "✅", label: "Check" },
-      { icon: "❌", label: "Cross" },
-      { icon: "⚠️", label: "Warning" },
-      { icon: "⭐", label: "Star" },
-      { icon: "🔥", label: "Fire" },
-      { icon: "💡", label: "Bulb" }
+      { icon: "✅", label: "check" },
+      { icon: "❌", label: "cross" },
+      { icon: "⚠️", label: "warning" },
+      { icon: "⭐", label: "star" },
+      { icon: "🔥", label: "fire" },
+      { icon: "💡", label: "bulb" }
     ]
   },
   {
-    name: "Actions",
+    name: "actions",
     icons: [
-      { icon: "📝", label: "Memo" },
-      { icon: "🚀", label: "Rocket" },
-      { icon: "🎯", label: "Target" },
-      { icon: "📊", label: "Chart" },
-      { icon: "🔧", label: "Wrench" },
-      { icon: "📅", label: "Calendar" }
+      { icon: "📝", label: "memo" },
+      { icon: "🚀", label: "rocket" },
+      { icon: "🎯", label: "target" },
+      { icon: "📊", label: "chart" },
+      { icon: "🔧", label: "wrench" },
+      { icon: "📅", label: "calendar" }
     ]
   },
   {
-    name: "Colors",
+    name: "colors",
     icons: [
-      { icon: "🔵", label: "Blue" },
-      { icon: "🟢", label: "Green" },
-      { icon: "🔴", label: "Red" },
-      { icon: "🟡", label: "Yellow" },
-      { icon: "🟣", label: "Purple" },
-      { icon: "🟠", label: "Orange" }
+      { icon: "🔵", label: "blue" },
+      { icon: "🟢", label: "green" },
+      { icon: "🔴", label: "red" },
+      { icon: "🟡", label: "yellow" },
+      { icon: "🟣", label: "purple" },
+      { icon: "🟠", label: "orange" }
     ]
   },
   {
-    name: "Symbols",
+    name: "symbols",
     icons: [
-      { icon: "✨", label: "Sparkles" },
-      { icon: "🎉", label: "Party" },
-      { icon: "👍", label: "Thumbs Up" },
-      { icon: "👎", label: "Thumbs Down" },
-      { icon: "💰", label: "Money" },
-      { icon: "⏰", label: "Clock" }
+      { icon: "✨", label: "sparkles" },
+      { icon: "🎉", label: "party" },
+      { icon: "👍", label: "thumbs_up" },
+      { icon: "👎", label: "thumbs_down" },
+      { icon: "💰", label: "money" },
+      { icon: "⏰", label: "clock" }
     ]
   }
 ];
 
 export default function IconsDropdown({ onInsertIcon, onClose }: Props) {
+  const { t } = useLanguage();
   // Flatten all icons into a single list (no grouping) and render 3 per line
   const flatIcons = iconCategories.flatMap(cat => cat.icons);
 
@@ -66,10 +68,10 @@ export default function IconsDropdown({ onInsertIcon, onClose }: Props) {
             key={it.label}
             className="dropdown-item icon-item"
             onClick={() => { onInsertIcon(it.icon); onClose(); }}
-            title={it.label}
+            title={t(`icons.labels.${it.label}`)}
           >
             <span className="icon-glyph">{it.icon}</span>
-            <span className="icon-label">{it.label}</span>
+            <span className="icon-label">{t(`icons.labels.${it.label}`)}</span>
           </button>
         ))}
       </div>

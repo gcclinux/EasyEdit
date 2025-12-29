@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './gitCredentialsModal.css';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface GitCredentialsModalProps {
   open: boolean;
@@ -10,14 +11,15 @@ interface GitCredentialsModalProps {
   initialToken?: string;
 }
 
-const GitCredentialsModal: React.FC<GitCredentialsModalProps> = ({ 
-  open, 
-  onClose, 
-  onSubmit, 
+const GitCredentialsModal: React.FC<GitCredentialsModalProps> = ({
+  open,
+  onClose,
+  onSubmit,
   isSetup = false,
   initialUsername = '',
   initialToken = ''
 }) => {
+  const { t } = useLanguage();
   const [username, setUsername] = useState(initialUsername);
   const [token, setToken] = useState(initialToken);
   const [showToken, setShowToken] = useState(false);
@@ -57,31 +59,29 @@ const GitCredentialsModal: React.FC<GitCredentialsModalProps> = ({
   return (
     <div className="modal-overlay">
       <div className="modal-content git-credentials-modal">
-        <h2>{isSetup ? 'Setup Git Credentials' : 'Git Credentials Required'}</h2>
+        <h2>{isSetup ? t('modals.git_credentials.title_setup') : t('modals.git_credentials.title_required')}</h2>
         <p className="modal-description">
-          {isSetup 
-            ? 'Enter your GitHub credentials to authenticate with remote repositories.'
-            : 'Please provide your credentials to continue with this Git operation.'}
+          {isSetup
+            ? t('modals.git_credentials.desc_setup')
+            : t('modals.git_credentials.desc_required')}
         </p>
 
         <div className="credentials-input-group">
-          <label htmlFor="git-username">GitHub Username (not email)</label>
+          <label htmlFor="git-username">{t('modals.git_credentials.username_label')}</label>
           <input
             id="git-username"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="your-github-username (e.g., gcclinux)"
+            placeholder={t('modals.git_credentials.username_placeholder')}
             autoFocus
           />
-          <small className="input-help" style={{ color: '#888', fontSize: '0.85em', marginTop: '4px' }}>
-            ⚠️ Use your GitHub username (e.g., <strong>gcclinux</strong>), NOT your email address
-          </small>
+          <small className="input-help" style={{ color: '#888', fontSize: '0.85em', marginTop: '4px' }} dangerouslySetInnerHTML={{ __html: t('modals.git_credentials.username_help') }} />
         </div>
 
         <div className="credentials-input-group">
-          <label htmlFor="git-token">Personal Access Token (not password)</label>
+          <label htmlFor="git-token">{t('modals.git_credentials.token_label')}</label>
           <div className="token-input-container">
             <input
               id="git-token"
@@ -89,27 +89,27 @@ const GitCredentialsModal: React.FC<GitCredentialsModalProps> = ({
               value={token}
               onChange={(e) => setToken(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+              placeholder={t('modals.git_credentials.token_placeholder')}
             />
-            <button 
-              onClick={() => setShowToken(!showToken)} 
+            <button
+              onClick={() => setShowToken(!showToken)}
               className="token-toggle-btn"
               type="button"
-              title={showToken ? 'Hide token' : 'Show token'}
+              title={showToken ? t('modals.git_credentials.hide_token') : t('modals.git_credentials.show_token')}
             >
               <span role="img" aria-label="toggle token visibility">👁️</span>
             </button>
           </div>
           <small className="input-help">
-            <a 
-              href="#" 
+            <a
+              href="#"
               onClick={(e) => {
                 e.preventDefault();
                 const url = 'https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token';
                 window.open(url, '_blank');
               }}
             >
-              How to create a personal access token
+              {t('modals.git_credentials.how_to_token')}
             </a>
           </small>
         </div>
@@ -121,17 +121,17 @@ const GitCredentialsModal: React.FC<GitCredentialsModalProps> = ({
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
             />
-            <span>Remember my credentials (encrypted locally)</span>
+            <span>{t('modals.git_credentials.remember_me')}</span>
           </label>
           <small className="security-note">
-            ⚠️ Credentials are encrypted and stored locally on your device
+            {t('modals.git_credentials.security_note')}
           </small>
         </div>
 
         <div className="modal-actions">
-          <button onClick={onClose} className="modal-button cancel-button">Cancel</button>
+          <button onClick={onClose} className="modal-button cancel-button">{t('actions.cancel')}</button>
           <button onClick={handleSubmit} className="modal-button submit-button">
-            {isSetup ? 'Save Credentials' : 'Authenticate'}
+            {isSetup ? t('modals.git_credentials.submit_setup') : t('modals.git_credentials.submit_auth')}
           </button>
         </div>
       </div>
