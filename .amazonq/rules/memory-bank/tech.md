@@ -3,201 +3,164 @@
 ## Core Technologies
 
 ### Frontend Framework
-- **React 19.1.1** - Main UI framework
-- **TypeScript 5.9.3** - Type-safe JavaScript
-- **Vite 7.1.7** - Build tool and dev server
-- **React DOM 19.1.1** - DOM rendering
+- **React 19.1.1** - Main UI framework with latest features
+- **TypeScript 5.9.3** - Type-safe JavaScript development
+- **Vite 7.1.7** - Fast build tool and development server
+- **CSS3** - Custom styling with CSS variables for theming
 
 ### Desktop Application
-- **Tauri 2.9.6** - Cross-platform desktop framework
-- **Rust** - Backend language for Tauri
-- **Cargo** - Rust package manager
+- **Tauri 2.9.6** - Rust-based desktop application framework
+- **Rust** - Backend language for native desktop functionality
+- **WebKit** - Web engine for desktop app rendering
 
-### Markdown & Content Processing
-- **react-markdown 10.1.0** - Markdown rendering
-- **remark-gfm 4.0.1** - GitHub Flavored Markdown
-- **remark-emoji 5.0.2** - Emoji support
-- **rehype-raw 7.0.0** - Raw HTML in markdown
+### Build & Development Tools
+- **Node.js** - JavaScript runtime (version specified in package.json)
+- **npm** - Package manager and script runner
+- **ESLint 9.36.0** - Code linting and style enforcement
+- **Jest 30.2.0** - Testing framework with coverage support
+- **Playwright 1.55.1** - End-to-end testing
 
-### Diagram Generation
-- **mermaid 11.12.0** - Flowcharts, sequence diagrams, Gantt charts
-- **nomnoml 1.7.0** - UML diagrams
-- **plantuml-encoder 1.4.0** - PlantUML diagram encoding
+## Key Dependencies
+
+### Markdown & Diagram Processing
+- **react-markdown 10.1.0** - Markdown rendering component
+- **mermaid 11.12.0** - Diagram generation library
+- **nomnoml 1.7.0** - ASCII diagram creation
+- **plantuml-encoder 1.4.0** - UML diagram encoding
+- **remark-gfm 4.0.1** - GitHub Flavored Markdown support
+- **remark-emoji 5.0.2** - Emoji support in markdown
+- **rehype-raw 7.0.0** - Raw HTML support in markdown
+
+### File & System Operations
+- **@tauri-apps/api 2.9.1** - Tauri frontend API bindings
+- **@tauri-apps/plugin-fs 2.4.4** - File system operations
+- **@tauri-apps/plugin-dialog 2.4.2** - Native dialog support
+- **@tauri-apps/plugin-shell 2.3.3** - Shell command execution
+- **file-saver 2.0.5** - Client-side file saving
+- **path-browserify 1.0.1** - Path utilities for browser
 
 ### Git Integration
 - **isomorphic-git 1.35.1** - Pure JavaScript Git implementation
-- **@isomorphic-git/lightning-fs 4.6.2** - File system for isomorphic-git
+- **@isomorphic-git/lightning-fs 4.6.2** - In-memory file system for Git
 
-### File & Export Operations
-- **file-saver 2.0.5** - File download functionality
-- **jspdf 3.0.3** - PDF generation
-- **html2canvas 1.4.1** - HTML to canvas conversion
+### Cloud & Authentication
+- **gapi-script 1.2.0** - Google API client library
+- **@types/gapi 0.0.47** - Google API TypeScript definitions
+- **@types/gapi.auth2 0.0.61** - Google OAuth2 type definitions
 
-### Authentication & Cloud
-- **gapi-script 1.2.0** - Google API integration
-- **@types/gapi** - Google API TypeScript definitions
-- **@types/gapi.auth2** - Google OAuth2 TypeScript definitions
-
-### Encryption & Security
+### Security & Encryption
 - **crypto-js 4.2.0** - Cryptographic functions
-- **buffer 6.0.3** - Node.js Buffer polyfill
+- **buffer 6.0.3** - Node.js Buffer API for browsers
 
-### UI & Styling
-- **react-icons 5.5.0** - Icon library
-- **@twemoji/api 16.0.1** - Twitter emoji rendering
-- **twemoji 14.0.2** - Emoji graphics
+### Export & Generation
+- **jspdf 3.0.3** - PDF generation library
+- **html2canvas 1.4.1** - HTML to canvas conversion
+- **twemoji 14.0.2** - Twitter emoji rendering
+- **@twemoji/api 16.0.1** - Twemoji API integration
 
-### Development Tools
-- **ESLint 9.36.0** - Code linting
-- **Jest 30.2.0** - Testing framework
-- **Playwright 1.55.1** - End-to-end testing
-- **TypeScript** - Static type checking
+### UI & Interaction
+- **react-icons 5.5.0** - Icon library for React
+- **lodash.debounce 4.0.8** - Input debouncing utility
+- **detect-port 2.1.0** - Port detection for development
 
-## Build System & Configuration
+### Server & Deployment
+- **express 5.1.0** - Web server for Docker deployment
+- **Docker** - Containerization platform
+- **GitHub Actions** - CI/CD pipeline automation
 
-### Package Management
-- **npm** - Primary package manager
-- **package.json** - Dependency management
-- **package-lock.json** - Dependency locking
+## Development Commands
 
-### Build Scripts
-```json
-{
-  "dev": "vite",
-  "server": "vite --host --port 3024",
-  "build": "tsc && vite build && node scripts/copy-metadata.js",
-  "build:web": "tsc && vite build --outDir dist-web",
-  "preview": "vite preview --port 3024",
-  "tauri:dev": "WEBKIT_DISABLE_DMABUF_RENDERER=1 WEBKIT_DISABLE_COMPOSITING_MODE=1 tauri dev",
-  "tauri:build": "WEBKIT_DISABLE_DMABUF_RENDERER=1 WEBKIT_DISABLE_COMPOSITING_MODE=1 tauri build"
-}
+### Core Development
+```bash
+npm run dev          # Start development server
+npm run server       # Start server on port 3024
+npm run build        # Build for production
+npm run build:web    # Build web-only version
+npm run preview      # Preview production build
 ```
 
+### Testing
+```bash
+npm run test         # Run test suite
+npm run test:watch   # Run tests in watch mode
+npm run test:coverage # Run tests with coverage report
+```
+
+### Tauri Desktop
+```bash
+npm run tauri:dev    # Start Tauri development mode
+npm run tauri:build  # Build Tauri desktop application
+```
+
+### HTTPS Setup
+```bash
+npm run setup-https          # Setup HTTPS (Unix/Linux/macOS)
+npm run setup-https-windows  # Setup HTTPS (Windows)
+```
+
+## Build Configurations
+
 ### TypeScript Configuration
-- **tsconfig.json** - Root TypeScript config with project references
+- **tsconfig.json** - Root TypeScript configuration with project references
 - **tsconfig.app.json** - Application-specific TypeScript settings
 - **tsconfig.node.json** - Node.js environment TypeScript settings
 
 ### Vite Configuration
-- **vite.config.ts** - Main Vite configuration for desktop/development
+- **vite.config.ts** - Main Vite configuration for desktop/server builds
 - **vite.config.web.ts** - Web-specific Vite configuration
 
-## Platform-Specific Technologies
+### Testing Configuration
+- **jest.config.js** - Jest testing framework configuration
+- **setupTests.ts** - Test environment setup
 
-### Web Platform
-- **File System Access API** - Modern browser file operations
-- **Service Workers** - Offline functionality
-- **Web APIs** - Browser-native features
+### Linting Configuration
+- **eslint.config.js** - ESLint rules and configuration
 
-### Desktop Platform (Tauri)
-- **@tauri-apps/api 2.9.1** - Tauri JavaScript API
-- **@tauri-apps/plugin-dialog 2.4.2** - Native file dialogs
-- **@tauri-apps/plugin-fs 2.4.4** - File system operations
-- **@tauri-apps/plugin-shell 2.3.3** - Shell command execution
+## Platform-Specific Requirements
 
-### Container Platform
-- **Docker** - Containerization
-- **Express 5.1.0** - Node.js web server
-- **detect-port 2.1.0** - Port detection utility
-
-### Linux Distribution
-- **Snap** - Ubuntu package format
-- **Flatpak** - Universal Linux package format
-- **AppImage** - Portable Linux application format
-
-## Development Environment
-
-### Prerequisites
+### Linux Dependencies
 ```bash
-# Node.js and npm
-node --version  # Required
-npm --version   # Required
+# Ubuntu/Debian
+sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
 
-# Git
-git --version   # Required
-
-# Rust (for Tauri)
-rustc --version
-cargo --version
+# Fedora
+sudo dnf install webkit2gtk4.1-devel openssl-devel curl wget file libappindicator-gtk3-devel librsvg2-devel
 ```
 
-### System Dependencies
-
-#### Linux (Ubuntu/Debian)
+### macOS Requirements
 ```bash
-sudo apt install libwebkit2gtk-4.1-dev \
-  build-essential \
-  curl \
-  wget \
-  file \
-  libxdo-dev \
-  libssl-dev \
-  libayatana-appindicator3-dev \
-  librsvg2-dev
+xcode-select --install  # Xcode Command Line Tools
 ```
 
-#### Linux (Fedora)
-```bash
-sudo dnf install webkit2gtk4.1-devel \
-  openssl-devel \
-  curl \
-  wget \
-  file \
-  libappindicator-gtk3-devel \
-  librsvg2-devel
-```
-
-#### macOS
-```bash
-xcode-select --install
-```
-
-#### Windows
+### Windows Requirements
 - Visual Studio Build Tools with C++ workload
+- Rust toolchain via rustup
 
-### Development Commands
+### Rust Installation
 ```bash
-# Install dependencies
-npm install
-
-# Development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Tauri development
-npm run tauri:dev
-
-# Tauri production build
-npm run tauri:build
-
-# Run tests
-npm test
-
-# Run with coverage
-npm run test:coverage
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source ~/.cargo/env
 ```
 
-## Architecture Decisions
+## Deployment Targets
 
-### Multi-Platform Strategy
-- **Web-first approach** with progressive enhancement
-- **Tauri for desktop** - lighter than Electron
-- **Docker for server deployment** - containerized web version
-- **Linux packages** - native distribution formats
+### Web Deployment
+- Static site hosting (GitHub Pages, Netlify, Vercel)
+- Docker container deployment
+- Express server with port 3024
 
-### State Management
-- **React hooks** - Built-in state management
-- **Local storage** - Browser persistence
-- **File system** - Document storage
+### Desktop Distribution
+- **Windows**: .exe installer and portable executable
+- **macOS**: .dmg disk image and .app bundle
+- **Linux**: AppImage, Flatpak, Snap packages
 
-### Build System
-- **Vite** - Fast development and optimized builds
-- **TypeScript** - Type safety and better DX
-- **ESLint** - Code quality and consistency
+### Container Deployment
+```bash
+docker pull ghcr.io/gcclinux/easyedit:latest
+docker run -d --name EASYEDIT -p 3024:3024 ghcr.io/gcclinux/easyedit:main
+```
 
-### Testing Strategy
-- **Jest** - Unit and integration testing
-- **Playwright** - End-to-end testing
-- **TypeScript** - Compile-time error detection
+## Environment Configuration
+- **`.env.example`** - Template for environment variables
+- **`.env.local`** - Local development environment settings
+- **Environment detection** - Automatic platform and runtime detection

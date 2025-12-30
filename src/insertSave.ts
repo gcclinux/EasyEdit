@@ -2,7 +2,7 @@
 import { RefObject, MutableRefObject } from 'react';
 import { saveAs } from 'file-saver';
 import mermaid from 'mermaid';
-import { marked } from 'marked';
+// import { marked } from 'marked'; // Not needed for saveToFile
 import nomnoml from 'nomnoml';
 
 
@@ -546,9 +546,55 @@ export const saveAsFile = async (editorContent: string, defaultName: string = "e
   return null; // Cannot track path with file-saver
 };
 
-export const saveToFile = (editorContent: string): void => {
-  const blob = new Blob([editorContent], { type: "text/markdown;charset=utf-8" });
-  saveAs(blob, "easyedit.md");
+export const saveToFile = async (editorContent: string, setCurrentFilePath?: (path: string) => void): Promise<void> => {
+  console.log('saveToFile called with content length:', editorContent.length);
+  
+  // Try File System Access API first (modern browsers)
+  if (hasFileSystemAccess()) {
+    try {
+      const fileHandle = await (window as any).showSaveFilePicker({
+        suggestedName: 'easyedit.md',
+        types: [
+          {
+            description: 'Markdown Files',
+            accept: {
+              'text/markdown': ['.md', '.markdown']
+            }
+          }
+        ]
+      });
+
+      const writable = await fileHandle.createWritable();
+      await writable.write(editorContent);
+      await writable.close();
+      
+      // Store the file handle for future saves
+      currentFileHandle = fileHandle;
+      
+      // Set the current file path if callback provided
+      if (setCurrentFilePath) {
+        setCurrentFilePath(fileHandle.name);
+      }
+      
+      console.log('File saved successfully via File System Access API');
+      return;
+    } catch (error: any) {
+      if (error.name !== 'AbortError') {
+        console.error('File System Access API error:', error);
+      }
+      // Fall through to file-saver fallback
+    }
+  }
+  
+  // Fallback: use file-saver (downloads to default folder)
+  try {
+    const blob = new Blob([editorContent], { type: "text/markdown;charset=utf-8" });
+    console.log('Blob created successfully');
+    saveAs(blob, "easyedit.md");
+    console.log('saveAs called successfully');
+  } catch (error) {
+    console.error('Error in saveToFile:', error);
+  }
 };
 
 export const saveToTxT = (editorContent: string): void => {

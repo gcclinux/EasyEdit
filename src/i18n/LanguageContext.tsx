@@ -35,15 +35,18 @@ export const useLanguage = () => {
 };
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [language, setLanguageState] = useState<string>('en');
+    // Initialize with saved language immediately to avoid flash of English
+    const [language, setLanguageState] = useState<string>(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('easyedit-language') || 'en';
+        }
+        return 'en';
+    });
     const [translations, setTranslations] = useState<Record<string, any>>({});
     const [customLanguages, setCustomLanguages] = useState<Language[]>([]);
 
-    // Load saved language on startup
+    // Load custom languages on startup
     useEffect(() => {
-        const savedLang = localStorage.getItem('easyedit-language') || 'en';
-        setLanguageState(savedLang);
-
         // Load custom languages definition
         const savedCustomLangs = localStorage.getItem('easyedit-custom-languages');
         if (savedCustomLangs) {

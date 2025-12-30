@@ -26,6 +26,8 @@
         "easy_notes": "EasyNotes",
         "save": "Opslaan",
         "save_desc": "Huidig bestand opslaan",
+        "save_as": "Opslaan als",
+        "save_as_desc": "Opslaan als Markdown",
         "support": "Ondersteuning",
         "support_desc": "Hulp krijgen of sponsoren",
         "features": "Functies",

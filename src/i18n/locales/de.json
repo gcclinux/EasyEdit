@@ -26,6 +26,8 @@
         "easy_notes": "EasyNotes",
         "save": "Speichern",
         "save_desc": "Aktuelle Datei speichern",
+        "save_as": "Speichern unter",
+        "save_as_desc": "Als Markdown speichern",
         "support": "Unterstützung",
         "support_desc": "Hilfe erhalten oder sponsern",
         "features": "Funktionen",

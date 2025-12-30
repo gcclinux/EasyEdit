@@ -1,82 +1,73 @@
 # EasyEdit - Product Overview
 
-## Purpose
-EasyEdit is a comprehensive markdown editor that enables users to write, preview, and manage Markdown documents in real-time. It provides an integrated environment for creating MD documents with advanced features including Git integration, cloud storage support, UML/Mermaid diagram generation, and multiple export formats.
+## Project Purpose
+EasyEdit is a comprehensive markdown editor that provides real-time preview capabilities with extensive features for document creation, collaboration, and export. It serves as a unified platform for creating markdown documents with advanced diagram support, Git integration, and cloud synchronization.
 
-## Value Proposition
-- **All-in-One Solution**: Single application combining markdown editing, version control, cloud sync, and diagram generation
-- **130+ Features**: Extensive feature set with examples and templates for rapid document creation
-- **Multi-Platform**: Available as web app, desktop app (Tauri), Docker container, and Flatpak
-- **Free & Open Source**: MIT licensed with active community support
+## Key Features & Capabilities
 
-## Key Features
+### Core Editing Features
+- Real-time markdown preview with live synchronization
+- Syntax highlighting and auto-completion
+- Over 130 built-in features and examples
+- Template system with pre-built document types (meeting notes, project plans, study notes, etc.)
+- Custom theme system with 6 built-in themes and import capability
 
-### Core Editing
-- Real-time markdown preview with syntax highlighting
-- Over 130 built-in features and examples accessible via button clicks
-- Template system (bug reports, daily journals, meeting notes, project plans, study notes, travel logs, workout logs)
-- Auto-generators for tables, Gantt charts, and timelines
-- Custom theme support with 6+ pre-built themes
+### Diagram & Visualization Support
+- Mermaid diagram integration (flowcharts, sequence diagrams, Gantt charts)
+- UML diagram support via PlantUML
+- ASCII diagram creation with Nomnoml
+- Table generator with visual editing
+- Timeline and Gantt chart generators
 
-### Diagram Support
-- Mermaid diagrams (flowcharts, sequence diagrams, Gantt charts, etc.)
-- UML diagrams via PlantUML and Nomnoml
-- ASCII diagrams
-- Inline diagram preview
-
-### File Management
-- Save/load .md files locally
-- File System Access API integration (web)
-- Tauri file system integration (desktop)
-- SSTP encryption for secure file storage
-- Master password protection
+### File Management & Export
+- Multiple export formats: HTML, TXT, PDF, SSTP encryption
+- File system access API integration
+- Drag-and-drop file handling
+- Auto-save functionality
+- File browser with directory navigation
 
 ### Git Integration
-- Clone repositories
-- Stage, commit, and push changes
-- View commit history
+- Full Git workflow support (clone, stage, commit, push)
+- Git history visualization
 - Branch management
-- Git credentials management
-- Visual status indicators
+- Credential management with secure storage
+- Git status indicators
 
-### Cloud Services
-- Google Drive OAuth integration
-- Cloud sync indicators
-- Multi-provider architecture ready
+### Cloud & Collaboration
+- Google Drive integration via OAuth
+- Cloud synchronization indicators
+- Multi-platform deployment (Web, Desktop, Docker)
+- Real-time collaboration features
 
-### Export Capabilities
-- HTML export
-- PDF export (via jsPDF)
-- Plain text export
-- SSTP encrypted export
+### Security Features
+- SSTP file encryption with master password
+- Secure credential storage
+- OAuth authentication for cloud services
+- Environment-based configuration
 
 ## Target Users
 
 ### Primary Users
-- **Developers**: Technical documentation, README files, API docs, project planning
-- **Students**: Study notes, research papers, assignment documentation
-- **Writers**: Content creation, blog posts, documentation
-- **Project Managers**: Meeting notes, project plans, task tracking
+- Technical writers and documentation teams
+- Software developers creating README files and technical docs
+- Project managers creating project documentation
+- Students and researchers taking structured notes
+- Content creators working with markdown
 
 ### Use Cases
-- Technical documentation and knowledge bases
-- Personal note-taking and journaling
-- Project planning and tracking
-- Educational content creation
-- Collaborative documentation with Git workflows
-- Diagram-heavy documentation (architecture, workflows, processes)
+- Creating technical documentation with diagrams
+- Project planning with Gantt charts and timelines
+- Meeting notes with structured formatting
+- Study materials with visual elements
+- Blog post drafting with live preview
+- Git repository documentation
+- Collaborative document editing with cloud sync
 
-## Deployment Options
-- **Web App**: Hosted at easyedit-cloud.web.app (Firebase)
-- **Desktop App**: Tauri-based native application (Linux, macOS, Windows)
-- **Docker**: Pre-built images available via GitHub Container Registry
-- **Flatpak**: Linux package distribution
-- **Snap**: Ubuntu/Linux snap package
+## Platform Availability
+- **Web Application**: Browser-based version with full features
+- **Desktop Application**: Tauri-based native app for Windows, macOS, Linux
+- **Docker Container**: Containerized deployment for server environments
+- **Flatpak**: Linux package manager distribution
 
-## Unique Selling Points
-1. Button-driven markdown generation (no need to memorize syntax)
-2. Integrated Git workflow without leaving the editor
-3. Multiple diagram engines in one application
-4. Cross-platform with consistent experience
-5. Privacy-focused with local-first architecture and optional cloud sync
-6. Extensive template library for quick starts
+## Value Proposition
+EasyEdit eliminates the need for multiple tools by providing a single, feature-rich markdown editor that handles everything from basic text editing to complex diagram creation, version control, and cloud synchronization. It bridges the gap between simple text editors and complex documentation platforms.

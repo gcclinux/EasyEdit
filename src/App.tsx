@@ -1778,8 +1778,8 @@ const App = () => {
   };
 
   // Save to Markdown wrapper
-  const handleSaveToMarkdown = () => {
-    saveToFile(editorContent);
+  const handleSaveToMarkdown = async () => {
+    await saveToFile(editorContent, setCurrentFilePath);
   };
 
   // Save to TXT wrapper
@@ -2020,6 +2020,17 @@ const App = () => {
               >
                 <div className="hdr-title"><FaSave /> {t('menu.save')}</div>
                 <div className="hdr-desc">{t('menu.save_desc')}</div>
+              </button>
+              <div className="hdr-sep" />
+              <button
+                className="dropdown-item"
+                onClick={async () => {
+                  await handleSaveToMarkdown();
+                  setShowHelpDropdown(false);
+                }}
+              >
+                <div className="hdr-title"><FaSave /> {t('menu.save_as')}</div>
+                <div className="hdr-desc">{t('menu.save_as_desc')}</div>
               </button>
               <div className="hdr-sep" />
               <button className="dropdown-item" onClick={() => { setFeaturesOpen(true); setShowHelpDropdown(false); }}>

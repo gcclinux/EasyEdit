@@ -2,331 +2,169 @@
 
 ## Code Quality Standards
 
-### TypeScript Usage
-- **Strict typing**: All files use TypeScript with explicit type definitions
-- **Interface definitions**: Complex objects use interfaces (e.g., `TextAreaRef`, `CloneOptions`, `GitStatus`)
-- **Generic types**: Proper use of generics for reusable components
-- **Type assertions**: Minimal use of `any`, prefer specific types or unions
-- **Optional properties**: Extensive use of optional properties with `?` operator
-
-### Naming Conventions
-- **Functions**: camelCase with descriptive names (`handleGitClone`, `insertBoldSyntax`)
-- **Variables**: camelCase for local variables, descriptive names
-- **Constants**: UPPER_SNAKE_CASE for enums and constants (`OAuthOperation`, `AlertType`)
-- **Components**: PascalCase for React components (`GitStatusIndicator`, `OAuthManager`)
-- **Files**: camelCase for utilities, PascalCase for components
-- **Interfaces**: PascalCase with descriptive names (`MonitoringAlert`, `HealthStatus`)
-
-### Documentation Standards
-- **JSDoc comments**: Comprehensive documentation for public methods and classes
-- **Inline comments**: Explain complex logic and business rules
-- **TODO comments**: Mark areas for future improvement
-- **Console logging**: Extensive use of console.log for debugging with structured messages
-- **Error context**: Detailed error messages with context information
-
-## Structural Conventions
-
-### File Organization
-- **Single responsibility**: Each file focuses on one main concern
-- **Barrel exports**: Use index files to re-export related functionality
-- **Separation of concerns**: Clear separation between UI, business logic, and utilities
-- **Feature-based structure**: Group related files by feature (oauth/, components/, templates/)
-
-### Import/Export Patterns
-```typescript
-// Named exports preferred over default exports
-export const insertBoldSyntax = (...) => { ... };
-export class GitManager { ... }
-
-// Destructured imports for better tree-shaking
-import { insertBoldSyntax, insertItalicSyntax } from './insertMarkdown';
-
-// Dynamic imports for code splitting
-const { handleTauriOpenFile } = await import('./tauriFileHandler');
-```
+### TypeScript Configuration
+- **Strict Type Checking**: All files use strict TypeScript with proper type annotations
+- **Interface Definitions**: Complex data structures use well-defined interfaces (e.g., `OAuthError`, `GitStatus`, `Commit`)
+- **Generic Types**: Utility functions leverage generics for type safety (`withRetry<T>`, `withTimeout<T>`)
+- **Enum Usage**: String enums for constants and error types (`OAuthErrorType`, status values)
 
 ### Error Handling Patterns
-```typescript
-// Comprehensive try-catch with specific error messages
-try {
-  await gitManager.clone(url, targetDir, options);
-} catch (error: any) {
-  console.error('=== Git Clone Failed ===');
-  console.error('Error details:', error);
-  
-  let errorMessage = error.message || 'Unknown error';
-  if (errorMessage.includes('401')) {
-    errorMessage = 'Authentication failed: Please check credentials';
-  }
-  
-  throw new Error(`Failed to clone repository: ${errorMessage}`);
-}
-```
-
-## Semantic Patterns
-
-### State Management
-- **React hooks**: Extensive use of useState, useEffect, useRef, useCallback
-- **State lifting**: Complex state managed at appropriate component levels
-- **Ref usage**: useRef for DOM manipulation and persistent values
-- **Effect dependencies**: Careful dependency arrays in useEffect
+- **Comprehensive Error Classification**: Errors are categorized by type with specific handling strategies
+- **User-Friendly Messages**: All errors provide both technical and user-friendly messages
+- **Retry Logic**: Network operations implement exponential backoff with configurable retry policies
+- **Graceful Degradation**: Operations continue with fallback mechanisms when possible
+- **Error Propagation**: Errors are properly caught, transformed, and re-thrown with context
 
 ### Async/Await Patterns
-```typescript
-// Consistent async/await usage over Promises
-const handleAsyncOperation = async () => {
-  try {
-    const result = await someAsyncFunction();
-    return result;
-  } catch (error) {
-    console.error('Operation failed:', error);
-    throw error;
-  }
-};
-```
+- **Consistent Async Usage**: All asynchronous operations use async/await syntax
+- **Promise Handling**: Proper error handling in async functions with try/catch blocks
+- **Timeout Management**: Long-running operations implement timeout mechanisms
+- **Resource Cleanup**: Async operations include proper cleanup in finally blocks
 
-### Event Handling
-```typescript
-// Consistent event handler naming and structure
-const handleButtonClick = async (event: React.MouseEvent) => {
-  event.preventDefault();
-  closeAllDropdowns();
-  await performAction();
-};
-```
+## Architectural Patterns
 
-### Conditional Rendering
-```typescript
-// Clear conditional rendering patterns
-{isFeatureEnabled('EASY_NOTES') && (
-  <EasyNotesSidebar />
-)}
+### State Management
+- **React Hooks**: Extensive use of useState, useEffect, useRef, and useCallback
+- **State Isolation**: Related state variables grouped together logically
+- **Ref Usage**: DOM references and mutable values properly managed with useRef
+- **Effect Dependencies**: useEffect hooks have properly defined dependency arrays
 
-{!isPreviewFull && (
-  <TextareaComponent />
-)}
-```
+### Component Architecture
+- **Functional Components**: All components are functional with hooks
+- **Props Interface**: Component props are well-defined with TypeScript interfaces
+- **Event Handling**: Consistent event handler naming (handle*, on*)
+- **Conditional Rendering**: Complex conditional logic extracted to helper functions
 
-## Internal API Usage Patterns
+### Module Organization
+- **Feature-Based Structure**: Code organized by feature domains (git, oauth, cloud, etc.)
+- **Utility Separation**: Common utilities extracted to dedicated modules
+- **Type Definitions**: Interfaces and types defined close to usage or in dedicated files
+- **Export Patterns**: Clear distinction between default and named exports
 
-### Git Operations
-```typescript
-// Consistent Git operation patterns
-const performGitOperation = async () => {
-  if (!gitManager) {
-    showToast('Git manager not initialized', 'error');
-    return;
-  }
-  
-  if (!isGitRepo) {
-    showToast('No active Git repository', 'info');
-    return;
-  }
-  
-  try {
-    await gitManager.someOperation();
-    showToast('Operation successful', 'success');
-  } catch (error) {
-    showToast(`Operation failed: ${error.message}`, 'error');
-  }
-};
-```
+## Naming Conventions
 
-### Modal Management
-```typescript
-// Consistent modal state management
-const [modalOpen, setModalOpen] = useState(false);
-const [modalConfig, setModalConfig] = useState({
-  open: false,
-  title: '',
-  onSubmit: () => {}
-});
+### Variables and Functions
+- **camelCase**: All variables and functions use camelCase (`editorContent`, `handleGitSave`)
+- **Descriptive Names**: Names clearly indicate purpose (`currentRepoPath`, `showPasswordPrompt`)
+- **Boolean Prefixes**: Boolean variables use is/has/can prefixes (`isGitRepo`, `hasCredentials`)
+- **Handler Naming**: Event handlers prefixed with 'handle' (`handleFileSelect`, `handleCommit`)
 
-// Modal opening pattern
-const openModal = () => {
-  setModalConfig({
-    open: true,
-    title: 'Modal Title',
-    onSubmit: handleSubmit
-  });
-};
-```
+### Constants and Enums
+- **UPPER_SNAKE_CASE**: Constants use uppercase with underscores (`DEFAULT_RETRY_CONFIG`)
+- **PascalCase Enums**: Enum names use PascalCase (`OAuthErrorType`, `GitStatus`)
+- **Descriptive Enum Values**: Enum values are self-documenting (`NETWORK_ERROR`, `USER_CANCELLED`)
 
-### Toast Notifications
-```typescript
-// Standardized toast usage
-showToast('Success message', 'success');
-showToast('Error occurred', 'error');
-showToast('Information', 'info');
-showToast('Warning message', 'warning');
-```
+### Files and Directories
+- **camelCase Files**: TypeScript files use camelCase (`gitManager.ts`, `stpFileCrypter.ts`)
+- **PascalCase Components**: React components use PascalCase (`App.tsx`, `GitDropdown.tsx`)
+- **Kebab-case Directories**: Directory names use kebab-case when multi-word
 
-## Frequently Used Code Idioms
+## API Design Patterns
 
-### Dropdown Management
-```typescript
-// Consistent dropdown state and positioning
-const [showDropdown, setShowDropdown] = useState(false);
-const [dropdownPos, setDropdownPos] = useState<{top: number; left: number; width: number} | null>(null);
+### Function Signatures
+- **Optional Parameters**: Optional parameters use TypeScript optional syntax with defaults
+- **Configuration Objects**: Complex functions accept configuration objects rather than many parameters
+- **Return Types**: Functions have explicit return type annotations
+- **Generic Constraints**: Generic functions include appropriate type constraints
 
-const handleDropdownClick = (e: React.MouseEvent) => {
-  e.preventDefault();
-  closeAllDropdowns();
-  setShowDropdown(true);
-  
-  if (buttonRef.current) {
-    const rect = buttonRef.current.getBoundingClientRect();
-    setDropdownPos({
-      top: rect.bottom + window.scrollY,
-      left: rect.left + window.scrollX,
-      width: rect.width
-    });
-  }
-};
-```
+### Error Handling API
+- **Structured Errors**: Custom error types with consistent structure
+- **Error Context**: Errors include original error context and user-friendly messages
+- **Retry Configuration**: Retryable operations accept configuration objects
+- **Timeout Support**: Long operations support timeout configuration
 
-### File Operations
-```typescript
-// Platform detection and conditional execution
-const isTauri = typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__;
-
-if (isTauri) {
-  // Tauri-specific implementation
-  const { handleTauriOperation } = await import('./tauriFileHandler');
-  await handleTauriOperation();
-} else {
-  // Web-specific implementation
-  await webOperation();
-}
-```
-
-### Credential Management
-```typescript
-// Consistent credential checking pattern
-const ensureCredentials = async (action: () => Promise<void>) => {
-  if (!gitCredentialManager.hasCredentials()) {
-    setPendingCredentialAction(() => action);
-    handleSetupCredentials();
-    return false;
-  }
-  
-  if (!gitCredentialManager.isUnlocked()) {
-    setPendingCredentialAction(() => action);
-    setMasterPasswordModalOpen(true);
-    return false;
-  }
-  
-  return true;
-};
-```
-
-## Popular Annotations and Patterns
-
-### React Component Patterns
-```typescript
-// Memoized components for performance
-const TextareaComponent = React.memo(({ ... }) => {
-  // Component implementation
-});
-
-// Custom hooks for reusable logic
-const useGitStatus = () => {
-  const [status, setStatus] = useState(initialStatus);
-  // Hook logic
-  return status;
-};
-```
-
-### Logging Patterns
-```typescript
-// Structured logging with context
-console.log('[Component] Operation started:', { param1, param2 });
-console.log('=== Operation Phase ===');
-console.error('[Component] Operation failed:', error);
-```
-
-### Configuration Patterns
-```typescript
-// Feature flags and configuration
-const isFeatureEnabled = (feature: string) => {
-  return config.features[feature] === true;
-};
-
-// Environment detection
-const isBrowser = () => typeof window !== 'undefined';
-const isTauri = () => typeof window !== 'undefined' && (window as any).__TAURI__;
-```
-
-### Cleanup Patterns
-```typescript
-// Comprehensive cleanup in useEffect
-useEffect(() => {
-  const handleEvent = () => { /* handler */ };
-  
-  document.addEventListener('event', handleEvent);
-  
-  return () => {
-    document.removeEventListener('event', handleEvent);
-  };
-}, []);
-```
-
-## Performance Optimization Patterns
-
-### Debouncing
-```typescript
-// Debounced operations for performance
-const debouncedOperation = useCallback(
-  debounce(() => {
-    performExpensiveOperation();
-  }, 300),
-  []
-);
-```
-
-### Lazy Loading
-```typescript
-// Dynamic imports for code splitting
-const loadFeature = async () => {
-  const { FeatureComponent } = await import('./FeatureComponent');
-  return FeatureComponent;
-};
-```
-
-### Memoization
-```typescript
-// Memoized calculations
-const expensiveValue = useMemo(() => {
-  return calculateExpensiveValue(dependencies);
-}, [dependencies]);
-```
+### Async API Patterns
+- **Promise-Based**: All async operations return Promises
+- **Cancellation Support**: Long operations support cancellation where appropriate
+- **Progress Callbacks**: Operations that take time support progress callbacks
+- **Resource Management**: Async operations properly manage resources (cleanup, timeouts)
 
 ## Security Patterns
 
+### Credential Management
+- **Secure Storage**: Credentials encrypted before storage
+- **Memory Clearing**: Sensitive data cleared from memory when possible
+- **Access Control**: Credential access requires proper authentication
+- **Timeout Handling**: Credential sessions have appropriate timeouts
+
 ### Input Validation
-```typescript
-// Consistent input validation
-if (!provider.name || !provider.clientId) {
-  throw new Error('Provider must have a name and clientId');
-}
-```
+- **Type Checking**: All inputs validated at runtime and compile time
+- **Sanitization**: User inputs sanitized before processing
+- **Length Limits**: String inputs have reasonable length limits
+- **Format Validation**: Structured inputs (URLs, emails) validated for format
 
-### CSRF Protection
-```typescript
-// State parameter validation for OAuth
-const authState = this.stateManager.validateState(state);
-if (!authState) {
-  throw new Error('Invalid or expired state parameter - possible CSRF attack');
-}
-```
+### Encryption Implementation
+- **Standard Algorithms**: Uses well-established encryption libraries (CryptoJS)
+- **Key Management**: Proper key derivation and management
+- **Error Handling**: Encryption errors handled gracefully
+- **Data Conversion**: Proper conversion between data formats (Uint8Array, WordArray)
 
-### Error Sanitization
-```typescript
-// Sanitized error messages for users
-const sanitizeError = (error: Error) => {
-  if (error.message.includes('401')) {
-    return 'Authentication failed. Please check your credentials.';
-  }
-  return 'An error occurred. Please try again.';
-};
-```
+## Performance Patterns
+
+### Optimization Techniques
+- **Debouncing**: User input operations debounced to prevent excessive calls
+- **Memoization**: Expensive calculations memoized with useCallback/useMemo
+- **Lazy Loading**: Components and modules loaded on demand
+- **Resource Cleanup**: Event listeners and subscriptions properly cleaned up
+
+### Memory Management
+- **Effect Cleanup**: useEffect hooks include cleanup functions
+- **Reference Management**: DOM references properly managed and cleared
+- **State Updates**: State updates batched when possible
+- **Large Data Handling**: Large datasets processed in chunks
+
+## Testing Patterns
+
+### Error Simulation
+- **Network Errors**: Comprehensive network error simulation and handling
+- **User Cancellation**: Proper handling of user-initiated cancellations
+- **Timeout Scenarios**: Operations tested with various timeout conditions
+- **Edge Cases**: Boundary conditions and edge cases properly tested
+
+### Validation Patterns
+- **Input Validation**: All user inputs validated before processing
+- **State Validation**: Component state validated for consistency
+- **Configuration Validation**: Configuration objects validated on startup
+- **Runtime Checks**: Critical operations include runtime validation
+
+## Documentation Standards
+
+### Code Comments
+- **Function Documentation**: Complex functions include JSDoc-style comments
+- **Algorithm Explanation**: Non-obvious algorithms explained with comments
+- **TODO Comments**: Technical debt marked with TODO comments
+- **Requirement Tracing**: Code linked to requirements where applicable
+
+### Type Documentation
+- **Interface Documentation**: Complex interfaces include property descriptions
+- **Enum Documentation**: Enum values documented with usage context
+- **Generic Documentation**: Generic type parameters explained
+- **Error Documentation**: Error types include handling guidance
+
+## Cross-Platform Considerations
+
+### Environment Detection
+- **Runtime Detection**: Platform capabilities detected at runtime
+- **Feature Flags**: Platform-specific features controlled by flags
+- **Graceful Degradation**: Features degrade gracefully on unsupported platforms
+- **API Abstraction**: Platform differences abstracted behind common APIs
+
+### Resource Management
+- **File System Access**: Different file system APIs handled transparently
+- **Network Operations**: Network operations adapted to platform capabilities
+- **Storage APIs**: Storage operations use appropriate platform APIs
+- **UI Adaptation**: User interface adapts to platform conventions
+
+## Integration Patterns
+
+### External Services
+- **OAuth Integration**: Standardized OAuth flow implementation
+- **Git Operations**: Consistent Git operation patterns across platforms
+- **Cloud Services**: Unified cloud service integration patterns
+- **Error Handling**: Consistent error handling across all integrations
+
+### Event-Driven Architecture
+- **Event Emission**: Consistent event emission patterns (Tauri, DOM)
+- **Event Handling**: Standardized event handler registration and cleanup
+- **State Synchronization**: Events used for cross-component state sync
+- **Error Propagation**: Errors propagated through event system when appropriate
