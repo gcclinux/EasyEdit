@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document compares the capabilities of EasyEdit across different platforms and browsers, with a focus on the new File System Access API implementation.
+This document compares the capabilities of EasyEditor across different platforms and browsers, with a focus on the new File System Access API implementation.
 
 ## Quick Comparison
 
@@ -203,7 +203,7 @@ This document compares the capabilities of EasyEdit across different platforms a
 2020-10  Chrome 86: File System Access API
 2020-10  Edge 86: File System Access API
 2020-11  Opera 72: File System Access API
-2024-12  EasyEdit: FS API Integration
+2024-12  EasyEditor: FS API Integration
 Future   Firefox: Possible support
 Future   Safari: Possible support
 ```

@@ -45,7 +45,7 @@ const LanguageModal: React.FC<LanguageModalProps> = ({ open, onClose }) => {
                 const { writeTextFile } = await import('@tauri-apps/plugin-fs');
 
                 const filePath = await save({
-                    defaultPath: 'easyedit_template_en.json',
+                    defaultPath: 'easyeditor_template_en.json',
                     filters: [{
                         name: 'JSON',
                         extensions: ['json']
@@ -67,7 +67,7 @@ const LanguageModal: React.FC<LanguageModalProps> = ({ open, onClose }) => {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'easyedit_template_en.json';
+            a.download = 'easyeditor_template_en.json';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);

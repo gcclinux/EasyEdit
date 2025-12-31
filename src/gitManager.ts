@@ -497,8 +497,8 @@ export class GitManager {
         ref: await this.getCurrentBranch(),
         singleBranch: true,
         author: {
-          name: 'EasyEdit User',
-          email: 'user@easyedit.app',
+          name: 'EasyEditor User',
+          email: 'user@easyeditor.app',
         },
         corsProxy: 'https://cors.isomorphic-git.org', // Add CORS proxy
       };
@@ -685,8 +685,8 @@ export class GitManager {
 
     try {
       const commitAuthor = author || {
-        name: 'EasyEdit User',
-        email: 'user@easyedit.app',
+        name: 'EasyEditor User',
+        email: 'user@easyeditor.app',
       };
 
       console.log('[gitManager] Author:', commitAuthor);
@@ -1063,7 +1063,7 @@ export class GitManager {
       if (initialCommit) {
         // Create a README.md file
         const readmePath = path.join(dir, 'README.md');
-        const readmeContent = `# New Repository\n\nInitialized with EasyEdit\n`;
+        const readmeContent = `# New Repository\n\nInitialized with EasyEditor\n`;
         await fs.promises.writeFile(readmePath, readmeContent, 'utf-8');
 
         // Stage the README
@@ -1071,8 +1071,8 @@ export class GitManager {
 
         // Commit
         await this.commit('Initial commit', {
-          name: 'EasyEdit User',
-          email: 'user@easyedit.app'
+          name: 'EasyEditor User',
+          email: 'user@easyeditor.app'
         });
       }
     } catch (error) {

@@ -1,0 +1,32 @@
+id: io.github.gcclinux.EasyEditor
+runtime: org.gnome.Platform
+runtime-version: '49'
+sdk: org.gnome.Sdk
+command: easyeditor
+rename-icon: io.github.gcclinux.EasyEditor
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --socket=pulseaudio
+  - --share=network
+  - --device=dri
+  - --filesystem=host
+  - --talk-name=org.freedesktop.Notifications
+modules:
+  - name: EasyEditor
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 easyeditor /app/bin/easyeditor
+      - install -Dm644 io.github.gcclinux.EasyEditor.desktop /app/share/applications/io.github.gcclinux.EasyEditor.desktop
+      - install -Dm644 easyeditor128.png /app/share/icons/hicolor/128x128/apps/io.github.gcclinux.EasyEditor.png
+      - install -Dm644 io.github.gcclinux.EasyEditor.metainfo.xml /app/share/metainfo/io.github.gcclinux.EasyEditor.metainfo.xml
+    sources:
+      - type: file
+        path: ../src-tauri/target/release/easyeditor
+      - type: file
+        path: io.github.gcclinux.EasyEditor.desktop
+      - type: file
+        path: ../public/easyeditor128.png
+      - type: file
+        path: io.github.gcclinux.EasyEditor.metainfo.xml

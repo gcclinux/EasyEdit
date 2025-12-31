@@ -57,7 +57,7 @@ export default function LinksDropdown({ onInsertTemplate, onClose }: Props) {
     },
     {
       name: t('links.markdown_img'),
-      markdown: '#### *Markdown Image URL Example*\n\n[![GitHub Project](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png "EasyEdit")](https://github.com/gcclinux/EasyEdit)\n\n',
+      markdown: '#### *Markdown Image URL Example*\n\n[![GitHub Project](https://raw.githubusercontent.com/gcclinux/EasyEditor/refs/heads/main/public/easyeditor128.png "EasyEditor")](https://github.com/gcclinux/EasyEditor)\n\n',
       description: t('links.markdown_img_desc'),
     },
   ];

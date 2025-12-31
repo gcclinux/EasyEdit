@@ -7,7 +7,7 @@ export default function CustomThemes() {
       <section className="page-header">
         <div className="container">
           <h1>Custom Themes</h1>
-          <p>Create and import custom color themes for EasyEdit</p>
+          <p>Create and import custom color themes for EasyEditor</p>
         </div>
       </section>
 
@@ -20,7 +20,7 @@ export default function CustomThemes() {
           <div className="doc-section">
             <h2>Overview</h2>
             <p>
-              Themes control all color-related styling in EasyEdit. You can create new themes by
+              Themes control all color-related styling in EasyEditor. You can create new themes by
               adding a CSS file that defines the CSS variables used by the application, and then
               import it from the app or select it via File → Themes → Import Theme.
             </p>

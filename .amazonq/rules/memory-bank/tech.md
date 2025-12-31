@@ -1,4 +1,4 @@
-# EasyEdit - Technology Stack
+# EasyEditor - Technology Stack
 
 ## Core Technologies
 
@@ -156,8 +156,8 @@ source ~/.cargo/env
 
 ### Container Deployment
 ```bash
-docker pull ghcr.io/gcclinux/easyedit:latest
-docker run -d --name EASYEDIT -p 3024:3024 ghcr.io/gcclinux/easyedit:main
+docker pull ghcr.io/gcclinux/easyeditor:latest
+docker run -d --name EASYEDITOR -p 3024:3024 ghcr.io/gcclinux/easyeditor:main
 ```
 
 ## Environment Configuration

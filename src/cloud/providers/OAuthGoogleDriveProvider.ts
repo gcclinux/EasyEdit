@@ -170,7 +170,7 @@ export class OAuthGoogleDriveProvider implements CloudProvider {
       const accessToken = await this.getValidAccessToken();
       console.log('[OAuthGoogleDriveProvider] Got access token, checking for existing folder...');
 
-      // Check if EasyEdit folder already exists
+      // Check if EasyEditor folder already exists
       const existingFolder = await this.findApplicationFolder();
       if (existingFolder) {
         console.log('[OAuthGoogleDriveProvider] Found existing folder:', existingFolder);
@@ -399,7 +399,7 @@ export class OAuthGoogleDriveProvider implements CloudProvider {
   }
 
   /**
-   * Find existing EasyEdit application folder
+   * Find existing EasyEditor application folder
    */
   private async findApplicationFolder(): Promise<string | null> {
     try {

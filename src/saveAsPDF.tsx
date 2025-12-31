@@ -128,7 +128,7 @@ export const saveAsPDF = async (editorContent: string) => {
         }
     
         document.body.removeChild(container);
-        pdf.save('easyedit.pdf');
+        pdf.save('easyeditor.pdf');
       } catch (err) {
         console.error('PDF generation error:', err);
       }

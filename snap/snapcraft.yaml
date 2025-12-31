@@ -1,40 +1,40 @@
-name: easyedit
+name: easyeditor
 version: '1.5.2'
 summary: Easy Markdown Editor
 description: |
-  EasyEdit is an easy markdown editor that allows you to write Markdown (MD) 
+  EasyEditor is an easy markdown editor that allows you to write Markdown (MD) 
   and preview it in real-time. You can save, load .md files, load Git repo 
   and stage, commit, push and export to HTML, TXT, PDF & SSTP Encryption.
 
 grade: stable
 confinement: classic
-icon: snap/gui/easyedit.png
+icon: snap/gui/easyeditor.png
 base: core24
 
 title: Easyedit
 license: MIT
-contact: https://github.com/gcclinux/easyedit/discussions
-website: https://gcclinux.github.io/EasyEdit/
-source-code: https://github.com/gcclinux/easyedit
-issues: https://github.com/gcclinux/easyedit/issues
+contact: https://github.com/gcclinux/easyeditor/discussions
+website: https://gcclinux.github.io/EasyEditor/
+source-code: https://github.com/gcclinux/easyeditor
+issues: https://github.com/gcclinux/easyeditor/issues
 donation: https://github.com/sponsors/gcclinux
 
 platforms:
   amd64:
 
 apps:
-  easyedit:
-    command: bin/easyedit
-    desktop: snap/gui/easyedit.desktop
+  easyeditor:
+    command: bin/easyeditor
+    desktop: snap/gui/easyeditor.desktop
 
 parts:
-  easyedit:
+  easyeditor:
     plugin: nil
     source: .
     override-build: |
       mkdir -p $SNAPCRAFT_PART_INSTALL/bin
-      cp src-tauri/target/release/easyedit $SNAPCRAFT_PART_INSTALL/bin/
-      chmod +x $SNAPCRAFT_PART_INSTALL/bin/easyedit
+      cp src-tauri/target/release/easyeditor $SNAPCRAFT_PART_INSTALL/bin/
+      chmod +x $SNAPCRAFT_PART_INSTALL/bin/easyeditor
       mkdir -p $SNAPCRAFT_PART_INSTALL/snap/gui
-      cp snap/gui/easyedit.desktop $SNAPCRAFT_PART_INSTALL/snap/gui/
-      cp snap/gui/easyedit.png $SNAPCRAFT_PART_INSTALL/snap/gui/
+      cp snap/gui/easyeditor.desktop $SNAPCRAFT_PART_INSTALL/snap/gui/
+      cp snap/gui/easyeditor.png $SNAPCRAFT_PART_INSTALL/snap/gui/

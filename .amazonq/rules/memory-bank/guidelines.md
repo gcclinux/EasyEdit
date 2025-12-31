@@ -1,4 +1,4 @@
-# EasyEdit - Development Guidelines
+# EasyEditor - Development Guidelines
 
 ## Code Quality Standards
 

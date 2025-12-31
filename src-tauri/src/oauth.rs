@@ -3,8 +3,6 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 use tauri::{AppHandle, Emitter, State};
 use uuid::Uuid;
-use tokio::net::TcpListener;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 /// OAuth token structure for Tauri communication
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -59,6 +57,7 @@ pub struct OAuthLogoutRequest {
 
 /// OAuth state management for tracking active flows
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct OAuthFlowState {
     pub flow_id: String,
     pub provider: String,

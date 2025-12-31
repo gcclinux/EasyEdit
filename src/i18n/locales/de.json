@@ -8,7 +8,7 @@
         "choose_language": "Sprache wählen",
         "choose_theme": "Farbschema wählen",
         "sponsor": "Projekt unterstützen",
-        "version_info": "EasyEdit Version und Info",
+        "version_info": "EasyEditor Version und Info",
         "mermaid": "Mermaid",
         "uml": "UML",
         "symbols": "Symbole",
@@ -31,7 +31,7 @@
         "support": "Unterstützung",
         "support_desc": "Hilfe erhalten oder sponsern",
         "features": "Funktionen",
-        "features_desc": "Sehen Sie, was EasyEdit kann",
+        "features_desc": "Sehen Sie, was EasyEditor kann",
         "undo": "Rückgängig",
         "redo": "Wiederholen",
         "new_file": "Neue Datei",
@@ -142,7 +142,7 @@
         "list2_desc": "Markdown Listenebene 2"
     },
     "about": {
-        "title": "EasyEdit",
+        "title": "EasyEditor",
         "subtitle": "Einfach. Schnell. Markdown-Notizen mit Live-Vorschau.",
         "badge_markdown": "Markdown",
         "badge_templates": "Vorlagen",
@@ -150,7 +150,7 @@
         "badge_export": "Export",
         "badge_hosted": "Eigenständig oder Gehostet",
         "what_it_is": "Was es ist",
-        "what_it_is_desc": "EasyEdit ist ein einfacher Markdown-Editor, mit dem Sie Markdown schreiben und in Echtzeit vorschauen können. Sie können .md-Dateien speichern und laden, Ihre Notizen als PDF exportieren und die gerenderte Ausgabe schnell teilen oder kopieren. Es ist leichtgewichtig, funktioniert offline und stört nicht, damit Sie sich auf das Schreiben konzentrieren können.",
+        "what_it_is_desc": "EasyEditor ist ein einfacher Markdown-Editor, mit dem Sie Markdown schreiben und in Echtzeit vorschauen können. Sie können .md-Dateien speichern und laden, Ihre Notizen als PDF exportieren und die gerenderte Ausgabe schnell teilen oder kopieren. Es ist leichtgewichtig, funktioniert offline und stört nicht, damit Sie sich auf das Schreiben konzentrieren können.",
         "support": "Support & Diskussionen:",
         "what_it_does": "Was es tut",
         "what_it_does_li1": "Verwenden Sie vorgefertigte Vorlagen für Meetings, Projekte, Studium, Reisen und Trainings.",
@@ -159,7 +159,7 @@
         "what_it_does_li4": "Ändern Sie die Größe der Editor/Vorschau-Aufteilung und wechseln Sie Themen im Handumdrehen.",
         "what_it_does_li5": "Klein, offline-fähig — funktioniert eigenständig oder gehostet",
         "why_like": "Warum Sie es mögen werden",
-        "why_like_desc1": "EasyEdit konzentriert sich auf Geschwindigkeit und Einfachheit und bietet Ihnen die Werkzeuge, die Sie benötigen, um Notizen schnell zu erfassen, zu strukturieren und zu exportieren. Es kombiniert einen leichten Editor mit einer Live-Vorschau, wiederverwendbaren Vorlagen und Ein-Klick-Exporten, damit Sie ohne Ablenkung produktiv bleiben können.",
+        "why_like_desc1": "EasyEditor konzentriert sich auf Geschwindigkeit und Einfachheit und bietet Ihnen die Werkzeuge, die Sie benötigen, um Notizen schnell zu erfassen, zu strukturieren und zu exportieren. Es kombiniert einen leichten Editor mit einer Live-Vorschau, wiederverwendbaren Vorlagen und Ein-Klick-Exporten, damit Sie ohne Ablenkung produktiv bleiben können.",
         "why_like_desc2": "Großartig für Tagebücher, Meeting-Notizen, Planung und jeden schnellen Erfassungs-Workflow.",
         "custom_themes": "Anpassbare Themen",
         "custom_themes_desc1": "Wählen Sie aus einer Vielzahl von schicken, modernen Themen mit verschiedenen Farbschemata, die zu Ihrem Stil passen und die Augen schonen. Wechseln Sie Themen sofort, um den perfekten Look für Ihren Workflow zu finden — egal, ob Sie helle, dunkle oder lebendige Farbpaletten bevorzugen.",
@@ -279,7 +279,7 @@
     "modals": {
         "theme": {
             "title": "Thema auswählen",
-            "subtitle": "Wählen Sie ein Farbschema für EasyEdit",
+            "subtitle": "Wählen Sie ein Farbschema für EasyEditor",
             "import": "Benutzerdefiniertes Thema importieren",
             "delete_confirm": "Dieses Thema löschen?",
             "delete_tooltip": "Thema löschen",

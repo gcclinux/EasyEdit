@@ -1,6 +1,6 @@
-# UML Diagram Support in EasyEdit
+# UML Diagram Support in EasyEditor
 
-EasyEdit now supports UML (Unified Modeling Language) diagrams using PlantUML syntax!
+EasyEditor now supports UML (Unified Modeling Language) diagrams using PlantUML syntax!
 
 ## Overview
 

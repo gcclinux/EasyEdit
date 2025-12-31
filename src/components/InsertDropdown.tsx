@@ -39,7 +39,7 @@ export default function InsertDropdown({ onRuler, onIndent1, onIndent2, onList1,
         className="dropdown-item"
         onClick={() => {
           // insert a simple link to the project homepage
-          onInsertTemplate('[EasyEdit HomePage](https://github.com/gcclinux/easyedit)');
+          onInsertTemplate('[EasyEditor HomePage](https://github.com/gcclinux/easyeditor)');
           onClose();
         }}
       >

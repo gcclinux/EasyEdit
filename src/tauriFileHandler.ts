@@ -238,7 +238,7 @@ export const handleTauriSaveAs = async (
     await ensureTauriReady();
     const { save } = await import('@tauri-apps/plugin-dialog');
     const result = await save({
-      defaultPath: defaultPath || 'easyedit.md',
+      defaultPath: defaultPath || 'easyeditor.md',
       filters: [{
         name: 'Markdown',
         extensions: ['md', 'markdown', 'txt']

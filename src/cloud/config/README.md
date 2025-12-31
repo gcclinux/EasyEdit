@@ -1,6 +1,6 @@
 # Google Drive Configuration
 
-This directory contains the configuration management system for Google Drive integration in EasyEdit.
+This directory contains the configuration management system for Google Drive integration in EasyEditor.
 
 ## Files
 
@@ -80,7 +80,7 @@ if (!validation.isValid) {
 
 - OAuth Client IDs are safe to be public (they're in client-side code)
 - API Keys should be restricted to specific APIs and domains in Google Cloud Console
-- The `drive.file` scope ensures EasyEdit only accesses files it creates
+- The `drive.file` scope ensures EasyEditor only accesses files it creates
 - Users can revoke access anytime from their Google Account settings
 
 ## Troubleshooting

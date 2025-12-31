@@ -2,7 +2,7 @@
 
 ## Question
 > Is it possible to create an additional Pages in GitHub that will host the application as running online?
-> Example: [Online App](https://gcclinux.github.io/EasyEdit/webapp)
+> Example: [Online App](https://gcclinux.github.io/EasyEditor/webapp)
 
 ## Answer: ✅ YES! It's Done!
 
@@ -14,8 +14,8 @@ Your repository now deploys **both** the marketing/docs site **and** the web app
 
 ### Structure
 ```
-https://gcclinux.github.io/EasyEdit/          → Marketing/Docs Site
-https://gcclinux.github.io/EasyEdit/webapp/   → Web App (NEW!)
+https://gcclinux.github.io/EasyEditor/          → Marketing/Docs Site
+https://gcclinux.github.io/EasyEditor/webapp/   → Web App (NEW!)
 ```
 
 ### Navigation
@@ -30,13 +30,13 @@ The docs site header now includes a prominent **"🚀 Web App"** button that lin
    - Builds from `/src/` (your main app source)
    - Uses `vite.config.web.ts`
    - Outputs to `dist-web/`
-   - Base path: `/EasyEdit/webapp/`
+   - Base path: `/EasyEditor/webapp/`
 
 2. **Docs Site** (`cd docs-site && npm run build`)
    - Builds from `/docs-site/src/`
    - Uses `docs-site/vite.config.ts`
    - Outputs to `docs-site/dist/`
-   - Base path: `/EasyEdit/`
+   - Base path: `/EasyEditor/`
 
 3. **Combine & Deploy**
    - Copy `dist-web/*` → `docs-site/dist/webapp/`
@@ -85,8 +85,8 @@ The docs site header now includes a prominent **"🚀 Web App"** button that lin
 - Docs site builds successfully: `cd docs-site && npm run build` ✓
 - Combined deployment tested: Both sites work at different paths ✓
 - Currently serving at: http://localhost:8080/
-  - Docs: http://localhost:8080/EasyEdit/
-  - Web app: http://localhost:8080/EasyEdit/webapp/
+  - Docs: http://localhost:8080/EasyEditor/
+  - Web app: http://localhost:8080/EasyEditor/webapp/
 
 ### Next: Deploy to GitHub
 ```bash
@@ -96,8 +96,8 @@ git push origin main
 ```
 
 After push, visit:
-- 📄 https://gcclinux.github.io/EasyEdit/
-- 🚀 https://gcclinux.github.io/EasyEdit/webapp/
+- 📄 https://gcclinux.github.io/EasyEditor/
+- 🚀 https://gcclinux.github.io/EasyEditor/webapp/
 
 ---
 
@@ -105,16 +105,16 @@ After push, visit:
 
 ### Before
 ```
-GitHub Repo: gcclinux/EasyEdit
+GitHub Repo: gcclinux/EasyEditor
 ├── Electron App (desktop only)
 └── Docs Site → GitHub Pages
 
-External Hosting: easyedit-web.web.app (separate)
+External Hosting: easyeditor-web.web.app (separate)
 ```
 
 ### After
 ```
-GitHub Repo: gcclinux/EasyEdit
+GitHub Repo: gcclinux/EasyEditor
 ├── Electron App (desktop)
 ├── Web App → GitHub Pages (/webapp/)  ← NEW!
 └── Docs Site → GitHub Pages (/)
@@ -152,8 +152,8 @@ All in one place! No external hosting needed!
 - Deploy: Automatic on push to `main`
 
 ### 4. Replace External Hosting
-- You can now retire `easyedit-web.web.app`
-- Update all links to point to `gcclinux.github.io/EasyEdit/webapp/`
+- You can now retire `easyeditor-web.web.app`
+- Update all links to point to `gcclinux.github.io/EasyEditor/webapp/`
 - No more external hosting costs!
 
 ---
@@ -175,8 +175,8 @@ git add .
 git commit -m "Your commit message"
 git push origin main
 # Wait 2-3 minutes, then visit:
-# - https://gcclinux.github.io/EasyEdit/
-# - https://gcclinux.github.io/EasyEdit/webapp/
+# - https://gcclinux.github.io/EasyEditor/
+# - https://gcclinux.github.io/EasyEditor/webapp/
 ```
 
 ---

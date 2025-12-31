@@ -1,6 +1,6 @@
 # OAuth Service Module
 
-This module provides OAuth 2.0 authentication capabilities for the EasyEdit desktop application built with Tauri.
+This module provides OAuth 2.0 authentication capabilities for the EasyEditor desktop application built with Tauri.
 
 ## Structure
 

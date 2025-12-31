@@ -20,7 +20,7 @@ export const loadTheme = (themeName: string, isCustom: boolean = false) => {
     // Load built-in theme
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    // Build URL using Vite base so it works both locally and on GitHub Pages (/EasyEdit/webapp/).
+    // Build URL using Vite base so it works both locally and on GitHub Pages (/EasyEditor/webapp/).
     // Avoid URL() constructor because BASE_URL may be relative (e.g. '/'), which is invalid as a base.
     const base = (import.meta.env.BASE_URL || '/');
     const normalizedBase = base.endsWith('/') ? base : `${base}/`;
@@ -30,17 +30,17 @@ export const loadTheme = (themeName: string, isCustom: boolean = false) => {
   }
 
   // Save to localStorage
-  localStorage.setItem('easyedit-theme', themeName);
-  localStorage.setItem('easyedit-theme-custom', isCustom.toString());
+  localStorage.setItem('easyeditor-theme', themeName);
+  localStorage.setItem('easyeditor-theme-custom', isCustom.toString());
   
   // Add data attribute to body for CSS targeting
   document.body.setAttribute('data-theme', themeName);
 };
 
 export const getCurrentTheme = (): string => {
-  return localStorage.getItem('easyedit-theme') || 'default';
+  return localStorage.getItem('easyeditor-theme') || 'default';
 };
 
 export const isCurrentThemeCustom = (): boolean => {
-  return localStorage.getItem('easyedit-theme-custom') === 'true';
+  return localStorage.getItem('easyeditor-theme-custom') === 'true';
 };

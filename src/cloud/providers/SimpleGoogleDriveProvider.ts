@@ -186,7 +186,7 @@ To get an access token manually:
       console.log('[SimpleGoogleDriveProvider] Creating application folder...');
       const accessToken = await this.getValidAccessToken();
       
-      // Check if EasyEdit folder already exists
+      // Check if EasyEditor folder already exists
       const existingFolder = await this.findApplicationFolder();
       if (existingFolder) {
         console.log('[SimpleGoogleDriveProvider] Found existing folder:', existingFolder);

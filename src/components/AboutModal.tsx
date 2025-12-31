@@ -74,7 +74,7 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
         }
 
         if (!remoteVer) {
-          const ghResp = await fetch('https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/release/latest.json');
+          const ghResp = await fetch('https://raw.githubusercontent.com/gcclinux/EasyEditor/refs/heads/main/release/latest.json');
           if (ghResp.ok) {
             const ghData = await ghResp.json();
             remoteVer = ghData.version || '';
@@ -93,7 +93,7 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
       <div className="modal-content about-modal">
         <div className="about-hero">
           <div className="about-hero-logo">
-            <img src={logo} alt="EasyEdit" />
+            <img src={logo} alt="EasyEditor" />
           </div>
           <div className="about-hero-text">
             <h2 id="about-title" className="about-title">{t('about.title')}</h2>
@@ -115,7 +115,7 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
               {t('about.what_it_is_desc')}
             </p>
             <p>
-              {t('about.support')} <a href="https://github.com/gcclinux/EasyEdit/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a>
+              {t('about.support')} <a href="https://github.com/gcclinux/EasyEditor/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a>
             </p>
           </div>
           <div className="about-card">

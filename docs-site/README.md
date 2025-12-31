@@ -1,6 +1,6 @@
-# EasyEdit GitHub Pages Site
+# EasyEditor GitHub Pages Site
 
-This is the official documentation and landing page for EasyEdit, built with Vite + React + TypeScript.
+This is the official documentation and landing page for EasyEditor, built with Vite + React + TypeScript.
 
 ## 🚀 Quick Start
 
@@ -218,7 +218,7 @@ npm install
 
 ## 📄 License
 
-This documentation site is part of the EasyEdit project and follows the same license.
+This documentation site is part of the EasyEditor project and follows the same license.
 
 ## 🤝 Contributing
 
@@ -232,8 +232,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📮 Support
 
-- [GitHub Issues](https://github.com/gcclinux/EasyEdit/issues)
-- [GitHub Discussions](https://github.com/gcclinux/EasyEdit/discussions)
+- [GitHub Issues](https://github.com/gcclinux/EasyEditor/issues)
+- [GitHub Discussions](https://github.com/gcclinux/EasyEditor/discussions)
 
 ---
 

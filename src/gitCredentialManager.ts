@@ -11,8 +11,8 @@ interface StoredCredentials {
   remoteUrl?: string;
 }
 
-const STORAGE_KEY = 'easyedit_git_credentials';
-const MASTER_KEY_STORAGE = 'easyedit_git_master_key';
+const STORAGE_KEY = 'easyeditor_git_credentials';
+const MASTER_KEY_STORAGE = 'easyeditor_git_master_key';
 
 export class GitCredentialManager {
   private masterKey: string | null = null;

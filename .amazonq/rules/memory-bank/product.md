@@ -1,7 +1,7 @@
-# EasyEdit - Product Overview
+# EasyEditor - Product Overview
 
 ## Project Purpose
-EasyEdit is a comprehensive markdown editor that provides real-time preview capabilities with extensive features for document creation, collaboration, and export. It serves as a unified platform for creating markdown documents with advanced diagram support, Git integration, and cloud synchronization.
+EasyEditor is a comprehensive markdown editor that provides real-time preview capabilities with extensive features for document creation, collaboration, and export. It serves as a unified platform for creating markdown documents with advanced diagram support, Git integration, and cloud synchronization.
 
 ## Key Features & Capabilities
 
@@ -70,4 +70,4 @@ EasyEdit is a comprehensive markdown editor that provides real-time preview capa
 - **Flatpak**: Linux package manager distribution
 
 ## Value Proposition
-EasyEdit eliminates the need for multiple tools by providing a single, feature-rich markdown editor that handles everything from basic text editing to complex diagram creation, version control, and cloud synchronization. It bridges the gap between simple text editors and complex documentation platforms.
+EasyEditor eliminates the need for multiple tools by providing a single, feature-rich markdown editor that handles everything from basic text editing to complex diagram creation, version control, and cloud synchronization. It bridges the gap between simple text editors and complex documentation platforms.

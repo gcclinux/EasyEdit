@@ -15,7 +15,7 @@ export default function TemplatesGuide() {
           <div className="guide-section">
             <h2>What are Templates?</h2>
             <p>
-              EasyEdit provides ready-to-use templates that help you quickly create structured documents. 
+              EasyEditor provides ready-to-use templates that help you quickly create structured documents. 
               Templates include pre-formatted sections, headers, and placeholders to guide your content creation.
             </p>
           </div>
@@ -127,7 +127,7 @@ export default function TemplatesGuide() {
 
           <div className="guide-section">
             <h2>Creating Your Own Templates</h2>
-            <p>While EasyEdit provides built-in templates, you can create your own:</p>
+            <p>While EasyEditor provides built-in templates, you can create your own:</p>
             <ol>
               <li>Create a document with your desired structure</li>
               <li>Use placeholders like [Your Text Here] for customizable sections</li>

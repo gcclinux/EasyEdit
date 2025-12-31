@@ -20,7 +20,7 @@ export default function ProjectSummary() {
           <div className="doc-section">
             <h2>✅ What Has Been Created</h2>
             <p>
-              A <strong>complete, production-ready GitHub Pages site</strong> for your EasyEdit application using{' '}
+              A <strong>complete, production-ready GitHub Pages site</strong> for your EasyEditor application using{' '}
               <strong>Vite + React + TypeScript</strong> - the same stack you're already using!
             </p>
           </div>
@@ -180,12 +180,12 @@ Deploy:    GitHub Actions → GitHub Pages`}</code></pre>
 cp screenshots/*.png docs-site/public/screenshots/
 
 # Then reference in pages:
-# <img src="/screenshots/main-window.png" alt="EasyEdit Main Window" />`}</code></pre>
+# <img src="/screenshots/main-window.png" alt="EasyEditor Main Window" />`}</code></pre>
 
             <h3>4. Deploy to GitHub Pages</h3>
             <p><strong>a. Enable GitHub Pages:</strong></p>
             <ol>
-              <li>Go to: https://github.com/gcclinux/EasyEdit/settings/pages</li>
+              <li>Go to: https://github.com/gcclinux/EasyEditor/settings/pages</li>
               <li>Under "Source", select: <strong>GitHub Actions</strong></li>
               <li>Save</li>
             </ol>
@@ -198,9 +198,9 @@ git push origin main`}</code></pre>
 
             <p><strong>c. Monitor deployment:</strong></p>
             <ul>
-              <li>Go to: https://github.com/gcclinux/EasyEdit/actions</li>
+              <li>Go to: https://github.com/gcclinux/EasyEditor/actions</li>
               <li>Watch the workflow run</li>
-              <li>Once complete, visit: https://gcclinux.github.io/EasyEdit/</li>
+              <li>Once complete, visit: https://gcclinux.github.io/EasyEditor/</li>
             </ul>
           </div>
 
@@ -290,7 +290,7 @@ Ctrl+C`}</code></pre>
             <h3>Site not showing?</h3>
             <ul>
               <li>Check the dev server is running</li>
-              <li>Visit: http://localhost:5173/EasyEdit/</li>
+              <li>Visit: http://localhost:5173/EasyEditor/</li>
             </ul>
 
             <h3>Want to stop the server?</h3>

@@ -16,13 +16,13 @@ export default function MermaidGuide() {
             <h2>What is Mermaid?</h2>
             <p>
               Mermaid is a JavaScript-based diagramming tool that renders text definitions into diagrams. 
-              EasyEdit supports Mermaid syntax, allowing you to create flowcharts, Gantt charts, class diagrams, 
+              EasyEditor supports Mermaid syntax, allowing you to create flowcharts, Gantt charts, class diagrams, 
               and more using simple text.
             </p>
           </div>
 
           <div className="guide-section">
-            <h2>How to Use Mermaid in EasyEdit</h2>
+            <h2>How to Use Mermaid in EasyEditor</h2>
             <ol>
               <li>Click the <strong>Mermaid ▾</strong> button in the toolbar</li>
               <li>Select the diagram type you want to create</li>

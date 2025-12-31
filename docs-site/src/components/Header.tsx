@@ -7,7 +7,7 @@ export default function Header() {
       <div className="container">
         <nav className="nav">
           <Link to="/" className="logo">
-            <span className="logo-text">EasyEdit</span>
+            <span className="logo-text">EasyEditor</span>
           </Link>
           <ul className="nav-links">
             <li><Link to="/">Home</Link></li>
@@ -16,7 +16,7 @@ export default function Header() {
             <li><Link to="/download">Download</Link></li>
             <li>
               <a 
-                href="https://github.com/gcclinux/EasyEdit" 
+                href="https://github.com/gcclinux/EasyEditor" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="github-link"

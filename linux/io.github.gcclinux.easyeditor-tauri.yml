@@ -1,12 +1,12 @@
-id: io.github.gcclinux.EasyEdit
+id: io.github.gcclinux.EasyEditor
 runtime: org.freedesktop.Platform
 runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
   - org.freedesktop.Sdk.Extension.node20
-command: easyedit
-rename-icon: io.github.gcclinux.EasyEdit
+command: easyeditor
+rename-icon: io.github.gcclinux.EasyEditor
 finish-args:
   - --share=ipc
   - --socket=x11
@@ -19,10 +19,10 @@ finish-args:
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node20/bin
   env:
-    CARGO_HOME: /run/build/EasyEdit/cargo
+    CARGO_HOME: /run/build/EasyEditor/cargo
     RUST_BACKTRACE: '1'
 modules:
-  - name: EasyEdit
+  - name: EasyEditor
     buildsystem: simple
     build-commands:
       # Install Node.js dependencies
@@ -32,14 +32,14 @@ modules:
       # Build Tauri app
       - npm run tauri build
       # Install the binary
-      - install -Dm755 src-tauri/target/release/easyedit /app/bin/easyedit
+      - install -Dm755 src-tauri/target/release/easyeditor /app/bin/easyeditor
       # Install desktop file
-      - install -Dm644 linux/io.github.gcclinux.EasyEdit.desktop /app/share/applications/io.github.gcclinux.EasyEdit.desktop
+      - install -Dm644 linux/io.github.gcclinux.EasyEditor.desktop /app/share/applications/io.github.gcclinux.EasyEditor.desktop
       # Install icon
-      - install -Dm644 public/easyedit128.png /app/share/icons/hicolor/128x128/apps/io.github.gcclinux.EasyEdit.png
+      - install -Dm644 public/easyeditor128.png /app/share/icons/hicolor/128x128/apps/io.github.gcclinux.EasyEditor.png
       # Install metainfo
-      - install -Dm644 linux/io.github.gcclinux.EasyEdit.metainfo.xml /app/share/metainfo/io.github.gcclinux.EasyEdit.metainfo.xml
+      - install -Dm644 linux/io.github.gcclinux.EasyEditor.metainfo.xml /app/share/metainfo/io.github.gcclinux.EasyEditor.metainfo.xml
     sources:
       - type: git
-        url: https://github.com/gcclinux/EasyEdit.git
+        url: https://github.com/gcclinux/EasyEditor.git
         tag: 1.5.1

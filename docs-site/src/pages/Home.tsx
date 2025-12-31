@@ -8,7 +8,7 @@ export default function Home() {
       <section className="hero">
         <div className="container">
           <div className="hero-content">
-            <h1 className="hero-title">EasyEdit</h1>
+            <h1 className="hero-title">EasyEditor</h1>
             <p className="hero-subtitle">
               A Powerful Markdown Editor with UML & Mermaid Diagram Support
             </p>
@@ -20,7 +20,7 @@ export default function Home() {
               <Link to="/docs" className="btn btn-secondary">
                 📚 Documentation
               </Link>
-              <a href="/EasyEdit/webapp/" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-webapp">
+              <a href="/EasyEditor/webapp/" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-webapp">
                 🚀 WebApp
               </a>
               <Link to="/download" className="btn btn-secondary">
@@ -100,7 +100,7 @@ export default function Home() {
       <section className="cta">
         <div className="container">
           <h2>Ready to Get Started?</h2>
-          <p>Download EasyEdit now and start creating amazing documents</p>
+          <p>Download EasyEditor now and start creating amazing documents</p>
           <Link to="/download" className="btn btn-primary btn-large">
             Download for Linux
           </Link>

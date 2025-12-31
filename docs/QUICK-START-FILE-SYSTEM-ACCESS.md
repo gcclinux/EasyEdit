@@ -8,7 +8,7 @@ If you're using **Chrome, Edge, or Opera**, you can now open and save files dire
 
 ### Quick Demo
 
-#### Step 1: Open EasyEdit in Chrome/Edge
+#### Step 1: Open EasyEditor in Chrome/Edge
 ```
 http://localhost:3024
 ```

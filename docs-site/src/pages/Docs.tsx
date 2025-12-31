@@ -7,7 +7,7 @@ export default function Docs() {
       <section className="page-header">
         <div className="container">
           <h1>Documentation</h1>
-          <p>Learn how to use EasyEdit effectively</p>
+          <p>Learn how to use EasyEditor effectively</p>
         </div>
       </section>
 
@@ -53,7 +53,7 @@ export default function Docs() {
             <Link to="/docs/custom-themes" className="doc-card">
               <div className="doc-icon">🎨</div>
               <h3>Custom Themes</h3>
-              <p>Create and import custom color themes for EasyEdit</p>
+              <p>Create and import custom color themes for EasyEditor</p>
             </Link>
 
             <Link to="/docs/git-integration" className="doc-card">
@@ -69,7 +69,7 @@ export default function Docs() {
             <div className="guide-section">
               <h3>Basic Usage</h3>
               <ol>
-                <li>Launch EasyEdit from your application menu or terminal</li>
+                <li>Launch EasyEditor from your application menu or terminal</li>
                 <li>Start typing Markdown content in the editor</li>
                 <li>See live preview on the right panel</li>
                 <li>Use the toolbar for quick formatting options</li>
@@ -79,7 +79,7 @@ export default function Docs() {
 
             <div className="guide-section">
               <h3>Creating Diagrams</h3>
-              <p>EasyEdit supports two types of diagrams:</p>
+              <p>EasyEditor supports two types of diagrams:</p>
               <ul>
                 <li><strong>UML Diagrams (Nomnoml):</strong> Use the UML dropdown to insert diagram templates</li>
                 <li><strong>Mermaid Diagrams:</strong> Use the Mermaid dropdown for flowcharts, Gantt charts, and more</li>
@@ -100,7 +100,7 @@ export default function Docs() {
 
             <div className="guide-section">
               <h3>Git Integration</h3>
-              <p>Work with Git repositories directly from EasyEdit:</p>
+              <p>Work with Git repositories directly from EasyEditor:</p>
               <ul>
                 <li><strong>Clone:</strong> Clone repositories from GitHub, GitLab, or other Git servers</li>
                 <li><strong>Edit:</strong> Open and edit Markdown files from your repository</li>
@@ -137,11 +137,11 @@ export default function Docs() {
           <div className="additional-resources">
             <h2>Additional Resources</h2>
             <div className="resources-grid">
-              <a href="https://github.com/gcclinux/EasyEdit" target="_blank" rel="noopener noreferrer" className="resource-card">
+              <a href="https://github.com/gcclinux/EasyEditor" target="_blank" rel="noopener noreferrer" className="resource-card">
                 <h4>GitHub Repository</h4>
                 <p>Access the source code and contribute</p>
               </a>
-              <a href="https://github.com/gcclinux/EasyEdit/issues" target="_blank" rel="noopener noreferrer" className="resource-card">
+              <a href="https://github.com/gcclinux/EasyEditor/issues" target="_blank" rel="noopener noreferrer" className="resource-card">
                 <h4>Report Issues</h4>
                 <p>Found a bug? Let us know</p>
               </a>
@@ -157,12 +157,12 @@ export default function Docs() {
           </div>
 
                     <div className="try-it-section">
-            <h2>Try EasyEdit Online</h2>
-            <p>Experience EasyEdit directly in your browser without downloading anything!</p>
+            <h2>Try EasyEditor Online</h2>
+            <p>Experience EasyEditor directly in your browser without downloading anything!</p>
             <div className="cta-links">
-              <Link to="/EasyEdit/docs" className="cta-button secondary">📚 Docs</Link>
-              <a href="/EasyEdit/webapp/" target="_blank" rel="noopener noreferrer" className="cta-button primary">🚀 Try It</a>
-              <Link to="/EasyEdit/download" className="cta-button secondary">⬇️ Download</Link>
+              <Link to="/EasyEditor/docs" className="cta-button secondary">📚 Docs</Link>
+              <a href="/EasyEditor/webapp/" target="_blank" rel="noopener noreferrer" className="cta-button primary">🚀 Try It</a>
+              <Link to="/EasyEditor/download" className="cta-button secondary">⬇️ Download</Link>
             </div>
           </div>
         </div>

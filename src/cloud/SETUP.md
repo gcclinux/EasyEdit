@@ -10,16 +10,16 @@
 2. **Connect to Google Drive**: Click the "Connect" button next to Google Drive
 3. **Authorize Access**: A Google sign-in window will open
    - Sign in with your Google account
-   - Review the permissions (EasyEdit only requests access to files it creates)
+   - Review the permissions (EasyEditor only requests access to files it creates)
    - Click "Allow" to grant access
 4. **Start Creating Notes**: Once connected, you can create and manage your notes!
 
-### What Permissions Does EasyEdit Need?
+### What Permissions Does EasyEditor Need?
 
-EasyEdit uses the `drive.file` scope, which means:
-- ✅ EasyEdit can only access files it creates
+EasyEditor uses the `drive.file` scope, which means:
+- ✅ EasyEditor can only access files it creates
 - ✅ Your existing Google Drive files are completely private
-- ✅ EasyEdit cannot see or access any other files in your Drive
+- ✅ EasyEditor cannot see or access any other files in your Drive
 - ✅ You can revoke access anytime from your Google Account settings
 
 ### Managing Your Connection
@@ -33,7 +33,7 @@ EasyEdit uses the `drive.file` scope, which means:
 
 ### Development Setup
 
-The application comes with pre-configured OAuth credentials for the EasyEdit project. However, if you're forking this project or need to use your own credentials:
+The application comes with pre-configured OAuth credentials for the EasyEditor project. However, if you're forking this project or need to use your own credentials:
 
 1. Create a Google Cloud Project at [Google Cloud Console](https://console.cloud.google.com/)
 2. Enable the Google Drive API
@@ -56,5 +56,5 @@ When building the packaged application, the pre-configured credentials are embed
 
 - OAuth credentials are public by design (they're in the client-side code)
 - Security comes from the OAuth flow itself, not from hiding the client ID
-- The `drive.file` scope ensures EasyEdit can only access its own files
+- The `drive.file` scope ensures EasyEditor can only access its own files
 - Never commit production credentials to public repositories

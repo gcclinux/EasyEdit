@@ -11,7 +11,7 @@
 
 ### ✅ What Was Completed
 
-The **File System Access API** has been successfully integrated into EasyEdit, providing near-native file handling capabilities in modern browsers (Chrome/Edge/Opera) while maintaining full backward compatibility with the Electron app and graceful fallback for older browsers.
+The **File System Access API** has been successfully integrated into EasyEditor, providing near-native file handling capabilities in modern browsers (Chrome/Edge/Opera) while maintaining full backward compatibility with the Electron app and graceful fallback for older browsers.
 
 ---
 
@@ -367,7 +367,7 @@ The File System Access API integration is **100% COMPLETE** and ready for testin
 ✅ Includes test tools  
 ✅ Has zero breaking changes  
 
-**The web version of EasyEdit is now significantly more powerful!**
+**The web version of EasyEditor is now significantly more powerful!**
 
 ---
 

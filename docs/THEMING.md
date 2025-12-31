@@ -1,8 +1,8 @@
-# EasyEdit Theming System
+# EasyEditor Theming System
 
 ## Overview
 
-EasyEdit now includes a comprehensive theming system that allows you to customize all colors throughout the application. All color-related styles have been extracted into theme files located in `src/themes/`.
+EasyEditor now includes a comprehensive theming system that allows you to customize all colors throughout the application. All color-related styles have been extracted into theme files located in `src/themes/`.
 
 ## Quick Start
 
@@ -178,4 +178,4 @@ For a complete list of all theme variables and their purposes, see `src/themes/R
 
 ## Version
 
-Theme system added in EasyEdit v1.x
+Theme system added in EasyEditor v1.x

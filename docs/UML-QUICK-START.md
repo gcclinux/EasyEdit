@@ -1,4 +1,4 @@
-# Quick Start: UML Diagrams in EasyEdit
+# Quick Start: UML Diagrams in EasyEditor
 
 ## Using the UML Feature
 

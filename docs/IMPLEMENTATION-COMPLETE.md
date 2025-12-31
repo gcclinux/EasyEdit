@@ -206,7 +206,7 @@ Web Browser (Open Repository):
 
 ## Version
 
-- **EasyEdit**: v1.4.6
+- **EasyEditor**: v1.4.6
 - **Implementation Date**: December 6, 2025
 - **Status**: ✅ Complete
 

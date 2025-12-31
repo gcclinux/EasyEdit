@@ -16,9 +16,9 @@ export const GOOGLE_DRIVE_CONFIG = {
     ? 'your-production-api-key'
     : 'your-development-api-key',
     
-  // OAuth scopes required by EasyEdit
+  // OAuth scopes required by EasyEditor
   SCOPES: [
-    'https://www.googleapis.com/auth/drive.file' // Only access files created by EasyEdit
+    'https://www.googleapis.com/auth/drive.file' // Only access files created by EasyEditor
   ],
   
   // Discovery document for Google Drive API v3

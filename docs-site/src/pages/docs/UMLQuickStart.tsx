@@ -2,7 +2,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import '../DocsPage.css'
 
-const content = `# Quick Start: UML Diagrams in EasyEdit
+const content = `# Quick Start: UML Diagrams in EasyEditor
 
 ## Using the UML Feature
 

@@ -31,7 +31,7 @@ interface StoredTokenData {
 type Platform = 'windows' | 'macos' | 'linux' | 'unknown';
 
 export class TokenStorage {
-  private readonly keyPrefix = 'easyedit-oauth';
+  private readonly keyPrefix = 'easyeditor-oauth';
   private readonly encryptionKey: Uint8Array;
   private readonly platform: Platform;
 
@@ -291,10 +291,10 @@ export class TokenStorage {
   private getUserId(): string {
     // In browser environment, use a generated ID stored in localStorage
     if (typeof window !== 'undefined' && window.localStorage) {
-      let userId = window.localStorage.getItem('easyedit-user-id');
+      let userId = window.localStorage.getItem('easyeditor-user-id');
       if (!userId) {
         userId = `user-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
-        window.localStorage.setItem('easyedit-user-id', userId);
+        window.localStorage.setItem('easyeditor-user-id', userId);
       }
       return userId;
     }
@@ -318,24 +318,24 @@ export class TokenStorage {
   private deriveEncryptionKey(): Uint8Array {
     // In browser environment, use a key derived from browser fingerprint
     if (typeof window !== 'undefined') {
-      const browserInfo = `${window.navigator.userAgent}-${window.location.hostname}-easyedit-oauth`;
-      return deriveKey(browserInfo, 'easyedit-salt');
+      const browserInfo = `${window.navigator.userAgent}-${window.location.hostname}-easyeditor-oauth`;
+      return deriveKey(browserInfo, 'easyeditor-salt');
     }
     
     // In Node.js environment, use system information
     if (typeof process !== 'undefined') {
       try {
         const os = require('os');
-        const systemInfo = `${os.hostname()}-${os.userInfo().username}-easyedit-oauth`;
-        return deriveKey(systemInfo, 'easyedit-salt');
+        const systemInfo = `${os.hostname()}-${os.userInfo().username}-easyeditor-oauth`;
+        return deriveKey(systemInfo, 'easyeditor-salt');
       } catch (error) {
         // Fallback to a default key
-        return deriveKey('easyedit-oauth-fallback', 'easyedit-salt');
+        return deriveKey('easyeditor-oauth-fallback', 'easyeditor-salt');
       }
     }
     
     // Fallback
-    return deriveKey('easyedit-oauth-fallback', 'easyedit-salt');
+    return deriveKey('easyeditor-oauth-fallback', 'easyeditor-salt');
   }
 
   /**

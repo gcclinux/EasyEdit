@@ -118,7 +118,7 @@ export const saveToHTML = async (editorContent: string): Promise<void> => {
     const blob = new Blob([finalHTML], {
       type: "text/html;charset=utf-8",
     });
-    saveAs(blob, "easyedit.html");
+    saveAs(blob, "easyeditor.html");
   } catch (error) {
     console.error('Error saving HTML:', error);
   }
@@ -505,7 +505,7 @@ export const saveToCurrentFile = async (editorContent: string): Promise<boolean>
 };
 
 // Save As with File System Access API (modern browsers)
-export const saveAsFile = async (editorContent: string, defaultName: string = "easyedit.md"): Promise<string | null> => {
+export const saveAsFile = async (editorContent: string, defaultName: string = "easyeditor.md"): Promise<string | null> => {
 
   // Modern browsers: Try File System Access API
   if (hasFileSystemAccess()) {
@@ -553,7 +553,7 @@ export const saveToFile = async (editorContent: string, setCurrentFilePath?: (pa
   if (hasFileSystemAccess()) {
     try {
       const fileHandle = await (window as any).showSaveFilePicker({
-        suggestedName: 'easyedit.md',
+        suggestedName: 'easyeditor.md',
         types: [
           {
             description: 'Markdown Files',
@@ -590,7 +590,7 @@ export const saveToFile = async (editorContent: string, setCurrentFilePath?: (pa
   try {
     const blob = new Blob([editorContent], { type: "text/markdown;charset=utf-8" });
     console.log('Blob created successfully');
-    saveAs(blob, "easyedit.md");
+    saveAs(blob, "easyeditor.md");
     console.log('saveAs called successfully');
   } catch (error) {
     console.error('Error in saveToFile:', error);
@@ -599,7 +599,7 @@ export const saveToFile = async (editorContent: string, setCurrentFilePath?: (pa
 
 export const saveToTxT = (editorContent: string): void => {
   const blob = new Blob([editorContent], { type: "text/plain;charset=utf-8" });
-  saveAs(blob, "easyedit.txt");
+  saveAs(blob, "easyeditor.txt");
 };
 
 export interface MainHandlerProps {

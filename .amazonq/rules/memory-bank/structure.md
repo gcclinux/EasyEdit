@@ -1,4 +1,4 @@
-# EasyEdit - Project Structure
+# EasyEditor - Project Structure
 
 ## Root Directory Organization
 

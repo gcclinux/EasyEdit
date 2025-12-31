@@ -9,10 +9,10 @@ export default function ImagesDropdown({ onInsertTemplate, onClose }: Props) {
   const { t } = useLanguage();
 
   const templates: Array<{ title: string; desc: string; tpl: string }> = [
-    { title: t('images.image'), desc: t('images.inline'), tpl: '![EasyEdit](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png)\n\n' },
-    { title: t('images.image_link'), desc: t('images.image_link_desc'), tpl: '[![EasyEdit](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png)](https://github.com/gcclinux/easyedit)\n\n' },
-    { title: t('images.figure'), desc: t('images.figure_desc'), tpl: '![](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png)\n\n*Figure: caption*\n\n' },
-    { title: t('images.link_new_tab'), desc: t('images.link_new_tab_desc'), tpl: '[![EasyEdit](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png)](https://github.com/gcclinux/easyedit "EasyEdit HomePage")\n\n' },
+    { title: t('images.image'), desc: t('images.inline'), tpl: '![EasyEditor](https://raw.githubusercontent.com/gcclinux/EasyEditor/refs/heads/main/public/easyeditor128.png)\n\n' },
+    { title: t('images.image_link'), desc: t('images.image_link_desc'), tpl: '[![EasyEditor](https://raw.githubusercontent.com/gcclinux/EasyEditor/refs/heads/main/public/easyeditor128.png)](https://github.com/gcclinux/easyeditor)\n\n' },
+    { title: t('images.figure'), desc: t('images.figure_desc'), tpl: '![](https://raw.githubusercontent.com/gcclinux/EasyEditor/refs/heads/main/public/easyeditor128.png)\n\n*Figure: caption*\n\n' },
+    { title: t('images.link_new_tab'), desc: t('images.link_new_tab_desc'), tpl: '[![EasyEditor](https://raw.githubusercontent.com/gcclinux/EasyEditor/refs/heads/main/public/easyeditor128.png)](https://github.com/gcclinux/easyeditor "EasyEditor HomePage")\n\n' },
   ];
 
   return (

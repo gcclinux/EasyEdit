@@ -1,5 +1,5 @@
 /**
- * Google Drive API Configuration for EasyEdit
+ * Google Drive API Configuration for EasyEditor
  * 
  * This configuration supports multiple deployment environments and provides
  * comprehensive credential management for Google Drive integration.
@@ -140,10 +140,10 @@ const ENVIRONMENT_CONFIGS: Record<string, GoogleDriveEnvironmentConfig> = {
     API_KEY: getEnvVar('VITE_GOOGLE_API_KEY_PROD') ||
       'your-production-api-key',
     AUTHORIZED_DOMAINS: [
-      'https://easyeditor.co.uk',
-      'https://www.easyeditor.co.uk'
+      'https://easyeditoror.co.uk',
+      'https://www.easyeditoror.co.uk'
     ],
-    REDIRECT_URI: 'https://easyeditor.co.uk'
+    REDIRECT_URI: 'https://easyeditoror.co.uk'
   }
 };
 
@@ -198,9 +198,9 @@ export const GOOGLE_DRIVE_CONFIG: GoogleDriveConfig = (() => {
     AUTHORIZED_DOMAINS: envConfig.AUTHORIZED_DOMAINS,
     REDIRECT_URI: envConfig.REDIRECT_URI,
 
-    // OAuth scopes required by EasyEdit
+    // OAuth scopes required by EasyEditor
     SCOPES: [
-      'https://www.googleapis.com/auth/drive.file' // Only access files created by EasyEdit
+      'https://www.googleapis.com/auth/drive.file' // Only access files created by EasyEditor
     ],
 
     // Discovery document for Google Drive API v3

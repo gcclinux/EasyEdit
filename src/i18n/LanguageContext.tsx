@@ -38,7 +38,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     // Initialize with saved language immediately to avoid flash of English
     const [language, setLanguageState] = useState<string>(() => {
         if (typeof window !== 'undefined') {
-            return localStorage.getItem('easyedit-language') || 'en';
+            return localStorage.getItem('easyeditor-language') || 'en';
         }
         return 'en';
     });
@@ -48,7 +48,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     // Load custom languages on startup
     useEffect(() => {
         // Load custom languages definition
-        const savedCustomLangs = localStorage.getItem('easyedit-custom-languages');
+        const savedCustomLangs = localStorage.getItem('easyeditor-custom-languages');
         if (savedCustomLangs) {
             try {
                 setCustomLanguages(JSON.parse(savedCustomLangs) as Language[]);
@@ -91,7 +91,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                     }
                 } else {
                     // Load custom language string from localStorage
-                    const customData = localStorage.getItem(`easyedit-lang-data-${language}`);
+                    const customData = localStorage.getItem(`easyeditor-lang-data-${language}`);
                     if (customData) {
                         data = JSON.parse(customData);
                     }
@@ -106,7 +106,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         };
 
         loadTranslations();
-        localStorage.setItem('easyedit-language', language);
+        localStorage.setItem('easyeditor-language', language);
     }, [language]);
 
     const setLanguage = (lang: string) => {
@@ -130,13 +130,13 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     const importLanguage = (code: string, name: string, data: Record<string, any>) => {
         // Save data
-        localStorage.setItem(`easyedit-lang-data-${code}`, JSON.stringify(data));
+        localStorage.setItem(`easyeditor-lang-data-${code}`, JSON.stringify(data));
 
         // Update custom languages list
         const newLang: Language = { code, name, label: `${name} (${code.toUpperCase()})`, isCustom: true };
         const updated = [...customLanguages.filter(l => l.code !== code), newLang];
         setCustomLanguages(updated);
-        localStorage.setItem('easyedit-custom-languages', JSON.stringify(updated));
+        localStorage.setItem('easyeditor-custom-languages', JSON.stringify(updated));
 
         // Switch to it
         setLanguage(code);

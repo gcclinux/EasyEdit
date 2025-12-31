@@ -1,6 +1,6 @@
-# EasyEdit Themes
+# EasyEditor Themes
 
-This folder contains color theme files for EasyEdit. Themes control all color-related styling throughout the application.
+This folder contains color theme files for EasyEditor. Themes control all color-related styling throughout the application.
 
 ## Current Themes
 

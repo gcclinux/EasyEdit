@@ -80,7 +80,7 @@ The development server is already running!
 
 **Open your browser to:**
 ```
-http://localhost:5173/EasyEdit/
+http://localhost:5173/EasyEditor/
 ```
 
 ### 2. Make Changes
@@ -125,7 +125,7 @@ I've set up a GitHub Actions workflow that will automatically deploy your site w
 
 4. **Your site will be live at:**
    ```
-   https://gcclinux.github.io/EasyEdit/
+   https://gcclinux.github.io/EasyEditor/
    ```
 
 ### Manual Deployment
@@ -212,12 +212,12 @@ The site is fully responsive and looks great on:
 ## 🐛 Known Issues / Notes
 
 - TypeScript errors in terminal are expected until dependencies are installed (already done)
-- The site uses `/EasyEdit/` as the base path (matches your repository name)
+- The site uses `/EasyEditor/` as the base path (matches your repository name)
 - Markdown rendering includes GitHub Flavored Markdown support
 
 ## 📚 Next Steps
 
-1. **Review the site** at http://localhost:5173/EasyEdit/
+1. **Review the site** at http://localhost:5173/EasyEditor/
 2. **Customize content** as needed
 3. **Add screenshots** from your main app
 4. **Enable GitHub Pages** in repository settings

@@ -1,12 +1,12 @@
 # Git Integration Feature Plan
 
-**EasyEdit Git Integration using isomorphic-git**
+**EasyEditor Git Integration using isomorphic-git**
 
 Date: December 5, 2025
 
 ## Overview
 
-Add comprehensive Git functionality to EasyEdit using `isomorphic-git`, enabling users to clone, edit, commit, and push markdown repositories without external Git installation. This self-contained solution provides full version control capabilities directly within the application.
+Add comprehensive Git functionality to EasyEditor using `isomorphic-git`, enabling users to clone, edit, commit, and push markdown repositories without external Git installation. This self-contained solution provides full version control capabilities directly within the application.
 
 ## Implementation Phases
 
@@ -222,7 +222,7 @@ class GitCredentialManager {
 ## Further Considerations
 
 ### 1. Repository Context Tracking
-**Question:** Should EasyEdit track single repository per session or support multiple repositories?
+**Question:** Should EasyEditor track single repository per session or support multiple repositories?
 
 **Recommendation:** 
 - Phase 1-3: Single active repository with clear indicator in UI
@@ -378,7 +378,7 @@ Users currently work with local markdown files. The Git integration should:
 ## Future Enhancements (Beyond Phase 4)
 
 1. **Pull Request Integration:**
-   - Create PRs from within EasyEdit
+   - Create PRs from within EasyEditor
    - View and merge PRs
    - Code review comments
 
@@ -418,7 +418,7 @@ Users currently work with local markdown files. The Git integration should:
 1. **User Guide:**
    - How to connect to GitHub/GitLab
    - Creating personal access tokens
-   - Basic Git workflow in EasyEdit
+   - Basic Git workflow in EasyEditor
 
 2. **FAQ:**
    - Troubleshooting authentication issues

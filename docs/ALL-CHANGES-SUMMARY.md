@@ -247,7 +247,7 @@ All criteria met ✅:
 
 ## Version Info
 
-- **EasyEdit**: v1.4.6
+- **EasyEditor**: v1.4.6
 - **Implementation Date**: December 6, 2025
 - **Total Changes**: 5 major improvements
 - **Files Modified**: 2

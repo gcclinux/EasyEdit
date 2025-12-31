@@ -22,7 +22,7 @@ To use Git features in the browser, you need to:
 
 **When to use:** You want to work with Git features (commit, push, etc.)
 
-1. Open EasyEdit in Chrome/Edge: `http://localhost:3024`
+1. Open EasyEditor in Chrome/Edge: `http://localhost:3024`
 2. Click **File → Open Repository** (only visible in Chrome/Edge)
 3. Select your Git repository folder (the one containing `.git`)
 4. Browser asks for permission - click **"View files"** or **"Allow"**
@@ -42,7 +42,7 @@ To use Git features in the browser, you need to:
 
 **When to use:** You just want to quickly edit a file without Git features
 
-1. Open EasyEdit in Chrome/Edge: `http://localhost:3024`
+1. Open EasyEditor in Chrome/Edge: `http://localhost:3024`
 2. Click **File → Open MarkDown**
 3. Select any markdown file
 4. Edit the content
@@ -238,5 +238,5 @@ We're monitoring these proposals:
 ---
 
 **Last Updated:** December 6, 2024  
-**Applies to:** EasyEdit v1.4.6+  
+**Applies to:** EasyEditor v1.4.6+  
 **Browser:** Chrome 86+, Edge 86+, Opera 72+

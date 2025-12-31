@@ -257,7 +257,7 @@ export class ConnectionDiagnostic {
   try {
     console.log('=== CHECKING LOCALSTORAGE ===');
     
-    const cloudStorageKey = 'easyedit_cloud_credentials';
+    const cloudStorageKey = 'easyeditor_cloud_credentials';
     const storedString = localStorage.getItem(cloudStorageKey);
     
     console.log('Raw localStorage data:', storedString);

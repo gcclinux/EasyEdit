@@ -1,10 +1,10 @@
 # Changelog
 
-![EasyEdit](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png)
+![EasyEditor](https://raw.githubusercontent.com/gcclinux/EasyEditor/refs/heads/main/public/easyeditor128.png)
 
-EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and preview it in real-time. You can save, load .md files and export to HTML,TXT & PDF. All notable changes to this project will be documented in this file.
+EasyEditor is an easy markdown editor that allows you to write Markdown (MD) and preview it in real-time. You can save, load .md files and export to HTML,TXT & PDF. All notable changes to this project will be documented in this file.
 
-*EasyEdit is a free and open-source project. You can use it for free and modify it as you like.*
+*EasyEditor is a free and open-source project. You can use it for free and modify it as you like.*
 
 ## Latest CODE version
 - 1.5.2 - Several bug fixes, documentation and replacing electron with tauri
@@ -40,7 +40,7 @@ EasyEdit is an easy markdown editor that allows you to write Markdown (MD) and p
 - 1.0.6 - Focused on a Linux installation script
 - 1.0.5 - Improved the package build format for Linux & Windows
 - 1.0.4 - Fixed Export to PDF that was not exporting the entire page content.
-- 1.0.3 - Re-wrote and optimised the main.cjs so windows also have the ability of right click on MD and open with EasyEdit
+- 1.0.3 - Re-wrote and optimised the main.cjs so windows also have the ability of right click on MD and open with EasyEditor
 - 1.0.2 - Added capability to parse a file directly to executable
 - 1.0.1 - Added detect-port in case App starts and default port is already in use by another App
 - 1.0.0 - Initial version distributed

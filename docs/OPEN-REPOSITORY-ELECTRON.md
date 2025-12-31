@@ -263,7 +263,7 @@ npm run app
 **Steps:**
 1. App opens
 2. Click **File → Open Repository**
-3. Select a folder (e.g., EasyEdit folder)
+3. Select a folder (e.g., EasyEditor folder)
 4. **Expected:**
    - ✅ File browser appears
    - ✅ Shows all markdown files

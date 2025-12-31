@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Building EasyEdit Snap..."
+echo "Building EasyEditor Snap..."
 echo "========================"
 
 # Retrieve version from package.json
@@ -17,19 +17,19 @@ echo "snapcraft cleaning previous builds..."
 snapcraft clean
 echo "========================"
 echo "removing previous snap installation and package..."
-sudo snap remove easyedit 2>/dev/null || true
+sudo snap remove easyeditor 2>/dev/null || true
 echo "========================"
 echo "deleting previous snap package..."
-rm -f "$SNAP_DIR/easyedit_${VERSION}_amd64.snap"
+rm -f "$SNAP_DIR/easyeditor_${VERSION}_amd64.snap"
 echo "========================"
 echo "building snap --destructive-mode package..."
-snapcraft pack --destructive-mode --output "$SNAP_DIR/easyedit_${VERSION}_amd64.snap"
+snapcraft pack --destructive-mode --output "$SNAP_DIR/easyeditor_${VERSION}_amd64.snap"
 echo "========================"
 echo "installing new built snap package..."
-sudo snap install --classic --dangerous "$SNAP_DIR/easyedit_${VERSION}_amd64.snap"
+sudo snap install --classic --dangerous "$SNAP_DIR/easyeditor_${VERSION}_amd64.snap"
 echo "========================"
-echo "launch easyedit snap application..."
-echo "$ snap run easyedit"
+echo "launch easyeditor snap application..."
+echo "$ snap run easyeditor"
 echo "========================"
-echo "Packaged: $SNAP_DIR/easyedit_${VERSION}_amd64.snap"
+echo "Packaged: $SNAP_DIR/easyeditor_${VERSION}_amd64.snap"
 echo ""

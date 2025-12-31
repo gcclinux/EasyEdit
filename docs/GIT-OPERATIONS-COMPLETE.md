@@ -52,7 +52,7 @@ Successfully implemented full Git operations (Stage, Commit, Push/Pull) for both
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    EasyEdit Application                  │
+│                    EasyEditor Application                  │
 ├─────────────────────────────────────────────────────────┤
 │                                                          │
 │  ┌──────────────┐              ┌──────────────┐        │

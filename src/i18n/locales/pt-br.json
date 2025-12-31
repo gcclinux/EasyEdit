@@ -8,7 +8,7 @@
         "choose_language": "Escolha o idioma",
         "choose_theme": "Escolha o esquema de cores",
         "sponsor": "Patrocine o projeto",
-        "version_info": "Versão e informações do EasyEdit",
+        "version_info": "Versão e informações do EasyEditor",
         "mermaid": "Mermaid",
         "uml": "UML",
         "symbols": "Símbolos",
@@ -31,7 +31,7 @@
         "support": "Suporte",
         "support_desc": "Obter ajuda ou patrocinar",
         "features": "Funcionalidades",
-        "features_desc": "Veja o que o EasyEdit pode fazer",
+        "features_desc": "Veja o que o EasyEditor pode fazer",
         "undo": "Desfazer",
         "redo": "Refazer",
         "new_file": "Novo Arquivo",
@@ -142,7 +142,7 @@
         "list2_desc": "Nível de lista Markdown 2"
     },
     "about": {
-        "title": "EasyEdit",
+        "title": "EasyEditor",
         "subtitle": "Simples. Rápido. Notas em Markdown com pré-visualização ao vivo.",
         "badge_markdown": "Markdown",
         "badge_templates": "Modelos",
@@ -150,7 +150,7 @@
         "badge_export": "Exportar",
         "badge_hosted": "Autônomo ou Hospedado",
         "what_it_is": "O que é",
-        "what_it_is_desc": "EasyEdit é um editor Markdown fácil que permite escrever Markdown e pré-visualizá-lo em tempo real. Você pode salvar e carregar arquivos .md, exportar suas notas para PDF e compartilhar ou copiar rapidamente a saída renderizada. É leve, funciona offline e não atrapalha para que você possa se concentrar na escrita.",
+        "what_it_is_desc": "EasyEditor é um editor Markdown fácil que permite escrever Markdown e pré-visualizá-lo em tempo real. Você pode salvar e carregar arquivos .md, exportar suas notas para PDF e compartilhar ou copiar rapidamente a saída renderizada. É leve, funciona offline e não atrapalha para que você possa se concentrar na escrita.",
         "support": "Suporte e discussões:",
         "what_it_does": "O que faz",
         "what_it_does_li1": "Use modelos prontos para reuniões, projetos, estudos, viagens e treinos.",
@@ -159,7 +159,7 @@
         "what_it_does_li4": "Redimensione a divisão editor/pré-visualização e alterne temas rapidamente.",
         "what_it_does_li5": "Pequeno, funciona offline — pode ser usado autônomo ou hospedado",
         "why_like": "Por que você vai gostar",
-        "why_like_desc1": "EasyEdit foca na velocidade e simplicidade, oferecendo as ferramentas necessárias para capturar, estruturar e exportar notas rapidamente. Combina um editor leve com pré-visualização ao vivo, modelos reutilizáveis e exportações com um clique para que você possa se manter produtivo sem distrações.",
+        "why_like_desc1": "EasyEditor foca na velocidade e simplicidade, oferecendo as ferramentas necessárias para capturar, estruturar e exportar notas rapidamente. Combina um editor leve com pré-visualização ao vivo, modelos reutilizáveis e exportações com um clique para que você possa se manter produtivo sem distrações.",
         "why_like_desc2": "Ótimo para diários, notas de reuniões, planejamento e qualquer fluxo de captura rápida.",
         "custom_themes": "Temas Personalizáveis",
         "custom_themes_desc1": "Escolha entre uma variedade de temas elegantes e modernos com diferentes esquemas de cores para combinar com seu estilo e reduzir o cansaço visual. Alterne temas instantaneamente para encontrar o visual perfeito para seu fluxo de trabalho — seja claro, escuro ou paletas de cores vibrantes.",
@@ -279,7 +279,7 @@
     "modals": {
         "theme": {
             "title": "Selecionar Tema",
-            "subtitle": "Escolha um esquema de cores para o EasyEdit",
+            "subtitle": "Escolha um esquema de cores para o EasyEditor",
             "import": "Importar Tema Personalizado",
             "delete_confirm": "Excluir este tema personalizado?",
             "delete_tooltip": "Excluir tema",

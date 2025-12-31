@@ -84,7 +84,7 @@ const CloneModal: React.FC<CloneModalProps> = ({ open, onClose, onSubmit, showTo
 
           // Verify we can write to the directory
           try {
-            const testFileName = '.easyedit-test';
+            const testFileName = '.easyeditor-test';
             const testFileHandle = await dirHandle.getFileHandle(testFileName, { create: true });
             await testFileHandle.remove();
           } catch (permError) {

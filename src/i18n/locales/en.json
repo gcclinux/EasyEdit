@@ -8,7 +8,7 @@
         "choose_language": "Choose language",
         "choose_theme": "Choose color scheme",
         "sponsor": "Sponsor the project",
-        "version_info": "EasyEdit version and info",
+        "version_info": "EasyEditor version and info",
         "mermaid": "Mermaid",
         "uml": "UML",
         "symbols": "Symbols",
@@ -31,7 +31,7 @@
         "support": "Support",
         "support_desc": "Get help or sponsor",
         "features": "Features",
-        "features_desc": "See what EasyEdit can do",
+        "features_desc": "See what EasyEditor can do",
         "undo": "Undo",
         "redo": "Redo",
         "new_file": "New File",
@@ -142,7 +142,7 @@
         "list2_desc": "Markdown list level 2"
     },
     "about": {
-        "title": "EasyEdit",
+        "title": "EasyEditor",
         "subtitle": "Simple. Fast. Markdown-first notes with live preview.",
         "badge_markdown": "Markdown",
         "badge_templates": "Templates",
@@ -150,7 +150,7 @@
         "badge_export": "Export",
         "badge_hosted": "Standalone or Hosted",
         "what_it_is": "What it is",
-        "what_it_is_desc": "EasyEdit is an easy Markdown editor that lets you write Markdown and preview it in real-time. You can save and load .md files, export your notes to PDF, and quickly share or copy rendered output. It’s lightweight, works offline, and stays out of the way so you can focus on writing.",
+        "what_it_is_desc": "EasyEditor is an easy Markdown editor that lets you write Markdown and preview it in real-time. You can save and load .md files, export your notes to PDF, and quickly share or copy rendered output. It’s lightweight, works offline, and stays out of the way so you can focus on writing.",
         "support": "Support & discussions:",
         "what_it_does": "What it does",
         "what_it_does_li1": "Use ready-made templates for meetings, projects, study, travel, and workouts.",
@@ -159,7 +159,7 @@
         "what_it_does_li4": "Resize the editor/preview split and switch themes on the fly.",
         "what_it_does_li5": "Small, offline-first footprint — works standalone or hosted",
         "why_like": "Why you’ll like it",
-        "why_like_desc1": "EasyEdit focuses on speed and simplicity while giving you the tools you need to capture, structure, and export notes quickly. It combines a lightweight editor with a live preview, reusable templates, and one-click exports so you can stay productive without distraction.",
+        "why_like_desc1": "EasyEditor focuses on speed and simplicity while giving you the tools you need to capture, structure, and export notes quickly. It combines a lightweight editor with a live preview, reusable templates, and one-click exports so you can stay productive without distraction.",
         "why_like_desc2": "Great for journaling, meeting notes, planning, and any quick-capture workflow.",
         "custom_themes": "Customizable Themes",
         "custom_themes_desc1": "Choose from a variety of slick, modern themes with different color schemes to match your style and reduce eye strain. Switch themes instantly to find the perfect look for your workflow — whether you prefer light, dark, or vibrant color palettes.",
@@ -203,7 +203,7 @@
         "download": "Download Link",
         "download_desc": "Relative path link for downloadable assets",
         "image_url": "Markdown Img URL",
-        "image_url_desc": "Embed an image that links to the EasyEdit project"
+        "image_url_desc": "Embed an image that links to the EasyEditor project"
     },
     "tables": {
         "2x2": "▦ 2x2 Table",
@@ -279,7 +279,7 @@
     "modals": {
         "theme": {
             "title": "Select Theme",
-            "subtitle": "Choose a color scheme for EasyEdit",
+            "subtitle": "Choose a color scheme for EasyEditor",
             "import": "Import Custom Theme",
             "delete_confirm": "Delete this custom theme?",
             "delete_tooltip": "Delete theme",

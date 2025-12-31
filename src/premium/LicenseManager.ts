@@ -4,7 +4,7 @@ class LicenseManager {
   private static instance: LicenseManager;
   private activeLicense: boolean = false;
   private checking: boolean = false;
-  private API_ENDPOINT = 'https://easyeditor-premium.web.app/api/check-license'; // Placeholder
+  private API_ENDPOINT = 'https://easyeditoror-premium.web.app/api/check-license'; // Placeholder
 
   private constructor() {}
 
@@ -50,10 +50,10 @@ class LicenseManager {
   // This is a placeholder. In a real app, you would use a more robust
   // way to identify the user or device.
   private async getUniqueUserId(): Promise<string> {
-    let userId = localStorage.getItem('easyedit-user-id');
+    let userId = localStorage.getItem('easyeditor-user-id');
     if (!userId) {
       userId = crypto.randomUUID();
-      localStorage.setItem('easyedit-user-id', userId);
+      localStorage.setItem('easyeditor-user-id', userId);
     }
     return userId;
   }

@@ -474,18 +474,18 @@ const App = () => {
   // Update document title with current filename
   useEffect(() => {
     const updateTitle = () => {
-      let title = 'EasyEdit';
+      let title = 'EasyEditor';
 
       // Priority 1: Cloud note title
       if (currentCloudNote) {
         const unsavedIndicator = currentCloudNote.hasUnsavedChanges ? '• ' : '';
-        title = `${unsavedIndicator}${currentCloudNote.title} - EasyEdit`;
+        title = `${unsavedIndicator}${currentCloudNote.title} - EasyEditor`;
       }
       // Priority 2: Local/Git file path
       else if (currentFilePath) {
         // Extract filename from path (works for both Windows and Unix paths)
         const filename = currentFilePath.split(/[/\\]/).pop() || currentFilePath;
-        title = `${filename} - EasyEdit`;
+        title = `${filename} - EasyEditor`;
       }
 
       // Update document title (works for both web and Tauri)
@@ -2039,7 +2039,7 @@ const App = () => {
               </button>
               <div className="hdr-sep" />
               <button className="dropdown-item" onClick={async () => {
-                const url = 'https://github.com/gcclinux/EasyEdit/discussions';
+                const url = 'https://github.com/gcclinux/EasyEditor/discussions';
                 let opened = false;
                 try {
                   const w = window.open(url, '_blank', 'noopener');

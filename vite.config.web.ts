@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 // Web-only build configuration for GitHub Pages deployment
 export default defineConfig({
   plugins: [react()],
-  base: '/EasyEdit/webapp/',
+  base: '/EasyEditor/webapp/',
   server: {
     port: 3025,
     strictPort: false,

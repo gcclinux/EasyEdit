@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Setup HTTPS for local development
-# This creates a self-signed certificate for EasyEdit
+# This creates a self-signed certificate for EasyEditor
 
-echo "🔐 Setting up HTTPS for EasyEdit..."
+echo "🔐 Setting up HTTPS for EasyEditor..."
 echo ""
 
 # Check if openssl is installed
@@ -35,7 +35,7 @@ openssl req -x509 -newkey rsa:4096 \
     -out cert.pem \
     -days 365 \
     -nodes \
-    -subj "/C=US/ST=State/L=City/O=EasyEdit/CN=localhost" \
+    -subj "/C=US/ST=State/L=City/O=EasyEditor/CN=localhost" \
     2>/dev/null
 
 if [ $? -eq 0 ]; then

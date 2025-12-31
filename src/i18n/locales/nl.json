@@ -8,7 +8,7 @@
         "choose_language": "Kies taal",
         "choose_theme": "Kies kleurenschema",
         "sponsor": "Sponsor het project",
-        "version_info": "EasyEdit versie en info",
+        "version_info": "EasyEditor versie en info",
         "mermaid": "Mermaid",
         "uml": "UML",
         "symbols": "Symbolen",
@@ -31,7 +31,7 @@
         "support": "Ondersteuning",
         "support_desc": "Hulp krijgen of sponsoren",
         "features": "Functies",
-        "features_desc": "Zie wat EasyEdit kan doen",
+        "features_desc": "Zie wat EasyEditor kan doen",
         "undo": "Ongedaan maken",
         "redo": "Opnieuw",
         "new_file": "Nieuw Bestand",
@@ -142,7 +142,7 @@
         "list2_desc": "Markdown lijstniveau 2"
     },
     "about": {
-        "title": "EasyEdit",
+        "title": "EasyEditor",
         "subtitle": "Eenvoudig. Snel. Markdown-notities met live voorbeeld.",
         "badge_markdown": "Markdown",
         "badge_templates": "Sjablonen",
@@ -150,7 +150,7 @@
         "badge_export": "Exporteren",
         "badge_hosted": "Zelfstandig of Gehost",
         "what_it_is": "Wat het is",
-        "what_it_is_desc": "EasyEdit is een eenvoudige Markdown-editor waarmee je Markdown kunt schrijven en in realtime kunt bekijken. Je kunt .md-bestanden opslaan en laden, je notities naar PDF exporteren en de gerenderde uitvoer snel delen of kopiëren. Het is lichtgewicht, werkt offline en zit niet in de weg, zodat je je kunt concentreren op het schrijven.",
+        "what_it_is_desc": "EasyEditor is een eenvoudige Markdown-editor waarmee je Markdown kunt schrijven en in realtime kunt bekijken. Je kunt .md-bestanden opslaan en laden, je notities naar PDF exporteren en de gerenderde uitvoer snel delen of kopiëren. Het is lichtgewicht, werkt offline en zit niet in de weg, zodat je je kunt concentreren op het schrijven.",
         "support": "Ondersteuning & discussies:",
         "what_it_does": "Wat het doet",
         "what_it_does_li1": "Gebruik kant-en-klare sjablonen voor vergaderingen, projecten, studie, reizen en trainingen.",
@@ -159,7 +159,7 @@
         "what_it_does_li4": "Pas de grootte van de editor/voorbeeld-splitsing aan en wissel direct van thema.",
         "what_it_does_li5": "Klein, offline-eerst — werkt zelfstandig of gehost",
         "why_like": "Waarom je het leuk zult vinden",
-        "why_like_desc1": "EasyEdit richt zich op snelheid en eenvoud en biedt je de tools die je nodig hebt om notities snel vast te leggen, te structureren en te exporteren. Het combineert een lichte editor met een live voorbeeld, herbruikbare sjablonen en exportopties met één klik, zodat je productief kunt blijven zonder afleiding.",
+        "why_like_desc1": "EasyEditor richt zich op snelheid en eenvoud en biedt je de tools die je nodig hebt om notities snel vast te leggen, te structureren en te exporteren. Het combineert een lichte editor met een live voorbeeld, herbruikbare sjablonen en exportopties met één klik, zodat je productief kunt blijven zonder afleiding.",
         "why_like_desc2": "Geweldig voor dagboeken, vergadernotities, planning en elke snelle vastleggingsworkflow.",
         "custom_themes": "Aanpasbare Thema's",
         "custom_themes_desc1": "Kies uit een reeks strakke, moderne thema's met verschillende kleurenschema's die bij je stijl passen en vermoeide ogen verminderen. Wissel direct van thema om de perfecte look voor je workflow te vinden — of je nu de voorkeur geeft aan lichte, donkere of levendige kleurenpaletten.",
@@ -279,7 +279,7 @@
     "modals": {
         "theme": {
             "title": "Selecteer Thema",
-            "subtitle": "Kies een kleureschema voor EasyEdit",
+            "subtitle": "Kies een kleureschema voor EasyEditor",
             "import": "Importeer Aangepast Thema",
             "delete_confirm": "Dit thema verwijderen?",
             "delete_tooltip": "Verwijder thema",

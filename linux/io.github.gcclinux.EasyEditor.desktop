@@ -1,11 +1,11 @@
 [Desktop Entry]
 Type=Application
-Name=EasyEdit
+Name=EasyEditor
 GenericName=Markdown Editor
 Comment=Simple Markdown editor with preview
-Exec=easyedit %U
-Icon=io.github.gcclinux.EasyEdit
+Exec=easyeditor %U
+Icon=io.github.gcclinux.EasyEditor
 Categories=Utility;TextEditor;Development;
 MimeType=text/plain;text/markdown;text/html;
 X-Purism-FormFactor=Workstation;Mobile;
-StartupWMClass=EasyEdit
+StartupWMClass=EasyEditor

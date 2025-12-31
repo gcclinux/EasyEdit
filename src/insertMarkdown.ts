@@ -493,7 +493,7 @@ export const insertImageSyntax = (
 ![alt text](image url "Image Title")
 
 #### Example:
-![EasyEdit](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png  "EasyEdit")
+![EasyEditor](https://raw.githubusercontent.com/gcclinux/EasyEditor/refs/heads/main/public/easyeditor128.png  "EasyEditor")
 `;
     const newText =
       editorContent.substring(0, start) +
@@ -517,10 +517,10 @@ export const insertImageSyntax = (
       const end = textarea.selectionEnd;
       const imageText = `
 ### *Markdown Text URL Example*
-[GitHub Project Link](https://github.com/gcclinux/EasyEdit)
+[GitHub Project Link](https://github.com/gcclinux/EasyEditor)
 
 ### *Markdown Image URL Example*
-[![GitHub Project](https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/public/easyedit128.png "EasyEdit")](https://github.com/gcclinux/EasyEdit)
+[![GitHub Project](https://raw.githubusercontent.com/gcclinux/EasyEditor/refs/heads/main/public/easyeditor128.png "EasyEditor")](https://github.com/gcclinux/EasyEditor)
 `;
       const newText =
         editorContent.substring(0, start) +

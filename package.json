@@ -1,6 +1,6 @@
 {
-  "name": "easyedit",
-  "description": "EasyEdit - A simple Markdown editor",
+  "name": "easyeditor",
+  "description": "EasyEditor - A simple Markdown editor",
   "version": "1.5.2",
   "type": "module",
   "scripts": {

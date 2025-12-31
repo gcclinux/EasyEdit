@@ -8,7 +8,7 @@
         "choose_language": "Wybierz język",
         "choose_theme": "Wybierz schemat kolorów",
         "sponsor": "Wesprzyj projekt",
-        "version_info": "Wersja i informacje o EasyEdit",
+        "version_info": "Wersja i informacje o EasyEditor",
         "mermaid": "Mermaid",
         "uml": "UML",
         "symbols": "Symbole",
@@ -31,7 +31,7 @@
         "support": "Wsparcie",
         "support_desc": "Uzyskaj pomoc lub wesprzyj",
         "features": "Funkcje",
-        "features_desc": "Zobacz, co potrafi EasyEdit",
+        "features_desc": "Zobacz, co potrafi EasyEditor",
         "undo": "Cofnij",
         "redo": "Ponów",
         "new_file": "Nowy Plik",
@@ -142,7 +142,7 @@
         "list2_desc": "Poziom listy Markdown 2"
     },
     "about": {
-        "title": "EasyEdit",
+        "title": "EasyEditor",
         "subtitle": "Prosty. Szybki. Notatki w Markdown z podglądem na żywo.",
         "badge_markdown": "Markdown",
         "badge_templates": "Szablony",
@@ -150,7 +150,7 @@
         "badge_export": "Eksport",
         "badge_hosted": "Samodzielny lub Hostowany",
         "what_it_is": "Co to jest",
-        "what_it_is_desc": "EasyEdit to prosty edytor Markdown, który pozwala pisać w Markdown i podglądać wynik w czasie rzeczywistym. Możesz zapisywać i ładować pliki .md, eksportować notatki do PDF oraz szybko udostępniać lub kopiować wyrenderowany wynik. Jest lekki, działa offline i nie przeszkadza, dzięki czemu możesz skupić się na pisaniu.",
+        "what_it_is_desc": "EasyEditor to prosty edytor Markdown, który pozwala pisać w Markdown i podglądać wynik w czasie rzeczywistym. Możesz zapisywać i ładować pliki .md, eksportować notatki do PDF oraz szybko udostępniać lub kopiować wyrenderowany wynik. Jest lekki, działa offline i nie przeszkadza, dzięki czemu możesz skupić się na pisaniu.",
         "support": "Wsparcie i dyskusje:",
         "what_it_does": "Co robi",
         "what_it_does_li1": "Używaj gotowych szablonów do spotkań, projektów, nauki, podróży i treningów.",
@@ -159,7 +159,7 @@
         "what_it_does_li4": "Zmieniaj rozmiar podziału edytora/podglądu i przełączaj motywy w locie.",
         "what_it_does_li5": "Mały, działa offline — może być używany samodzielnie lub hostowany",
         "why_like": "Dlaczego go polubisz",
-        "why_like_desc1": "EasyEdit stawia na szybkość i prostotę, dając Ci narzędzia potrzebne do szybkiego przechwytywania, strukturyzowania i eksportowania notatek. Łączy lekki edytor z podglądem na żywo, szablonami wielokrotnego użytku i eksportem jednym kliknięciem, dzięki czemu możesz pozostać produktywnym bez rozpraszania uwagi.",
+        "why_like_desc1": "EasyEditor stawia na szybkość i prostotę, dając Ci narzędzia potrzebne do szybkiego przechwytywania, strukturyzowania i eksportowania notatek. Łączy lekki edytor z podglądem na żywo, szablonami wielokrotnego użytku i eksportem jednym kliknięciem, dzięki czemu możesz pozostać produktywnym bez rozpraszania uwagi.",
         "why_like_desc2": "Świetny do dzienników, notatek ze spotkań, planowania i każdego szybkiego przepływu pracy.",
         "custom_themes": "Konfigurowalne Motywy",
         "custom_themes_desc1": "Wybieraj spośród wielu eleganckich, nowoczesnych motywów z różnymi schematami kolorów, aby dopasować je do swojego stylu i zmniejszyć zmęczenie oczu. Przełączaj motywy natychmiast, aby znaleźć idealny wygląd dla swojej pracy — niezależnie od tego, czy wolisz jasne, ciemne czy żywe palety kolorów.",
@@ -279,7 +279,7 @@
     "modals": {
         "theme": {
             "title": "Wybierz Motyw",
-            "subtitle": "Wybierz schemat kolorów dla EasyEdit",
+            "subtitle": "Wybierz schemat kolorów dla EasyEditor",
             "import": "Importuj Motyw",
             "delete_confirm": "Usunąć ten motyw?",
             "delete_tooltip": "Usuń motyw",

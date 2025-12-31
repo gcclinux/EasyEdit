@@ -12,8 +12,8 @@ interface StoredCloudCredentials {
   expiresAt?: string; // ISO string
 }
 
-const CLOUD_STORAGE_KEY = 'easyedit_cloud_credentials';
-const CLOUD_MASTER_KEY_STORAGE = 'easyedit_cloud_master_key';
+const CLOUD_STORAGE_KEY = 'easyeditor_cloud_credentials';
+const CLOUD_MASTER_KEY_STORAGE = 'easyeditor_cloud_master_key';
 
 export class CloudCredentialManager {
   private masterKey: string | null = null;

@@ -116,11 +116,11 @@ describe('TokenStorage Logout and Cleanup', () => {
           // Ensure unique provider names and that they don't collide when base64 encoded
           const uniquePairs = providerTokenPairs.filter((pair, index, arr) => {
             const currentProvider = pair[0];
-            const currentEncoded = Buffer.from(`easyedit-oauth-${currentProvider}`).toString('base64');
+            const currentEncoded = Buffer.from(`easyeditor-oauth-${currentProvider}`).toString('base64');
             
             return arr.findIndex(p => {
               const otherProvider = p[0];
-              const otherEncoded = Buffer.from(`easyedit-oauth-${otherProvider}`).toString('base64');
+              const otherEncoded = Buffer.from(`easyeditor-oauth-${otherProvider}`).toString('base64');
               return otherEncoded === currentEncoded;
             }) === index;
           });

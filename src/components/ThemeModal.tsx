@@ -52,7 +52,7 @@ const ThemeModal: React.FC<ThemeModalProps> = ({ open, onClose, onSelectTheme, c
         const { writeTextFile } = await import('@tauri-apps/plugin-fs');
 
         const filePath = await save({
-          defaultPath: 'easyedit_template_theme.css',
+          defaultPath: 'easyeditor_template_theme.css',
           filters: [{
             name: 'CSS',
             extensions: ['css']
@@ -73,7 +73,7 @@ const ThemeModal: React.FC<ThemeModalProps> = ({ open, onClose, onSelectTheme, c
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'easyedit_template_theme.css';
+      a.download = 'easyeditor_template_theme.css';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

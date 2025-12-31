@@ -1,5 +1,5 @@
 
-Write-Host "[HTTPS] Setting up HTTPS for EasyEdit..."
+Write-Host "[HTTPS] Setting up HTTPS for EasyEditor..."
 Write-Host ""
 
 # Find openssl
@@ -35,7 +35,7 @@ Write-Host "Generating self-signed certificate..."
 
 # Run openssl
 try {
-    $process = Start-Process -FilePath $openssl -ArgumentList "req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj /C=US/ST=State/L=City/O=EasyEdit/CN=localhost" -Wait -NoNewWindow -PassThru
+    $process = Start-Process -FilePath $openssl -ArgumentList "req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj /C=US/ST=State/L=City/O=EasyEditor/CN=localhost" -Wait -NoNewWindow -PassThru
     
     if ($process.ExitCode -eq 0) {
         Write-Host ""

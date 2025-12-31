@@ -41,7 +41,7 @@ if (fs.existsSync(localLatestPath)) {
 
 if (!remoteVersion) {
     // remote fallback (raw GitHub URL)
-    fetch('https://raw.githubusercontent.com/gcclinux/EasyEdit/refs/heads/main/release/latest.json')
+    fetch('https://raw.githubusercontent.com/gcclinux/EasyEditor/refs/heads/main/release/latest.json')
     .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok ' + response.statusText);
@@ -101,10 +101,10 @@ function checkVersion() {
 
     if (compareVersions(remoteVersionToCompare, version) > 0) {
         versionCheck.classList.remove('placeholder');
-        versionCheck.innerHTML = 'New version available <a href="https://github.com/gcclinux/EasyEdit/releases">here</a>';
+        versionCheck.innerHTML = 'New version available <a href="https://github.com/gcclinux/EasyEditor/releases">here</a>';
     } else {
         versionCheck.classList.remove('placeholder');
-        versionCheck.textContent = 'You are using the latest version of EasyEdit.';
+        versionCheck.textContent = 'You are using the latest version of EasyEditor.';
     }
 }
 

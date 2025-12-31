@@ -1,4 +1,4 @@
-# Security Guidelines for EasyEdit
+# Security Guidelines for EasyEditor
 
 ## Credential Management
 

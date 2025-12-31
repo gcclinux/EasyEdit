@@ -6,7 +6,7 @@ export interface CustomTheme {
   css: string;
 }
 
-const CUSTOM_THEMES_KEY = 'easyedit-custom-themes';
+const CUSTOM_THEMES_KEY = 'easyeditor-custom-themes';
 
 export const getCustomThemes = (): CustomTheme[] => {
   const stored = localStorage.getItem(CUSTOM_THEMES_KEY);

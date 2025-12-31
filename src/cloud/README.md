@@ -1,6 +1,6 @@
 # Cloud Integration Module
 
-This module provides cloud storage integration for EasyEdit notes, enabling users to store and synchronize markdown notes across multiple cloud providers.
+This module provides cloud storage integration for EasyEditor notes, enabling users to store and synchronize markdown notes across multiple cloud providers.
 
 ## Directory Structure
 

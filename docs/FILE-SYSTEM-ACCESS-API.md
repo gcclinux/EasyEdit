@@ -2,7 +2,7 @@
 
 ## Overview
 
-EasyEdit now supports the **File System Access API** in modern browsers (Chrome, Edge, Opera), providing near-native file access capabilities in the web version. This brings the web experience much closer to the Electron desktop app.
+EasyEditor now supports the **File System Access API** in modern browsers (Chrome, Edge, Opera), providing near-native file access capabilities in the web version. This brings the web experience much closer to the Electron desktop app.
 
 ## What's New?
 
@@ -135,10 +135,10 @@ await writable.close();
 
 ### Example 1: Basic Workflow (Chrome)
 
-1. Open EasyEdit in Chrome: `http://localhost:3024`
+1. Open EasyEditor in Chrome: `http://localhost:3024`
 2. Click **File → Open MarkDown**
 3. Select a `.md` file from your filesystem
-4. Browser shows: "EasyEdit wants to read this file"
+4. Browser shows: "EasyEditor wants to read this file"
 5. Click **Allow**
 6. Edit your content
 7. Press `Ctrl+S` to save
@@ -154,7 +154,7 @@ await writable.close();
 
 ### Example 3: Fallback Mode (Firefox)
 
-1. Open EasyEdit in Firefox
+1. Open EasyEditor in Firefox
 2. Click **File → Open MarkDown**
 3. Select a file (traditional file picker)
 4. Edit your content
@@ -219,7 +219,7 @@ await writable.close();
    git init
    echo "# Test" > README.md
    ```
-2. Open `README.md` in EasyEdit (Chrome)
+2. Open `README.md` in EasyEditor (Chrome)
 3. Look for "Git repository detected!" toast
 4. Edit and save with `Ctrl+S`
 
@@ -254,7 +254,7 @@ await writable.close();
 
 ## Conclusion
 
-The File System Access API integration brings significant improvements to the web version of EasyEdit, making it much more capable for users of modern browsers. While it doesn't fully replace the Electron app (especially for Git operations), it provides a much better experience than traditional web file handling.
+The File System Access API integration brings significant improvements to the web version of EasyEditor, making it much more capable for users of modern browsers. While it doesn't fully replace the Electron app (especially for Git operations), it provides a much better experience than traditional web file handling.
 
 **Recommendation:**
 - **For Git workflows**: Use the Electron desktop app

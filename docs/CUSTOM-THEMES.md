@@ -1,10 +1,10 @@
 # Creating and Installing Custom Themes
 
-EasyEdit now supports user-installable custom themes! You can create your own themes or install themes shared by others without rebuilding the app.
+EasyEditor now supports user-installable custom themes! You can create your own themes or install themes shared by others without rebuilding the app.
 
 ## Built-in Themes
 
-EasyEdit includes 6 built-in themes:
+EasyEditor includes 6 built-in themes:
 
 1. **Default** - Original dark theme with purple/gray
 2. **Ocean Blue** - Cool blue theme
@@ -15,7 +15,7 @@ EasyEdit includes 6 built-in themes:
 
 ## How to Install a Custom Theme
 
-1. **Open EasyEdit**
+1. **Open EasyEditor**
 2. Click **File** → **Select Theme**
 3. Click **Import Custom Theme** button
 4. Fill in the form:
@@ -242,7 +242,7 @@ Import this through the app and you'll have a neon pink theme!
 
 ## Community Themes
 
-Share your themes in the EasyEdit discussions:
-https://github.com/gcclinux/EasyEdit/discussions
+Share your themes in the EasyEditor discussions:
+https://github.com/gcclinux/EasyEditor/discussions
 
 Tag your posts with `#custom-theme` to help others find them!

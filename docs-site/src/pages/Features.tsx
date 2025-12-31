@@ -6,7 +6,7 @@ export default function Features() {
       <section className="page-header">
         <div className="container">
           <h1>Features</h1>
-          <p>Discover all the powerful features that make EasyEdit the perfect Markdown editor</p>
+          <p>Discover all the powerful features that make EasyEditor the perfect Markdown editor</p>
         </div>
       </section>
 
@@ -16,7 +16,7 @@ export default function Features() {
             <div className="feature-detail-content">
               <h2>📝 Advanced Markdown Editor</h2>
               <p>
-                EasyEdit provides a full-featured Markdown editor with syntax highlighting, 
+                EasyEditor provides a full-featured Markdown editor with syntax highlighting, 
                 live preview, and support for GitHub Flavored Markdown (GFM).
               </p>
               <ul>

@@ -325,7 +325,7 @@ export class GISGoogleDriveProvider implements CloudProvider {
       const accessToken = await this.getValidAccessToken();
       console.log('[GISGoogleDriveProvider] Got access token, checking for existing folder...');
       
-      // Check if EasyEdit folder already exists
+      // Check if EasyEditor folder already exists
       const existingFolder = await this.findApplicationFolder();
       if (existingFolder) {
         console.log('[GISGoogleDriveProvider] Found existing folder:', existingFolder);
@@ -574,7 +574,7 @@ export class GISGoogleDriveProvider implements CloudProvider {
   }
   
   /**
-   * Find existing EasyEdit application folder
+   * Find existing EasyEditor application folder
    */
   private async findApplicationFolder(): Promise<string | null> {
     try {

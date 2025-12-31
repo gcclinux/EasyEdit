@@ -117,7 +117,7 @@ export const saveToHTML = async (editorContent: string): Promise<void> => {
       const blob = new Blob([finalHTML], {
         type: "text/html;charset=utf-8",
       });
-      saveAs(blob, "easyedit.html");
+      saveAs(blob, "easyeditor.html");
     } catch (error) {
       console.error('Error saving HTML:', error);
     }
@@ -147,12 +147,12 @@ export const handleOpenClick = (
 
 export const saveToFile = (editorContent: string): void => {
 const blob = new Blob([editorContent], { type: "text/markdown;charset=utf-8" });
-saveAs(blob, "easyedit.md");
+saveAs(blob, "easyeditor.md");
 };
 
 export const saveToTxT = (editorContent: string): void => {
 const blob = new Blob([editorContent], { type: "text/plain;charset=utf-8" });
-saveAs(blob, "easyedit.txt");
+saveAs(blob, "easyeditor.txt");
 };
 
 export interface MainHandlerProps {

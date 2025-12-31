@@ -1,13 +1,13 @@
 import './Download.css'
 
-const GITHUB_LATEST = 'https://github.com/gcclinux/EasyEdit/releases/latest'
+const GITHUB_LATEST = 'https://github.com/gcclinux/EasyEditor/releases/latest'
 
 export default function Download() {
   return (
     <div className="download-page">
       <section className="page-header">
         <div className="container">
-          <h1>Download EasyEdit</h1>
+          <h1>Download EasyEditor</h1>
           <p>Get the latest version for Linux, Windows, and macOS</p>
         </div>
       </section>
@@ -192,7 +192,7 @@ export default function Download() {
                 <h3>GitHub Repository</h3>
                 <p>Access the source code, report issues, and contribute</p>
                 <a 
-                  href="https://github.com/gcclinux/EasyEdit" 
+                  href="https://github.com/gcclinux/EasyEditor" 
                   className="btn btn-primary"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -246,8 +246,8 @@ export default function Download() {
               <h3>🐧 Linux - AppImage</h3>
               <ol>
                 <li>Download the .AppImage file from the releases page</li>
-                <li>Make it executable: <code>chmod +x EasyEdit-*.AppImage</code></li>
-                <li>Run it: <code>./EasyEdit-*.AppImage</code></li>
+                <li>Make it executable: <code>chmod +x EasyEditor-*.AppImage</code></li>
+                <li>Run it: <code>./EasyEditor-*.AppImage</code></li>
               </ol>
             </div>
 
@@ -255,9 +255,9 @@ export default function Download() {
               <h3>🐧 Linux - DEB Package</h3>
               <ol>
                 <li>Download the .deb file</li>
-                <li>Install: <code>sudo dpkg -i EasyEdit-*.deb</code></li>
+                <li>Install: <code>sudo dpkg -i EasyEditor-*.deb</code></li>
                 <li>Fix dependencies if needed: <code>sudo apt-get install -f</code></li>
-                <li>Launch from applications menu or run: <code>easyedit</code></li>
+                <li>Launch from applications menu or run: <code>easyeditor</code></li>
               </ol>
             </div>
 
@@ -265,9 +265,9 @@ export default function Download() {
               <h3>🐧 Linux - RPM Package</h3>
               <ol>
                 <li>Download the .rpm file</li>
-                <li>Install: <code>sudo rpm -i EasyEdit-*.rpm</code></li>
-                <li>Or use dnf: <code>sudo dnf install EasyEdit-*.rpm</code></li>
-                <li>Launch from applications menu or run: <code>easyedit</code></li>
+                <li>Install: <code>sudo rpm -i EasyEditor-*.rpm</code></li>
+                <li>Or use dnf: <code>sudo dnf install EasyEditor-*.rpm</code></li>
+                <li>Launch from applications menu or run: <code>easyeditor</code></li>
               </ol>
             </div>
 
@@ -275,8 +275,8 @@ export default function Download() {
               <h3>🐧 Linux - Snap</h3>
               <ol>
                 <li>Download the .snap file</li>
-                <li>Install: <code>sudo snap install EasyEdit-*.snap --dangerous</code></li>
-                <li>Run: <code>easyedit</code></li>
+                <li>Install: <code>sudo snap install EasyEditor-*.snap --dangerous</code></li>
+                <li>Run: <code>easyeditor</code></li>
               </ol>
             </div>
 
@@ -295,7 +295,7 @@ export default function Download() {
               <ol>
                 <li>Download the portable .exe or .zip file</li>
                 <li>Extract if ZIP (no installation needed for .exe)</li>
-                <li>Run EasyEdit.exe directly</li>
+                <li>Run EasyEditor.exe directly</li>
                 <li>Can be run from USB or any folder</li>
               </ol>
             </div>
@@ -305,8 +305,8 @@ export default function Download() {
               <ol>
                 <li>Download the .dmg file</li>
                 <li>Open the downloaded .dmg file to mount it</li>
-                <li>Drag the EasyEdit app icon into the Applications folder</li>
-                <li>Eject the mounted image and launch EasyEdit from Applications</li>
+                <li>Drag the EasyEditor app icon into the Applications folder</li>
+                <li>Eject the mounted image and launch EasyEditor from Applications</li>
                 <li>If macOS blocks the app, go to System Settings → Privacy & Security and allow it</li>
               </ol>
             </div>
@@ -316,7 +316,7 @@ export default function Download() {
               <ol>
                 <li>Download the .zip file</li>
                 <li>Unzip the archive</li>
-                <li>Move the extracted EasyEdit.app to your Applications folder</li>
+                <li>Move the extracted EasyEditor.app to your Applications folder</li>
                 <li>If macOS warns about an unverified developer, right-click and choose Open</li>
               </ol>
             </div>
@@ -324,7 +324,7 @@ export default function Download() {
             <div className="install-section">
               <h3>🔧 Build from Source</h3>
               <ol>
-                <li>Clone the repository: <code>git clone https://github.com/gcclinux/EasyEdit.git</code></li>
+                <li>Clone the repository: <code>git clone https://github.com/gcclinux/EasyEditor.git</code></li>
                 <li>Install dependencies: <code>npm install</code></li>
                 <li>Build: <code>npm run build</code></li>
                 <li>Package: <code>npm run electron:build</code></li>
@@ -336,10 +336,10 @@ export default function Download() {
             <h2>Need Help?</h2>
             <p>If you encounter any issues during installation or usage:</p>
             <div className="support-links">
-              <a href="https://github.com/gcclinux/EasyEdit/issues" target="_blank" rel="noopener noreferrer" className="btn btn-outline">
+              <a href="https://github.com/gcclinux/EasyEditor/issues" target="_blank" rel="noopener noreferrer" className="btn btn-outline">
                 Report an Issue
               </a>
-              <a href="https://github.com/gcclinux/EasyEdit/discussions" target="_blank" rel="noopener noreferrer" className="btn btn-outline">
+              <a href="https://github.com/gcclinux/EasyEditor/discussions" target="_blank" rel="noopener noreferrer" className="btn btn-outline">
                 Community Discussions
               </a>
             </div>

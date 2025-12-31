@@ -15,7 +15,7 @@ export function FeaturesModal({ open, onClose }: FeaturesModalProps) {
       <div className="modal-content features-modal">
         <div className="features-hero">
           <div className="features-hero-logo">
-            <img src={logo} alt="EasyEdit" />
+            <img src={logo} alt="EasyEditor" />
           </div>
           <div className="features-hero-text">
             <h2 id="features-title" className="features-title">Features</h2>

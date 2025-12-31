@@ -297,9 +297,9 @@ const oauthManager = createOAuthManager({
 
 ### Logs Location
 
-- **Windows**: `%APPDATA%/EasyEdit/logs/oauth.log`
-- **macOS**: `~/Library/Application Support/EasyEdit/logs/oauth.log`
-- **Linux**: `~/.config/EasyEdit/logs/oauth.log`
+- **Windows**: `%APPDATA%/EasyEditor/logs/oauth.log`
+- **macOS**: `~/Library/Application Support/EasyEditor/logs/oauth.log`
+- **Linux**: `~/.config/EasyEditor/logs/oauth.log`
 
 ## Contributing
 
@@ -313,4 +313,4 @@ When contributing to the Tauri OAuth integration:
 
 ## License
 
-This OAuth integration is part of EasyEdit and follows the same MIT license.
+This OAuth integration is part of EasyEditor and follows the same MIT license.

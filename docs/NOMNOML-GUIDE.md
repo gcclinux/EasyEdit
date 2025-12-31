@@ -245,7 +245,7 @@ Server --> User: Response
 - [Try Nomnoml Online](https://nomnoml.com/)
 - [Syntax Reference](https://github.com/skanaar/nomnoml#directives)
 
-## Examples in EasyEdit
+## Examples in EasyEditor
 
 See `UML-Examples.md` for working examples of all diagram types!
 
