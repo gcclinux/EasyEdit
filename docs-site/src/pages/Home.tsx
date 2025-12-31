@@ -13,14 +13,14 @@ export default function Home() {
               A Powerful Markdown Editor with UML & Mermaid Diagram Support
             </p>
             <p className="hero-description">
-              Create beautiful documents, diagrams, and notes with ease. 
+              Create beautiful documents, diagrams, and notes with ease.
               Built for Linux with advanced features for developers and writers.
             </p>
             <div className="hero-buttons">
               <Link to="/docs" className="btn btn-secondary">
                 📚 Documentation
               </Link>
-              <a href="/EasyEditor/webapp/" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-webapp">
+              <a href="/easyeditor/webapp/" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-webapp">
                 🚀 WebApp
               </a>
               <Link to="/download" className="btn btn-secondary">
