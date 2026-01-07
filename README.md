@@ -1,4 +1,4 @@
-## *Easyedit*
+ ## *Easyedit*
 
 Easyedit is an easy markdown editor that allows you to write Markdown (MD) and preview it in real-time. You can save, load .md files, load Git repo and stage,commit, push and export to HTML,TXT, PDF & SSTP Encryption. The idea is to provide a single MD / Mermaid /UML Aplication that can help creating MD documents by build the MD code as easy as a click of a button, with over 130 features & examples.
 

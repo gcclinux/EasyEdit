@@ -29,7 +29,6 @@ test-deploy
 *.sln
 *.sw?
 *.firebase
-.firebaserc
 firebase.json
 *dist
 .idx/*

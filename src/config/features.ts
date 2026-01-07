@@ -10,7 +10,7 @@ import LicenseManager from '../premium/LicenseManager';
 export const FEATURES = {
   // EasyNotes cloud integration feature
   // This feature is controlled by the license status.
-  EASY_NOTES: false,
+  EASY_NOTES: true,
 
   // Add other feature flags here as needed
   // EXAMPLE_FEATURE: true,
