@@ -4,9 +4,11 @@ class LicenseManager {
   private static instance: LicenseManager;
   private activeLicense: boolean = false;
   private checking: boolean = false;
-  private API_ENDPOINT = 'https://easyeditoror-premium.web.app/api/check-license'; // Placeholder
+  private API_ENDPOINT = 'https://easyeditor-premium.web.app/api/check-license';
+  private STORAGE_KEY_EMAIL = 'easyeditor-user-email';
+  private STORAGE_KEY_DATE = 'easyeditor-user-purchase-date';
 
-  private constructor() {}
+  private constructor() { }
 
   public static getInstance(): LicenseManager {
     if (!LicenseManager.instance) {
@@ -29,15 +31,44 @@ class LicenseManager {
     return this.activeLicense;
   }
 
+  public async setLicenseData(email: string, purchaseDate: string): Promise<void> {
+    localStorage.setItem(this.STORAGE_KEY_EMAIL, email);
+    localStorage.setItem(this.STORAGE_KEY_DATE, purchaseDate);
+    await this.checkLicenseStatus();
+  }
+
+  public getStoredEmail(): string | null {
+    return localStorage.getItem(this.STORAGE_KEY_EMAIL);
+  }
+
+  public getStoredPurchaseDate(): string | null {
+    return localStorage.getItem(this.STORAGE_KEY_DATE);
+  }
+
   private async checkLicenseStatus(): Promise<void> {
+    const email = this.getStoredEmail();
+    const purchaseDate = this.getStoredPurchaseDate();
+
+    if (!email || !purchaseDate) {
+      this.activeLicense = false;
+      return;
+    }
+
     try {
-      // In a real application, you would get a unique user/device ID
-      const userId = await this.getUniqueUserId();
-      const response = await fetch(`${this.API_ENDPOINT}?userId=${userId}`);
+      const response = await fetch(this.API_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, purchaseDate }),
+      });
 
       if (response.ok) {
         const data = await response.json();
-        this.activeLicense = data.hasActiveLicense === true;
+        // Check for "True" string or true boolean, based on the PowerShell output "True"
+        // The user example showed "True", usually JSON returns boolean true/false but PowerShell might format it. 
+        // Assuming standard JSON boolean from web API, but being safe.
+        this.activeLicense = data.hasActiveLicense === true || data.hasActiveLicense === 'True';
       } else {
         this.activeLicense = false;
       }
@@ -45,17 +76,6 @@ class LicenseManager {
       console.error('Error checking license status:', error);
       this.activeLicense = false;
     }
-  }
-
-  // This is a placeholder. In a real app, you would use a more robust
-  // way to identify the user or device.
-  private async getUniqueUserId(): Promise<string> {
-    let userId = localStorage.getItem('easyeditor-user-id');
-    if (!userId) {
-      userId = crypto.randomUUID();
-      localStorage.setItem('easyeditor-user-id', userId);
-    }
-    return userId;
   }
 }
 

@@ -25,7 +25,7 @@
 }
 
 /* Ensure all text inside the About modal stays readable */
-.about-modal, 
+.about-modal,
 .about-modal p,
 .about-modal li,
 .about-modal h1,
@@ -121,4 +121,8 @@
 
 .muted {
   color: var(--color-text-muted-dark)
+}
+
+.about-modal input {
+  color: black !important;
 }

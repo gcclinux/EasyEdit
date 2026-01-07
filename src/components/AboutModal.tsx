@@ -3,6 +3,7 @@ import './aboutModal.css';
 import { createPortal } from 'react-dom';
 import logo from '../assets/logo.png';
 import { useLanguage } from '../i18n/LanguageContext';
+import LicenseManager from '../premium/LicenseManager';
 
 interface AboutModalProps {
   open: boolean;
@@ -16,6 +17,30 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
   const lastUpdated = 'Sun Dec 7 2025';
   const [version, setVersion] = React.useState<string>('');
   const [availableVersion, setAvailableVersion] = React.useState<string>('');
+  const [name, setName] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [purchaseDate, setPurchaseDate] = React.useState('');
+  const [isLicenseValid, setIsLicenseValid] = React.useState(false);
+
+  React.useEffect(() => {
+    const storedEmail = LicenseManager.getStoredEmail();
+    if (storedEmail) setEmail(storedEmail);
+    const storedDate = LicenseManager.getStoredPurchaseDate();
+    if (storedDate) setPurchaseDate(storedDate);
+    const storedName = localStorage.getItem('easyeditor-user-name');
+    if (storedName) setName(storedName);
+
+    // Check initial license state
+    if (LicenseManager.hasActiveLicense()) {
+      setIsLicenseValid(true);
+    }
+  }, []);
+
+  const handleSaveLicense = async () => {
+    localStorage.setItem('easyeditor-user-name', name);
+    await LicenseManager.setLicenseData(email, purchaseDate);
+    setIsLicenseValid(LicenseManager.hasActiveLicense());
+  };
 
   React.useEffect(() => {
     // Try common sources for app version: injected env, fetch package.json, else unknown
@@ -129,18 +154,11 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
             </ul>
           </div>
           <div className="about-card">
-            <h3>{t('about.why_like')}</h3>
-            <p>
-              {t('about.why_like_desc1')}
+            <h3>{t('about.credits')}</h3>
+            <p>{t('about.built_by')}<br />
+              <span className="muted">{t('about.last_updated')} {lastUpdated}</span>
             </p>
-            <p>{t('about.why_like_desc2')}</p>
-          </div>
-          <div className="about-card">
-            <h3>{t('about.custom_themes')}</h3>
-            <p>
-              {t('about.custom_themes_desc1')}
-            </p>
-            <p>{t('about.custom_themes_desc2')}</p>
+            <p>{t('about.license')}<br />{t('about.running_version')} <strong>{version || '...'}</strong><br />{t('about.available_version')} <strong>{availableVersion || '...'}</strong></p>
           </div>
           <div className="about-card">
             <h3>{t('about.git_integration')}</h3>
@@ -150,11 +168,68 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
             <p>{t('about.git_integration_desc2')}</p>
           </div>
           <div className="about-card">
-            <h3>{t('about.credits')}</h3>
-            <p>{t('about.built_by')}<br />
-              <span className="muted">{t('about.last_updated')} {lastUpdated}</span>
+            <h3>{t('about.custom_themes')} & {t('about.why_like')}</h3>
+            <p>
+              {t('about.custom_themes_desc1')}
             </p>
-            <p>{t('about.license')}<br />{t('about.running_version')} <strong>{version || '...'}</strong><br />{t('about.available_version')} <strong>{availableVersion || '...'}</strong></p>
+            <p>{t('about.why_like_desc1')}</p>
+          </div>
+          <div className="about-card">
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <div style={{ flex: 1 }}>
+                <h3>{t('about.premium_features')}</h3>
+                <ul style={{ paddingLeft: '20px', lineHeight: '1.6', fontSize: '0.9em' }}>
+                  <li>{t('about.premium_features_li1')}</li>
+                  <li>{t('about.premium_features_li2')}</li>
+                  <li>{t('about.premium_features_li3')}</li>
+                  <li>{t('about.premium_features_li4')}</li>
+                  <li>{t('about.premium_features_li5')}</li>
+                  <li>{t('about.premium_features_li6')}</li>
+                </ul>
+              </div>
+              <div style={{ flex: 1, borderLeft: '1px solid var(--border-color, #eee)', paddingLeft: '1rem' }}>
+                <h3>{t('about.license_info')} {isLicenseValid && <span style={{ color: 'green', marginLeft: '10px' }}>OK</span>}</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.9em', marginBottom: '4px' }}>{t('about.license_name')}</label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      style={{ width: '95%', padding: '4px', borderRadius: '4px', border: '1px solid #ccc', color: 'black' }}
+                      placeholder={t('about.license_name_placeholder')}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.9em', marginBottom: '4px' }}>{t('about.license_email')}</label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      style={{ width: '95%', padding: '4px', borderRadius: '4px', border: '1px solid #ccc', color: 'black' }}
+                      placeholder={t('about.license_email_placeholder')}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.9em', marginBottom: '4px' }}>{t('about.license_date')}</label>
+                    <input
+                      type="text"
+                      value={purchaseDate}
+                      onChange={(e) => setPurchaseDate(e.target.value)}
+                      style={{ width: '95%', padding: '4px', borderRadius: '4px', border: '1px solid #ccc', color: 'black' }}
+                      placeholder={t('about.license_date_placeholder')}
+                    />
+                  </div>
+                  <button
+                    onClick={handleSaveLicense}
+                    className="btn secondary"
+                    style={{ marginTop: '5px', alignSelf: 'flex-start', padding: '6px 12px' }}
+                  >
+                    {t('about.check_license')}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div className="modal-actions">
