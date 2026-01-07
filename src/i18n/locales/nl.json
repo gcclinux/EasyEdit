@@ -167,6 +167,8 @@
         "git_integration": "Git-integratie",
         "git_integration_desc1": "Basis Git-functies ingebouwd — repositories klonen, Markdown-bestanden bewerken, wijzigingen stagen, committen en direct naar Git-servers pushen. Perfect voor het beheren van documentatie, notities en inhoud die is opgeslagen in Git-repositories zonder de editor te verlaten.",
         "git_integration_desc2": "Werk naadloos samen met GitHub, GitLab en andere Git-hostingdiensten.",
+        "license_free": "Gratis",
+        "license_premium": "Premium",
         "credits": "Credits",
         "built_by": "Met zorg gebouwd door Ricardo Wagemaker.",
         "last_updated": "Laatst bijgewerkt:",

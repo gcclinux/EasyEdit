@@ -1,7 +1,7 @@
 import React from 'react';
 import './aboutModal.css';
 import { createPortal } from 'react-dom';
-import logo from '../assets/logo.png';
+import logo from '../assets/128x128@2x.png';
 import { useLanguage } from '../i18n/LanguageContext';
 import LicenseManager from '../premium/LicenseManager';
 
@@ -188,7 +188,7 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
                 </ul>
               </div>
               <div style={{ flex: 1, borderLeft: '1px solid var(--border-color, #eee)', paddingLeft: '1rem' }}>
-                <h3>{t('about.license_info')} {isLicenseValid && <span style={{ color: 'green', marginLeft: '10px' }}>OK</span>}</h3>
+                <h3>{t('about.license_info')} ({isLicenseValid ? t('about.license_premium') : t('about.license_free')})</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.9em', marginBottom: '4px' }}>{t('about.license_name')}</label>
@@ -196,7 +196,8 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      style={{ width: '95%', padding: '4px', borderRadius: '4px', border: '1px solid #ccc', color: 'black' }}
+                      className="license-name-input"
+                      style={{ width: '95%', padding: '4px', borderRadius: '4px', border: '1px solid #ccc', color: 'red !important' }}
                       placeholder={t('about.license_name_placeholder')}
                     />
                   </div>
@@ -206,7 +207,8 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      style={{ width: '95%', padding: '4px', borderRadius: '4px', border: '1px solid #ccc', color: 'black' }}
+                      className="license-email-input"
+                      style={{ width: '95%', padding: '4px', borderRadius: '4px', border: '1px solid #ccc' }}
                       placeholder={t('about.license_email_placeholder')}
                     />
                   </div>
@@ -216,6 +218,7 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
                       type="text"
                       value={purchaseDate}
                       onChange={(e) => setPurchaseDate(e.target.value)}
+                      className="license-purchasedate-input"
                       style={{ width: '95%', padding: '4px', borderRadius: '4px', border: '1px solid #ccc', color: 'black' }}
                       placeholder={t('about.license_date_placeholder')}
                     />

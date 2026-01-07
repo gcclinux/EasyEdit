@@ -167,6 +167,8 @@
         "git_integration": "Git-Integration",
         "git_integration_desc1": "Grundlegende Git-Funktionen integriert — Repositorys klonen, Markdown-Dateien bearbeiten, Änderungen stagen, commiten und direkt auf Git-Server pushen. Perfekt für die Verwaltung von Dokumentation, Notizen und Inhalten in Git-Repositorys, ohne den Editor zu verlassen.",
         "git_integration_desc2": "Arbeiten Sie nahtlos mit GitHub, GitLab und anderen Git-Hosting-Diensten zusammen.",
+        "license_free": "Kostenlos",
+        "license_premium": "Premium",
         "credits": "Credits",
         "built_by": "Mit Sorgfalt erstellt von Ricardo Wagemaker.",
         "last_updated": "Zuletzt aktualisiert:",

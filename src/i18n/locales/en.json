@@ -167,6 +167,8 @@
         "git_integration": "Git Integration",
         "git_integration_desc1": "Basic Git features built right in — clone repositories, edit Markdown files, stage changes, commit, and push directly to Git servers. Perfect for managing documentation, notes, and content stored in Git repositories without leaving the editor.",
         "git_integration_desc2": "Seamlessly work with GitHub, GitLab, and other Git hosting services.",
+        "license_free": "Free",
+        "license_premium": "Premium",
         "credits": "Credits",
         "built_by": "Built with care by Ricardo Wagemaker.",
         "last_updated": "Last updated:",

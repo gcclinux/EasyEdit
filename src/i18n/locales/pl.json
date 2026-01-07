@@ -167,6 +167,8 @@
         "git_integration": "Integracja Git",
         "git_integration_desc1": "Podstawowe funkcje Git wbudowane — klonuj repozytoria, edytuj pliki Markdown, przygotowuj zmiany, zatwierdzaj i wysyłaj bezpośrednio na serwery Git. Idealne do zarządzania dokumentacją, notatkami i treścią przechowywaną w repozytoriach Git bez opuszczania edytora.",
         "git_integration_desc2": "Pracuj bezproblemowo z GitHub, GitLab i innymi usługami hostingu Git.",
+        "license_free": "Darmowa",
+        "license_premium": "Premium",
         "credits": "Twórcy",
         "built_by": "Stworzone z dbałością przez Ricardo Wagemaker.",
         "last_updated": "Ostatnia aktualizacja:",

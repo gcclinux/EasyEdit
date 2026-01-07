@@ -167,6 +167,8 @@
         "git_integration": "Integração Git",
         "git_integration_desc1": "Recursos básicos do Git integrados — clone repositórios, edite arquivos Markdown, prepare alterações, faça commit e push diretamente para servidores Git. Perfeito para gerenciar documentação, notas e conteúdo armazenado em repositórios Git sem sair do editor.",
         "git_integration_desc2": "Trabalhe perfeitamente com GitHub, GitLab e outros serviços de hospedagem Git.",
+        "license_free": "Gratuito",
+        "license_premium": "Premium",
         "credits": "Créditos",
         "built_by": "Feito com carinho por Ricardo Wagemaker.",
         "last_updated": "Última atualização:",
