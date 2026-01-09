@@ -12,7 +12,7 @@
 .modal-content.about-modal {
   background-color: var(--bg-modal);
   color: var(--color-text-modal);
-  padding: 20px;
+  padding: 10px 20px 15px 20px;
   border-radius: 8px;
   width: 1500px;
   max-width: 95vw;
@@ -47,8 +47,8 @@
 }
 
 .about-hero-logo img {
-  width: 180px;
-  height: 180px;
+  width: 120px;
+  height: 120px;
   object-fit: contain
 }
 
@@ -82,7 +82,6 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  margin-top: -20px;
 }
 
 .about-card {
@@ -143,8 +142,8 @@
 
 .about-close {
   position: absolute;
-  right: 18px;
-  top: 18px;
+  right: 10px;
+  top: 10px;
   background: transparent;
   border: none;
   color: inherit;

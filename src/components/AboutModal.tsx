@@ -129,6 +129,8 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
               <span className="badge">{t('about.badge_mermaid')}</span>
               <span className="badge">{t('about.badge_export')}</span>
               <span className="badge">{t('about.badge_hosted')}</span>
+              <span className="badge">{t('about.badge_git')}</span>
+              <span className="badge">{t('about.badge_cloud')}</span>
             </div>
           </div>
         </div>

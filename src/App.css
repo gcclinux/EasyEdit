@@ -24,18 +24,31 @@ html,
   width: 100%;
 }
 
+/* Code block container styles */
 .code-block-container {
   background-color: var(--bg-code-block);
   padding: 10px;
   border-radius: 4px;
   margin: 4px 0;
-  white-space: pre;
-  overflow-x: auto;
+  white-space: pre-wrap;
+  /* Wrap long lines */
+  word-break: break-word;
+  /* Better word breaking */
+  overflow: visible;
+  /* No scrollbars - expand to show all content */
   width: 100%;
+  height: auto;
+  /* Auto height to fit content */
+  min-height: fit-content;
+  /* Ensure minimum height fits content */
+  flex-shrink: 0;
+  /* Prevent flex from shrinking this element */
   box-sizing: border-box;
   color: var(--color-text-code);
   font-family: monospace;
 }
+
+
 
 .inline-code {
   background-color: var(--bg-code-block);
@@ -197,7 +210,12 @@ html,
   text-decoration: none;
   flex-grow: 1;
   height: 75vh;
-  overflow: auto;
+  overflow-y: auto;
+  /* Vertical scrolling */
+  overflow-x: hidden;
+  /* Hide horizontal scrollbar */
+  word-break: break-word;
+  /* Better handling of long words */
   box-sizing: border-box;
 
   /* Container styles */
@@ -221,6 +239,7 @@ html,
 
   & th {
     background-color: var(--bg-table-header);
+    color: #000000;
   }
 }
 
@@ -408,6 +427,7 @@ html,
 .preview-horizontal th,
 .preview-parallel th {
   background-color: var(--bg-table-header);
+  color: #000000;
 }
 
 .toolbar {
