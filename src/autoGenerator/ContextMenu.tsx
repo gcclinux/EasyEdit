@@ -5,7 +5,7 @@ interface ContextMenuProps {
   textareaRef: React.RefObject<HTMLTextAreaElement>;
   editorContent: string;
   setEditorContent: (content: string) => void;
-  cursorPositionRef: React.MutableRefObject<number>;
+  cursorPositionRef: React.RefObject<number>;
   setContextMenu: (contextMenu: { visible: boolean; x: number; y: number }) => void;
   setCachedSelection: (selection: { start: number; end: number } | null) => void;
   setSelectionStart: (start: number | null) => void;
@@ -44,7 +44,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   }, [contextMenu.visible, setContextMenu]);
 
   return (
-    <div 
+    <div
       ref={menuRef}
       className="context-menu-container"
       style={{
@@ -55,7 +55,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
     >
 
       {/* Menu entry for Cut */}
-        <div
+      <div
         className="context-menu-item"
         onMouseDown={(e) => {
           e.preventDefault();
@@ -64,17 +64,17 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
               cachedSelection.start,
               cachedSelection.end
             );
-            
+
             // Copy to clipboard
             navigator.clipboard.writeText(selectedText);
-            
+
             // Update content by removing selected text
-            const newContent = 
+            const newContent =
               editorContent.slice(0, cachedSelection.start) +
               editorContent.slice(cachedSelection.end);
-            
+
             setEditorContent(newContent);
-            
+
             // Update cursor position
             setTimeout(() => {
               if (textareaRef.current) {
@@ -95,7 +95,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
         </div>
       </div>
 
-        {/* Menu entry for Copy */}
+      {/* Menu entry for Copy */}
       <div className="context-menu-item"
         onMouseDown={(e) => {
           e.preventDefault();
@@ -112,8 +112,8 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           textareaRef.current?.focus();
         }}
       >
-        <div style={{ 
-          display: 'flex', 
+        <div style={{
+          display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           width: '100%'
@@ -122,7 +122,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           <span style={{ marginLeft: 'auto', opacity: 0.7 }}>Ctrl+C</span>
         </div>
       </div>
-      
+
       {/* Menu entry for Paste */}
       <div className="context-menu-item"
         onMouseDown={async (e) => {
@@ -132,9 +132,9 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
               const clipText = await navigator.clipboard.readText();
               const start = textareaRef.current.selectionStart;
               const end = textareaRef.current.selectionEnd;
-              const newText = 
-                editorContent.substring(0, start) + 
-                clipText + 
+              const newText =
+                editorContent.substring(0, start) +
+                clipText +
                 editorContent.substring(end);
               setEditorContent(newText);
               cursorPositionRef.current = start + clipText.length;
@@ -146,8 +146,8 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           textareaRef.current?.focus();
         }}
       >
-        <div style={{ 
-          display: 'flex', 
+        <div style={{
+          display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           width: '100%'
@@ -169,7 +169,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
             });
             setSelectionStart(0);
             setSelectionEnd(editorContent.length);
-            
+
             setTimeout(() => {
               if (textareaRef.current) {
                 textareaRef.current.focus();
@@ -180,8 +180,8 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
           setContextMenu({ visible: false, x: 0, y: 0 });
         }}
       >
-        <div style={{ 
-          display: 'flex', 
+        <div style={{
+          display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           width: '100%'

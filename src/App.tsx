@@ -144,10 +144,19 @@ import ToastContainer from './components/ToastContainer';
 import { isFeatureEnabled } from './config/features';
 import { useLanguage } from './i18n/LanguageContext';
 import LanguageModal from './components/LanguageModal';
+import LicenseManager from './premium/LicenseManager';
 
 const App = () => {
   const { t } = useLanguage();
   const [documentHistory, setDocumentHistory] = useState<HistoryState[]>([]);
+
+  // Listen for license updates to enable premium features dynamically
+  const [, setLicenseUpdate] = useState(0);
+  useEffect(() => {
+    return LicenseManager.subscribe(() => {
+      setLicenseUpdate(prev => prev + 1);
+    });
+  }, []);
   const [editorContent, setEditorContent] = useState<string>('');
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
   const [isHorizontal, setIsHorizontal] = useState<boolean>(false);

@@ -45,12 +45,29 @@ class LicenseManager {
     return localStorage.getItem(this.STORAGE_KEY_DATE);
   }
 
+  private listeners: (() => void)[] = [];
+
+  private notifyListeners(): void {
+    this.listeners.forEach(listener => listener());
+  }
+
+  public subscribe(listener: () => void): () => void {
+    this.listeners.push(listener);
+    return () => {
+      this.listeners = this.listeners.filter(l => l !== listener);
+    };
+  }
+
   private async checkLicenseStatus(): Promise<void> {
     const email = this.getStoredEmail();
     const purchaseDate = this.getStoredPurchaseDate();
 
     if (!email || !purchaseDate) {
+      const oldStatus = this.activeLicense;
       this.activeLicense = false;
+      if (oldStatus !== this.activeLicense) {
+        this.notifyListeners();
+      }
       return;
     }
 
@@ -63,6 +80,7 @@ class LicenseManager {
         body: JSON.stringify({ email, purchaseDate }),
       });
 
+      const oldStatus = this.activeLicense;
       if (response.ok) {
         const data = await response.json();
         // Check for "True" string or true boolean, based on the PowerShell output "True"
@@ -72,9 +90,17 @@ class LicenseManager {
       } else {
         this.activeLicense = false;
       }
+
+      if (oldStatus !== this.activeLicense) {
+        this.notifyListeners();
+      }
     } catch (error) {
       console.error('Error checking license status:', error);
+      const oldStatus = this.activeLicense;
       this.activeLicense = false;
+      if (oldStatus !== this.activeLicense) {
+        this.notifyListeners();
+      }
     }
   }
 }

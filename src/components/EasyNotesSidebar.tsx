@@ -34,7 +34,7 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
   const [showNewNoteDialog, setShowNewNoteDialog] = useState(false);
   const [newNoteTitle, setNewNoteTitle] = useState('');
   const [selectedProvider, setSelectedProvider] = useState<string>('googledrive');
-  
+
   // Delete confirmation modal state
   const [deleteConfirmModal, setDeleteConfirmModal] = useState<{
     isOpen: boolean;
@@ -43,7 +43,7 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
     isOpen: false,
     noteToDelete: null
   });
-  
+
   // Enhanced loading states for specific operations
   const [operationStates, setOperationStates] = useState<{
     connecting: Record<string, boolean>;
@@ -104,43 +104,43 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
       console.warn('[EasyNotesSidebar] CloudManager not available - feature disabled');
       return;
     }
-    
+
     try {
       console.log('[EasyNotesSidebar] Checking if user is authenticated after redirect...');
-      
+
       // Check if we have OAuth tokens in the URL (from redirect)
       const urlHash = window.location.hash;
       const hasOAuthTokens = urlHash.includes('id_token=') || urlHash.includes('access_token=');
-      
+
       if (hasOAuthTokens) {
         console.log('[EasyNotesSidebar] OAuth tokens found in URL, processing redirect...');
-        
+
         // Clear the URL hash to clean up FIRST to prevent loops
         window.history.replaceState(null, '', window.location.pathname);
-        
+
         // Wait a moment for the URL to be cleaned
         await new Promise(resolve => setTimeout(resolve, 100));
-        
+
         // Don't try to connect again - the redirect flow should have handled the authentication
         // Just reload the provider metadata to check if we're now connected
         console.log('[EasyNotesSidebar] Reloading provider metadata after OAuth redirect...');
         await loadNotesAndProviders();
         return;
       }
-      
+
       // Check if Google Drive provider is already authenticated
       const availableProviders = await cloudManager.getAvailableProviders();
       const googleProvider = availableProviders.find(p => p.name === 'googledrive');
       if (googleProvider) {
         const isAuth = await googleProvider.isAuthenticated();
         console.log('[EasyNotesSidebar] Google Drive authenticated:', isAuth);
-        
+
         if (isAuth) {
           console.log('[EasyNotesSidebar] User is authenticated, checking connection status...');
           // If authenticated but not connected, complete the connection
           const isConnected = await cloudManager.isProviderConnected('googledrive');
           console.log('[EasyNotesSidebar] Google Drive connected:', isConnected);
-          
+
           if (!isConnected) {
             console.log('[EasyNotesSidebar] Authenticated but not connected, completing setup...');
             try {
@@ -163,7 +163,7 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
       console.warn('[EasyNotesSidebar] CloudManager not available - feature disabled');
       return;
     }
-    
+
     setLoading(true);
     try {
       // Load notes
@@ -174,11 +174,11 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
       // Load provider metadata
       const availableProviders = await cloudManager.getAvailableProviders();
       const providerMetadata: Record<string, ProviderMetadata> = {};
-      
+
       for (const provider of availableProviders) {
         const metadata = await cloudManager.getProviderMetadata(provider.name);
         console.log(`[EasyNotesSidebar] Provider ${provider.name} metadata:`, metadata);
-        
+
         if (metadata) {
           providerMetadata[provider.name] = metadata;
         } else {
@@ -190,7 +190,7 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
           };
         }
       }
-      
+
       console.log('[EasyNotesSidebar] Final provider metadata:', providerMetadata);
       setProviders(providerMetadata);
     } catch (error) {
@@ -207,22 +207,22 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
       showToast('Cloud features are disabled', 'error');
       return;
     }
-    
+
     console.log('[EasyNotesSidebar] Connect button clicked for provider:', providerName);
-    
+
     // Set specific loading state for this provider
     setOperationStates(prev => ({
       ...prev,
       connecting: { ...prev.connecting, [providerName]: true },
       authenticating: { ...prev.authenticating, [providerName]: true }
     }));
-    
+
     console.log('[EasyNotesSidebar] Starting connection process...');
-    
+
     try {
       const success = await cloudManager.connectProvider(providerName);
       console.log('[EasyNotesSidebar] Connect result:', success);
-      
+
       if (success) {
         showToast(`Connected to ${providers[providerName]?.displayName || providerName}`, 'success');
         console.log('[EasyNotesSidebar] Reloading notes and providers...');
@@ -234,7 +234,7 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
     } catch (error) {
       console.error(`Failed to connect to ${providerName}:`, error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      
+
       // Show user-friendly error message
       if (errorMessage.includes('not yet configured')) {
         showToast('Google Drive integration will be available in a future update', 'info');
@@ -257,13 +257,13 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
       showToast('Cloud features are disabled', 'error');
       return;
     }
-    
+
     // Set specific loading state for disconnection
     setOperationStates(prev => ({
       ...prev,
       disconnecting: { ...prev.disconnecting, [providerName]: true }
     }));
-    
+
     try {
       await cloudManager.disconnectProvider(providerName);
       showToast(`Disconnected from ${providers[providerName]?.displayName || providerName}`, 'success');
@@ -286,7 +286,7 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
       showToast('Cloud features are disabled', 'error');
       return;
     }
-    
+
     if (!newNoteTitle.trim()) {
       showToast('Please enter a note title', 'warning');
       return;
@@ -302,7 +302,7 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
       ...prev,
       creatingNote: true
     }));
-    
+
     try {
       const newNote = await cloudManager.createNote(selectedProvider, newNoteTitle.trim());
       showToast(`Created note "${newNote.title}"`, 'success');
@@ -327,19 +327,21 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
       showToast('Cloud features are disabled', 'error');
       return;
     }
-    
+
     // Set specific loading state for this note
     setOperationStates(prev => ({
       ...prev,
       openingNote: { ...prev.openingNote, [note.id]: true }
     }));
-    
+
     try {
       const content = await cloudManager.openNote(note.id);
       if (onNoteSelect) {
         onNoteSelect(note.id, content, note);
       }
       showToast(`Opened "${note.title}"`, 'success');
+      // Close sidebar after successful load
+      setShowEasyNotesSidebar(false);
     } catch (error) {
       console.error('Failed to open note:', error);
       showToast('Failed to open note', 'error');
@@ -358,7 +360,7 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
       showToast('Cloud features are disabled', 'error');
       return;
     }
-    
+
     setSyncing(true);
     try {
       const syncResult = await cloudManager.syncNotes();
@@ -379,7 +381,7 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
   const handleDeleteNote = (note: NoteMetadata, event: React.MouseEvent) => {
     // Stop event propagation to prevent opening the note
     event.stopPropagation();
-    
+
     // Show confirmation modal
     setDeleteConfirmModal({
       isOpen: true,
@@ -393,28 +395,28 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
       showToast('Cloud features are disabled', 'error');
       return;
     }
-    
+
     const note = deleteConfirmModal.noteToDelete;
     if (!note) return;
-    
+
     // Close modal
     setDeleteConfirmModal({ isOpen: false, noteToDelete: null });
-    
+
     // Set specific loading state for this note
     setOperationStates(prev => ({
       ...prev,
       deletingNote: { ...prev.deletingNote, [note.id]: true }
     }));
-    
+
     try {
       await cloudManager.deleteNote(note.id);
       showToast(`Deleted "${note.title}"`, 'success');
-      
+
       // Notify parent component if this was the currently open note
       if (onNoteDelete) {
         onNoteDelete(note.id);
       }
-      
+
       await loadNotesAndProviders();
     } catch (error) {
       console.error('Failed to delete note:', error);
@@ -445,7 +447,7 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
     return Object.entries(providers).filter(([_, metadata]) => metadata.connected);
   };
   return (
-    <div 
+    <div
       className={`easynotes-sidebar ${showEasyNotesSidebar ? 'easynotes-sidebar-open' : ''}`}
       style={{
         position: 'fixed',
@@ -487,14 +489,14 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
           </button>
         </div>
       </div>
-      
+
       {/* Cloud Providers Section */}
       <div style={{ marginBottom: '20px' }}>
         <h3 style={{ fontSize: '1rem', marginBottom: '10px', color: 'var(--color-text-dropdown)' }}>
           <FaCloud style={{ marginRight: '8px' }} />
           Cloud Providers
         </h3>
-        
+
         {Object.entries(providers).map(([providerName, metadata]) => (
           <div key={providerName} style={{
             display: 'flex',
@@ -539,9 +541,9 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
                 <FaSync className="fa-spin" style={{ fontSize: '10px' }} />
               )}
               {operationStates.connecting[providerName] ? 'Connecting...' :
-               operationStates.authenticating[providerName] ? 'Authenticating...' :
-               operationStates.disconnecting[providerName] ? 'Disconnecting...' :
-               metadata.connected ? 'Disconnect' : 'Connect'}
+                operationStates.authenticating[providerName] ? 'Authenticating...' :
+                  operationStates.disconnecting[providerName] ? 'Disconnecting...' :
+                    metadata.connected ? 'Disconnect' : 'Connect'}
             </button>
           </div>
         ))}
@@ -579,7 +581,7 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
               </>
             )}
           </button>
-          
+
           <button
             onClick={handleSyncNotes}
             disabled={loading || syncing || getConnectedProviders().length === 0}
@@ -609,23 +611,23 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
         <h3 style={{ fontSize: '1.2rem', marginBottom: '15px', color: 'var(--color-text-dropdown)' }}>
           Notes ({notes.length})
         </h3>
-        
+
         {loading && (
           <div style={{ textAlign: 'center', padding: '20px', color: 'var(--color-text-light)' }}>
             <FaSync className="fa-spin" style={{ marginRight: '8px' }} />
             Loading...
           </div>
         )}
-        
+
         {!loading && notes.length === 0 && (
           <p style={{ color: 'var(--color-text-light)', fontSize: '14px', textAlign: 'center', padding: '20px' }}>
-            {getConnectedProviders().length === 0 
+            {getConnectedProviders().length === 0
               ? 'Connect to a cloud provider to start creating notes!'
               : 'No notes yet. Create your first note!'
             }
           </p>
         )}
-        
+
         {!loading && notes.length > 0 && (
           <div>
             {notes.map((note) => {
@@ -745,7 +747,7 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
             maxWidth: '400px'
           }}>
             <h3 style={{ margin: '0 0 15px 0', fontSize: '1.2rem' }}>Create New Note</h3>
-            
+
             <div style={{ marginBottom: '15px' }}>
               <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px' }}>
                 Note Title:
@@ -772,7 +774,7 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
                 }}
               />
             </div>
-            
+
             <div style={{ marginBottom: '15px' }}>
               <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px' }}>
                 Cloud Provider:
@@ -797,7 +799,7 @@ const EasyNotesSidebar: React.FC<EasyNotesSidebarProps> = ({
                 ))}
               </select>
             </div>
-            
+
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
               <button
                 onClick={() => {
