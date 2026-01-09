@@ -787,6 +787,7 @@ html,
   padding: 8px 12px;
   text-align: left;
   cursor: pointer;
+  color: var(--context-menu-text, #000000);
 }
 
 .context-menu-container {
