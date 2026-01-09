@@ -29,7 +29,6 @@ test-deploy
 *.sln
 *.sw?
 *.firebase
-firebase.json
 *dist
 .idx/*
 *.pem
