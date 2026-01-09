@@ -29,7 +29,7 @@
   margin-bottom: 0;
 }
 
-.about-hero-text > * {
+.about-hero-text>* {
   margin-bottom: 0;
 }
 
@@ -97,7 +97,7 @@
   margin-bottom: 8px;
 }
 
-.about-card > *:last-child {
+.about-card>*:last-child {
   margin-bottom: 2px;
 }
 
@@ -107,52 +107,27 @@
   margin-bottom: 2px;
 }
 
-.license-name-input {
-  color: white !important;
+/* License Input Fields - Adaptive Colors */
+:root {
+  --license-input-bg: #ffffff;
+  --license-input-text: #000000;
 }
 
-.about-modal .license-name-input {
-  color: white !important;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --license-input-bg: #000000;
+    --license-input-text: #ffffff;
+  }
 }
 
-.about-card .license-name-input {
-  color: white !important;
-}
-
-input.license-name-input {
-  color: white !important;
-}
-
-.license-purchasedate-input {
-  color: white !important;
-}
-
-.about-modal .license-purchasedate-input {
-  color: white !important;
-}
-
-.about-card .license-purchasedate-input {
-  color: white !important;
-}
-
-input.license-purchasedate-input {
-  color: white !important;
-}
-
+.license-name-input,
+.license-purchasedate-input,
 .license-email-input {
-  color: white !important;
-}
-
-.about-modal .license-email-input {
-  color: white !important;
-}
-
-.about-card .license-email-input {
-  color: white !important;
-}
-
-input.license-email-input {
-  color: white !important;
+  background-color: var(--license-input-bg) !important;
+  color: var(--license-input-text) !important;
+  border: 1px solid var(--border-card);
+  padding: 4px;
+  border-radius: 4px;
 }
 
 /* Make paragraph text in the About modal italic for a softer, note-like feel */
@@ -194,8 +169,4 @@ input.license-email-input {
 
 .muted {
   color: var(--color-text-muted-dark)
-}
-
-.about-modal input {
-  color: black !important;
 }
