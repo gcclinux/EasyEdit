@@ -118,7 +118,9 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
       <div className="modal-content about-modal">
         <div className="about-hero">
           <div className="about-hero-logo">
-            <img src={logo} alt="EasyEditor" />
+            <a href="https://www.easyeditor.co.uk/" target="_blank" rel="noopener noreferrer">
+              <img src={logo} alt="EasyEditor" />
+            </a>
           </div>
           <div className="about-hero-text">
             <h2 id="about-title" className="about-title">{t('about.title')}</h2>
@@ -188,6 +190,15 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
                   <li>{t('about.premium_features_li5')}</li>
                   <li>{t('about.premium_features_li6')}</li>
                 </ul>
+                <a
+                  href="https://www.easyeditor.co.uk/#pricing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn secondary"
+                  style={{ marginTop: '5px', padding: '6px 12px', display: 'inline-block', textDecoration: 'none' }}
+                >
+                  View Pricing
+                </a>
               </div>
               <div style={{ flex: 1, borderLeft: '1px solid var(--border-color, #eee)', paddingLeft: '1rem' }}>
                 <h3>{t('about.license_info')} ({isLicenseValid ? t('about.license_premium') : t('about.license_free')})</h3>
