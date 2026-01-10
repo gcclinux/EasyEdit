@@ -1,4 +1,5 @@
-// src/premium/LicenseManager.ts
+import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
+import { isTauriEnvironment } from '../utils/environment';
 
 class LicenseManager {
   private static instance: LicenseManager;
@@ -72,7 +73,9 @@ class LicenseManager {
     }
 
     try {
-      const response = await fetch(this.API_ENDPOINT, {
+      const fetchFn = isTauriEnvironment() ? tauriFetch : fetch;
+
+      const response = await fetchFn(this.API_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

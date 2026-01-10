@@ -12,7 +12,6 @@ interface AboutModalProps {
 
 export function AboutModal({ open, onClose }: AboutModalProps) {
   const { t } = useLanguage();
-  if (!open) return null;
 
   const lastUpdated = 'Sun Dec 7 2025';
   const [version, setVersion] = React.useState<string>('');
@@ -112,6 +111,7 @@ export function AboutModal({ open, onClose }: AboutModalProps) {
       }
     })();
   }, []);
+  if (!open) return null;
 
   const content = (
     <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="about-title">
