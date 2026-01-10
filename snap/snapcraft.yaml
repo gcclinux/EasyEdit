@@ -1,10 +1,12 @@
 name: easyeditor
-version: '1.5.2b'
+version: '1.5.2c'
 summary: Easy Markdown Editor
 description: |
-  EasyEditor is an easy markdown editor that allows you to write Markdown (MD) 
+  Easyeditor is an easy markdown editor that allows you to write Markdown (MD) 
   and preview it in real-time. You can save, load .md files, load Git repo 
-  and stage, commit, push and export to HTML, TXT, PDF & SSTP Encryption.
+  and stage, commit, push and export to HTML, TXT, PDF & SSTP Encryption, This 
+  application uses classic confinement because it's a Tauri-based application 
+  requiring WebKitGTK 4.1 with full system access for file operations.
 
 grade: stable
 confinement: classic
@@ -14,7 +16,7 @@ base: core24
 title: Easyedit
 license: MIT
 contact: https://github.com/gcclinux/easyeditor/discussions
-website: https://gcclinux.github.io/EasyEditor/
+website: https://easyeditor.co.uk
 source-code: https://github.com/gcclinux/easyeditor
 issues: https://github.com/gcclinux/easyeditor/issues
 donation: https://github.com/sponsors/gcclinux
